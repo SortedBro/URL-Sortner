@@ -45,7 +45,7 @@ url-shortener
 │   └── url.js
 │
 ├── routes
-│   └── url.js
+│   └── urlRoutes.js
 │
 ├── controllers
 │   └── urlController.js
