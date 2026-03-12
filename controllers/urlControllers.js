@@ -1,36 +1,49 @@
 const Url = require('../models/urlSchema')
-const {nanoid}=require('nanoid')
+const { nanoid } = require('nanoid')
 
-exports.createShortUrl= async(req,res)=>{
-
-    
+exports.createShortUrl = async (req, res) => {
 
 
-    const {orginalUrl} = req.body;
+
+
+    const { orginalUrl } = req.body;
     const shortCode = nanoid(6);
+
+    const existingUrl = await Url.findOne({ orginalUrl })
+
+    if (existingUrl) {
+
+        return res.json({
+            shortUrl: `http://localhost:${process.env.PORT}/${existingUrl.shortCode}`
+        })
+
+    }
+
+
+
 
     const url = await Url.create({
         orginalUrl,
         shortCode
     })
 
-res.json({
-    shortUrl:`http://localhost:${process.env.PORT}/${shortCode}`
-})
+    res.json({
+        shortUrl: `http://localhost:${process.env.PORT}/${shortCode}`
+    })
 
 
 }
 
-exports.redirectUrl=async (req,res)=>{
+exports.redirectUrl = async (req, res) => {
     const url = await Url.findOne({
-        shortCode:req.params.code
+        shortCode: req.params.code
     })
 
 
 
-    if(!url){
-        return res.status(404).json({message:"Url not found"})
+    if (!url) {
+        return res.status(404).json({ message: "Url not found" })
     }
 
-    res.redirectUrl(url.orginalUrl)
+    res.redirect(url.orginalUrl)
 }
