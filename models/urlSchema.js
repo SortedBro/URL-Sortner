@@ -13,6 +13,13 @@ const urlSchema = new mongoose.Schema(
             required: true,
             unique: true,
         },
+        shortUrl:{
+            type:String,
+            require:true,
+            unique: true,
+
+
+        }
     },
     {
         timestamps: true,
