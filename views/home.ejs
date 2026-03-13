@@ -4,25 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Url-Short Page</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
-    <form action="/shorten" method="POST">
+    <form action="/shorten" method="POST" class="card">
         <label for="">Enter the Url : </label>
 
-        <input type="text" name="orginalUrl" placeholder="https://example.com">
+        <input type="text" name="orginalUrl" placeholder="https://example.com" required>
 
-        <button type="submit">submit</button>
+        <button class="btn" type="submit">submit</button>
 
-        
-            <% if (shortUrl) { %>
-                <h3>Your Short URL:</h3>
-                <a href="<%= shortUrl %>">
-                    <%= shortUrl %>
-                </a>
-                <% } %>
-        
+ <div>
+    <% if (shortUrl) { %>
+
+        <h3>Your Short URL:</h3>
+
+        <a href="<%= shortUrl %>">
+            <%= shortUrl %>
+        </a>
+
+    <% } %>
+</div>
+
+
     </form>
+<script src="/script/script.js"></script>
 </body>
 
 </html>

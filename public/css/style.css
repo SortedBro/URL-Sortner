@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ─── Variables ─────────────────────────────── */
+:root {
+  --bg:        #0A0A0F;
+  --surface:   #13131A;
+  --card:      #1C1C27;
+  --border:    rgba(255,255,255,0.07);
+  --accent:    #7B6EF6;
+  --accent-2:  #A78BFA;
+  --glow:      rgba(123,110,246,0.35);
+  --text:      #F0EFF8;
+  --muted:     #7A798A;
+  --success:   #34D399;
+  --success-bg:rgba(52,211,153,0.10);
+}
+
+/* ─── Reset ──────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── Body ───────────────────────────────────── */
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  color: var(--text);
+  padding: 2rem 1rem;
+  /* subtle radial glow behind card */
+  background-image: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(123,110,246,0.08) 0%, transparent 70%);
+}
+
+/* ─── Card (the form) ────────────────────────── */
+.card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+
+  /* entry animation */
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* decorative top line */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+/* ─── Heading (add this above form in .ejs if you want) */
+/* Using label as heading fallback */
+label {
+  display: block;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+/* ─── Input ──────────────────────────────────── */
+input[type="text"] {
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+input[type="text"]::placeholder { color: var(--muted); }
+
+input[type="text"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--glow);
+}
+
+/* ─── Button ─────────────────────────────────── */
+.btn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.85rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+}
+
+.btn:hover {
+  background: var(--accent-2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--glow);
+}
+
+.btn:active { transform: translateY(0); box-shadow: none; }
+
+/* ─── Result div ─────────────────────────────── */
+div {
+  margin-top: 1.5rem;
+}
+
+div h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--success);
+  margin-bottom: 0.6rem;
+}
+
+div a {
+  display: block;
+  padding: 0.85rem 1rem;
+  background: var(--success-bg);
+  border: 1px solid rgba(52,211,153,0.2);
+  border-radius: 10px;
+  color: var(--success);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  word-break: break-all;
+  transition: background 0.2s, border-color 0.2s;
+  animation: fadeIn 0.4s ease both;
+}
+
+div a:hover {
+  background: rgba(52,211,153,0.18);
+  border-color: rgba(52,211,153,0.4);
+}
+
+/* ─── Animations ─────────────────────────────── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* ─── Responsive ─────────────────────────────── */
+@media (max-width: 480px) {
+  .card { padding: 2rem 1.25rem; border-radius: 16px; }
+}

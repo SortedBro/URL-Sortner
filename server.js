@@ -13,7 +13,7 @@ connectDB();
 
 
 
-
+app.use(express.static("public"))
 app.use(express.json())
 app.use(express.urlencoded({ extended:false }))
 app.set('view engine','ejs');
@@ -22,7 +22,7 @@ app.set('view engine','ejs');
 
 
 app.get("/",(req,res)=>{
-    res.render('home',{shortUrl:null})
+    res.render('home',{shortUrl:null,error:null})
     // res.json({m:'This is the end'})
 })
 
@@ -33,4 +33,5 @@ app.use('/',urlRoutes)
 
 app.listen(port , ()=>{
     console.log(`Server is running at ${port}`)
+    console.log(`http://localhost:${port}/`)
 })
