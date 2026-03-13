@@ -3,36 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Url-Short Page</title>
+    <title>SnapLink — URL Shortener</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
     <nav class="navbar">
         <h2>Snap<span>Link</span></h2>
+        <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+            <span class="icon-sun">☀</span>
+            <span class="icon-moon">☽</span>
+        </button>
     </nav>
+
     <form action="/shorten" method="POST" class="card">
-        <label for="">Enter the Url : </label>
+        <label for="orginalUrl">Enter the URL</label>
+        <input type="text" id="orginalUrl" name="orginalUrl" placeholder="https://example.com" required>
+        <button class="btn" type="submit">Snap URL</button>
 
-        <input type="text" name="orginalUrl" placeholder="https://example.com" required>
-
-        <button class="btn" type="submit">submit</button>
-
- <div>
-    <% if (shortUrl) { %>
-
-        <h3>Your Short URL:</h3>
-
-        <a href="<%= shortUrl %>">
-            <%= shortUrl %>
-        </a>
-
-    <% } %>
-</div>
-
-
+        <div class="result-box">
+            <% if (shortUrl) { %>
+                <h3>Your Short URL</h3>
+                <a href="<%= shortUrl %>" target="_blank" id="shortLink">
+                    <%= shortUrl %>
+                </a>
+            <% } %>
+        </div>
     </form>
-<script src="/script/script.js"></script>
+
+    <script src="/script/script.js"></script>
 </body>
 
 </html>

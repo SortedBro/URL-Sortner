@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
-/* ─── Variables ─────────────────────────────── */
+/* ─── Dark Theme (default) ───────────────────── */
 :root {
   --bg:         #080810;
   --surface:    #10101A;
@@ -13,7 +13,30 @@
   --muted:      #72718A;
   --success:    #2DD4BF;
   --success-bg: rgba(45,212,191,0.08);
+  --success-br: rgba(45,212,191,0.18);
+  --nav-bg:     rgba(8,8,16,0.85);
   --nav-h:      64px;
+  --toggle-bg:  rgba(255,255,255,0.07);
+  --toggle-br:  rgba(255,255,255,0.12);
+}
+
+/* ─── Light Theme ────────────────────────────── */
+body.light {
+  --bg:         #F4F3FF;
+  --surface:    #FFFFFF;
+  --card:       #FFFFFF;
+  --border:     rgba(0,0,0,0.08);
+  --accent:     #5A52E8;
+  --accent-2:   #7B72F5;
+  --glow:       rgba(90,82,232,0.18);
+  --text:       #1A1830;
+  --muted:      #8885A8;
+  --success:    #0D9488;
+  --success-bg: rgba(13,148,136,0.07);
+  --success-br: rgba(13,148,136,0.20);
+  --nav-bg:     rgba(244,243,255,0.85);
+  --toggle-bg:  rgba(0,0,0,0.05);
+  --toggle-br:  rgba(0,0,0,0.10);
 }
 
 /* ─── Reset ──────────────────────────────────── */
@@ -23,13 +46,17 @@
 body {
   min-height: 100vh;
   background: var(--bg);
-  background-image:
-    radial-gradient(ellipse 55% 45% at 50% 60%, rgba(108,99,255,0.07) 0%, transparent 70%);
+  background-image: radial-gradient(ellipse 55% 45% at 50% 60%, rgba(108,99,255,0.07) 0%, transparent 70%);
   font-family: 'DM Sans', sans-serif;
   color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: background 0.3s, color 0.3s;
+}
+
+body.light {
+  background-image: radial-gradient(ellipse 55% 45% at 50% 60%, rgba(90,82,232,0.05) 0%, transparent 70%);
 }
 
 /* ─── Navbar ─────────────────────────────────── */
@@ -38,14 +65,16 @@ body {
   height: var(--nav-h);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 2rem;
   border-bottom: 1px solid var(--border);
-  background: rgba(8,8,16,0.80);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--nav-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   position: sticky;
   top: 0;
   z-index: 10;
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .navbar h2 {
@@ -60,6 +89,37 @@ body {
   color: var(--accent);
 }
 
+/* ─── Theme Toggle Button ────────────────────── */
+.theme-toggle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--toggle-br);
+  background: var(--toggle-bg);
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: rotate(20deg) scale(1.08);
+}
+
+/* show/hide sun & moon icons */
+.icon-sun  { display: none; }
+.icon-moon { display: block; }
+
+body.light .icon-sun  { display: block; }
+body.light .icon-moon { display: none; }
+
 /* ─── Card (form) ────────────────────────────── */
 .card {
   width: 100%;
@@ -68,10 +128,14 @@ body {
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 2.5rem 2rem;
-  margin: clamp(2rem, 8vh, 5rem) auto 2rem;
+  margin: clamp(2rem, 8vh, 5rem) 1rem 2rem;
   position: relative;
   overflow: hidden;
   animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: background 0.3s, border-color 0.3s;
+
+  /* light mode card shadow */
+  box-shadow: 0 4px 32px rgba(0,0,0,0.06);
 }
 
 /* top accent line */
@@ -92,6 +156,7 @@ label {
   text-transform: uppercase;
   color: var(--muted);
   margin-bottom: 0.5rem;
+  transition: color 0.3s;
 }
 
 /* ─── Input ──────────────────────────────────── */
@@ -105,7 +170,7 @@ input[type="text"] {
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.3s;
 }
 
 input[type="text"]::placeholder { color: var(--muted); }
@@ -115,7 +180,7 @@ input[type="text"]:focus {
   box-shadow: 0 0 0 3px var(--glow);
 }
 
-/* ─── Button ─────────────────────────────────── */
+/* ─── Submit Button ──────────────────────────── */
 .btn {
   width: 100%;
   margin-top: 1rem;
@@ -138,7 +203,7 @@ input[type="text"]:focus {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, transparent 55%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 55%);
   pointer-events: none;
 }
 
@@ -150,26 +215,30 @@ input[type="text"]:focus {
 
 .btn:active { transform: translateY(0); box-shadow: none; }
 
-/* ─── Result box ─────────────────────────────── */
-div {
+/* ─── Result Box ─────────────────────────────── */
+.result-box {
   margin-top: 1.25rem;
 }
 
-div h3 {
+.result-box h3 {
   font-family: 'Syne', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
   color: var(--success);
   margin-bottom: 0.6rem;
+  transition: color 0.3s;
 }
 
-div a {
-  display: block;
+.result-box a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   padding: 0.85rem 1rem;
   background: var(--success-bg);
-  border: 1px solid rgba(45,212,191,0.18);
+  border: 1px solid var(--success-br);
   border-radius: 10px;
   color: var(--success);
   font-size: 13.5px;
@@ -180,9 +249,33 @@ div a {
   animation: fadeIn 0.4s ease both;
 }
 
-div a:hover {
-  background: rgba(45,212,191,0.14);
-  border-color: rgba(45,212,191,0.35);
+.result-box a:hover {
+  filter: brightness(1.1);
+}
+
+/* ─── Copy Button (added via JS) ─────────────── */
+.copy-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--success-br);
+  color: var(--success);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  background: var(--success-bg);
+  border-color: var(--success);
+}
+
+.copy-btn.copied {
+  opacity: 0.7;
 }
 
 /* ─── Animations ─────────────────────────────── */
@@ -198,6 +291,6 @@ div a:hover {
 
 /* ─── Responsive ─────────────────────────────── */
 @media (max-width: 500px) {
-  .card { padding: 2rem 1.25rem; border-radius: 16px; }
-  .navbar { padding: 0 1.25rem; }
+  .card    { padding: 2rem 1.25rem; border-radius: 16px; }
+  .navbar  { padding: 0 1.25rem; }
 }
