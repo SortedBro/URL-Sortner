@@ -4,6 +4,7 @@ const connectDB=require('./config/db');
 require('dotenv').config();
 const urlRoutes = require('./routes/urlRoutes');
 const { handleUserSignUP,handleUserLogin } = require('./controllers/userControllers');
+const { handleContact } = require('./controllers/contactControllers');
 
 
 
@@ -26,10 +27,20 @@ app.get("/",(req,res)=>{
     res.render('home',{shortUrl:null,error:null})
     // res.json({m:'This is the end'})
 })
+
+app.get('/about', (req, res) => {
+    res.render('about')
+})
+
 app.get('/signup',  (req, res) => res.render('signup', { error: null, success: null }))
 app.post('/signup', handleUserSignUP)  
 app.get('/login',  (req, res) => res.render('login', { error: null, success: null }))
 app.post('/login', handleUserLogin) 
+
+
+app.post('/contact',handleContact);
+app.get("/about",(req,res)=>{res.render("about",{ success: null, error: null })})
+
 
 
 
