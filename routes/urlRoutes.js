@@ -1,10 +1,15 @@
 const express = require("express")
-const {createShortUrl,redirectUrl}=require('../controllers/urlControllers')
+const {createShortUrl,redirectUrl, serverOn}=require('../controllers/urlControllers')
 const router = express.Router();
 
 
 
-router.post("/shorten",createShortUrl)
+
 router.get("/:code",redirectUrl)
+router.get("/health",serverOn)
+
+router.post("/shorten",createShortUrl)
+
+
 
 module.exports = router;

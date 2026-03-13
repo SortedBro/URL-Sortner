@@ -56,3 +56,9 @@ exports.redirectUrl = async (req, res) => {
 
     res.redirect(url.orginalUrl)
 }
+
+
+exports.serverOn=(req,res)=>{
+    res.json({message:"Server is on"})
+
+}
