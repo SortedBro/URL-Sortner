@@ -26,7 +26,7 @@ exports.handleUserSignUP = async (req, res) => {
 
 
     }
-    
+
 }
 
 
@@ -36,7 +36,7 @@ exports.handleUserLogin = async (req, res) => {
     try {
 
         const user = await User.findOne({ email })
-        console.log("User in handle log in ",user)
+        console.log("User in handle log in ", user)
 
         if (!user) {
             console.log('Invalid user')
@@ -56,7 +56,7 @@ exports.handleUserLogin = async (req, res) => {
 
         const decodePass = await bcrypt.compare(password, user.password);
         // console.log("decode pass " ,decodePass);
-        
+
 
         if (!decodePass) {
             return res.render(
@@ -72,20 +72,29 @@ exports.handleUserLogin = async (req, res) => {
 
         //jwt token
 
-        const token = jwt.sign(
+        const accessToken = jwt.sign(
 
             { user: user._id },
             process.env.jwt_secret,
             { expiresIn: "10h" }
-
         )
-        console.log("token banaya " , token);
-        console.log("jwt_secret" , process.env.jwt_secret);
+
+        const refreshToken = jwt.sign(
+
+                { user: user._id },
+                process.env.jwt_secret,
+                { expiresIn: "10h" }
+
+            )
+        // console.log("token banaya " , token);
+        // console.log("jwt_secret" , process.env.jwt_secret);
         //cockie
 
-        res.cookie("token",token.trim(),{
-            httpOnly:true,
-            
+        res.cookie("refreshToken", refreshToken.trim(), {
+            httpOnly: true,
+            secure: true,
+
+
         })
 
         res.redirect(
