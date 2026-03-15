@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 require('dotenv').config();
 const urlRoutes = require('./routes/urlRoutes')
-const path=require('path')
+const path = require('path')
+const cookieParser  = require('cookie-parser');
+const underDevRouter = require('./routes/under-dev');
+const { softAuth } = require('./middleware/auth.middleware');
+
 
 
 const port = process.env.PORT || 3000;
@@ -19,20 +23,28 @@ app.use(express.static("public"))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.set('view engine', 'ejs');
+app.use(cookieParser())
+app.use(softAuth)
 
 
 
 
 // GET routes
 
-app.get("/", (req, res) => { res.render('home', { shortUrl: null, error: null }) })
-app.get('/signup', (req, res) => res.render('signup', { error: null, success: null }))
-app.get('/login', (req, res) => res.render('login', { error: null, success: null }))
-app.get("/about", (req, res) => { res.render("about", { success: null, error: null }) })
+app.get("/", (req, res) => { res.render('home', { shortUrl: null, error: null }) });
+app.get('/signup', (req, res) => res.render('signup', { error: null, success: null }));
+app.get('/login', (req, res) => res.render('login', { error: null, success: null }));
+app.get("/about", (req, res) => { res.render("about", { success: null, error: null }) });
+
+app.get('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.redirect('/login');
+});
 
 
 // POST routes
 
+app.use("/", underDevRouter)
 app.use('/shorten', urlRoutes)
 app.use('/', urlRoutes)
 

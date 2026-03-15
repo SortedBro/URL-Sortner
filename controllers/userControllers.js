@@ -1,6 +1,6 @@
 const User = require('../models/userSchema.js')
 const bcrypt = require('bcrypt')
-
+const jwt = require('jsonwebtoken')
 
 
 exports.handleUserSignUP = async (req, res) => {
@@ -8,6 +8,8 @@ exports.handleUserSignUP = async (req, res) => {
 
     //password hashed
     const hasedPassword = await bcrypt.hash(password, 10)
+
+    // console.log("hased password" , hasedPassword)
 
 
     try {
@@ -18,12 +20,13 @@ exports.handleUserSignUP = async (req, res) => {
             password: hasedPassword,
         })
 
-        res.render('home', { shortUrl: null, error: null })
+        res.render('login', { shortUrl: null, error: null })
     } catch (error) {
         console.log("Error:", error);
 
 
     }
+    
 }
 
 
@@ -33,6 +36,7 @@ exports.handleUserLogin = async (req, res) => {
     try {
 
         const user = await User.findOne({ email })
+        console.log("User in handle log in ",user)
 
         if (!user) {
             console.log('Invalid user')
@@ -51,6 +55,8 @@ exports.handleUserLogin = async (req, res) => {
         // password decode 
 
         const decodePass = await bcrypt.compare(password, user.password);
+        // console.log("decode pass " ,decodePass);
+        
 
         if (!decodePass) {
             return res.render(
@@ -64,6 +70,23 @@ exports.handleUserLogin = async (req, res) => {
             )
         }
 
+        //jwt token
+
+        const token = jwt.sign(
+
+            { user: user._id },
+            process.env.jwt_secret,
+            { expiresIn: "10h" }
+
+        )
+        console.log("token banaya " , token);
+        console.log("jwt_secret" , process.env.jwt_secret);
+        //cockie
+
+        res.cookie("token",token.trim(),{
+            httpOnly:true,
+            
+        })
 
         res.redirect(
             '/'

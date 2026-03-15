@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — SnapLink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+
+<body>
+
+  <nav>
+    <a class="nav-logo" href="/dashboard">
+      <span></span>
+      SnapLink
+    </a>
+    <div class="nav-right">
+      <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
+      <a class="btn-logout" href="/logout">Logout</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>My <span>Links</span></h1>
+      <p>Saari short URLs aur unki analytics ek jagah</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total URLs</div>
+        <div class="stat-value accent">
+          <%= urls.length %>
+        </div>
+        <div class="stat-sub">banaye gaye links</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Clicks</div>
+        <div class="stat-value">
+          <%= urls.reduce((sum, u)=> sum + (u.clicks || 0), 0) %>
+        </div>
+        <div class="stat-sub">across all links</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Most Clicked</div>
+        <div class="stat-value">
+          <%= urls.length ? Math.max(...urls.map(u=> u.clicks || 0)) : 0 %>
+        </div>
+        <div class="stat-sub">
+          <% const top=urls.length ? urls.reduce((a,b)=> (a.clicks||0) > (b.clicks||0) ? a : b, urls[0]) : null;
+            %>
+            <%= top ? '/' + top.shortCode : 'koi link nahi' %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-section">
+      <div class="table-header">
+        <span class="table-title">All Links</span>
+        <span class="table-count">
+          <%= urls.length %> total
+        </span>
+      </div>
+
+      <% if (urls.length===0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">🔗</div>
+          <h3>Koi URL nahi mili</h3>
+          <p>Abhi tak koi short URL nahi banaya</p>
+          <a href="/">Pehla link banao →</a>
+        </div>
+        <% } else { %>
+          <table>
+            <thead>
+              <tr>
+                <th>Link</th>
+                <th>Short URL</th>
+                <th>Clicks</th>
+                <th class="hide-mobile">Last Click</th>
+                <th class="hide-mobile">Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% urls.forEach(url=> { %>
+                <tr>
+                  <td class="td-url">
+                    <span class="url-original" title="<%= url.originalUrl %>">
+                      <%= url.originalUrl %>
+                    </span>
+                  </td>
+                  <td>
+                    <a class="url-short" href="/<%= url.shortCode %>" target="_blank">
+                      /<%= url.shortCode %>
+                    </a>
+                  </td>
+                  <td>
+                    <span class="click-badge <%= url.clicks === 0 ? 'zero' : '' %>">
+                      <% if (url.clicks> 0) { %>▲<% } %>
+                          <%= url.clicks || 0 %>
+                    </span>
+                  </td>
+                  <td class="hide-mobile">
+                    <span class="date-text">
+                      <%= url.lastClickedAt ? new Date(url.lastClickedAt).toLocaleDateString('en-IN', {day:'numeric',
+                        month:'short'}) : '—' %>
+                    </span>
+                  </td>
+                  <td class="hide-mobile">
+                    <span class="date-text">
+                      <%= new Date(url.createdAt).toLocaleDateString('en-IN', {day:'numeric', month:'short',
+                        year:'2-digit'}) %>
+                    </span>
+                  </td>
+                  <td style="display:flex; gap:6px; align-items:center;">
+                    <button class="btn-copy" onclick="copyUrl('<%= url.shortUrl %>', this)">Copy</button>
+                    <form action="/delete/<%= url.shortCode %>" method="POST" style="margin:0">
+                      <button class="btn-delete" type="submit" onclick="return confirm('Delete karo?')">✕</button>
+                    </form>
+                  </td>
+                </tr>
+                <% }) %>
+            </tbody>
+          </table>
+          <% } %>
+    </div>
+
+  </main>
+
+  <script>
+    // Theme toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('theme-btn').textContent = isDark ? '☾ Dark' : '☀ Light';
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    }
+
+    // Saved theme load karo
+    const saved = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀ Light' : '☾ Dark';
+
+    // Copy URL
+    function copyUrl(url, btn) {
+      navigator.clipboard.writeText(url).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+
+</body>
+
+</html>

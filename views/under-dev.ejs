@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= pageTitle %> — Under Development</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/css/uderdevelop.css">
+</head>
+<body>
+
+  <!-- Manual dark/light toggle button -->
+  <button class="theme-toggle" id="toggleBtn" onclick="toggleTheme()">🌙 dark</button>
+
+  <!-- ================================
+    BLURRED BACKGROUND — fake skeleton
+    Ya apna actual page content daalo
+  ================================== -->
+  <div class="page-content">
+    <div class="fake-nav">
+      <div class="fake-bar" style="width:90px"></div>
+      <div class="fake-bar" style="width:55px"></div>
+      <div class="fake-bar" style="width:55px"></div>
+      <div class="fake-bar" style="width:70px"></div>
+    </div>
+    <div class="fake-hero"></div>
+    <div class="fake-bar" style="width:75%;margin-bottom:8px"></div>
+    <div class="fake-bar" style="width:50%;margin-bottom:8px"></div>
+    <div class="fake-bar" style="width:65%;margin-bottom:12px"></div>
+    <div class="fake-cards">
+      <div class="fake-card"></div>
+      <div class="fake-card"></div>
+      <div class="fake-card"></div>
+    </div>
+    <div class="fake-bar" style="width:80%;margin-bottom:8px"></div>
+    <div class="fake-bar" style="width:40%"></div>
+  </div>
+
+  <!-- ================================
+    OVERLAY CARD
+  ================================== -->
+  <div class="overlay">
+    <div class="ud-card">
+      <div class="tape-top"></div>
+      <div class="tape-bottom"></div>
+
+      <div class="worker-area">
+        <div class="sparks">
+          <div class="spark"></div>
+          <div class="spark"></div>
+          <div class="spark"></div>
+          <div class="spark"></div>
+        </div>
+        <span class="hard-hat">👷</span>
+      </div>
+
+      <div class="ud-title">Arey bhai, yahan kaam chal raha hai!</div>
+      <div class="ud-sub">
+        <strong><%= pageTitle %></strong> abhi ban raha hai.<br>
+        Thoda sabr rakho, jaldi ready hoga.
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-fill" id="pfill"></div>
+      </div>
+      <div class="percent-label" id="pct">0%</div>
+
+      <!-- Task list — server se aata hai -->
+      <div class="task-list">
+        <% tasks.forEach(function(task) { %>
+          <div class="task-row">
+            <span class="task-dot <%= task.state %>"></span>
+            <span style="flex:1"><%= task.label %></span>
+            <span style="color:var(--text-label);font-size:10px">
+              <% if (task.state === 'done') { %>
+                ✓ done
+              <% } else if (task.state === 'wip') { %>
+                kaam chal raha...
+              <% } else { %>
+                baaki hai
+              <% } %>
+            </span>
+          </div>
+        <% }); %>
+      </div>
+
+      <div class="notify-row">
+        <input class="notify-input" id="email-in" placeholder="email daalo, notify karein?" />
+        <button class="notify-btn" onclick="handleNotify()">notify me</button>
+      </div>
+      <div class="notify-success" id="ns">✓ haan bhai, yaad rakhenge!</div>
+    </div>
+  </div>
+
+  <script>
+    // ── Progress bar ──
+    const tasks  = <%- JSON.stringify(tasks) %>;
+    const done   = tasks.filter(t => t.state === 'done').length;
+    const wip    = tasks.filter(t => t.state === 'wip').length;
+    const target = Math.round((done + wip * 0.5) / tasks.length * 100);
+
+    let cur = 0;
+    const fill  = document.getElementById('pfill');
+    const pct   = document.getElementById('pct');
+    const timer = setInterval(() => {
+      if (cur >= target) { clearInterval(timer); return; }
+      cur++;
+      fill.style.width = cur + '%';
+      pct.textContent  = cur + '%';
+    }, 18);
+
+    // ── Notify ──
+    async function handleNotify() {
+      const email = document.getElementById('email-in').value.trim();
+      if (!email) return;
+      try {
+        await fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, page: '<%= pageTitle %>' })
+        });
+      } catch(e) {}
+      document.querySelector('.notify-row').style.display = 'none';
+      document.getElementById('ns').style.display = 'block';
+    }
+
+    // ── Dark / Light toggle ──
+    const btn = document.getElementById('toggleBtn');
+
+    // System preference check on load
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let isDark = prefersDark;
+    applyTheme();
+
+    function toggleTheme() {
+      isDark = !isDark;
+      applyTheme();
+    }
+
+    function applyTheme() {
+      if (isDark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        btn.textContent = '☀️ light';
+        setDarkVars();
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        btn.textContent = '🌙 dark';
+        setLightVars();
+      }
+    }
+
+    function setDarkVars() {
+      const r = document.documentElement.style;
+      r.setProperty('--bg-page',     '#111110');
+      r.setProperty('--bg-card',     '#1c1c1a');
+      r.setProperty('--bg-input',    '#252523');
+      r.setProperty('--bg-progress', '#2a2a28');
+      r.setProperty('--bg-fake',     '#2a2a28');
+      r.setProperty('--border-card', '#3a3a38');
+      r.setProperty('--border-input','#3a3a38');
+      r.setProperty('--border-row',  '#2e2e2c');
+      r.setProperty('--border-todo', '#3a3a38');
+      r.setProperty('--text-title',  '#f0f0ee');
+      r.setProperty('--text-sub',    '#999999');
+      r.setProperty('--text-percent','#666666');
+      r.setProperty('--text-task',   '#aaaaaa');
+      r.setProperty('--text-label',  '#555555');
+      r.setProperty('--dot-todo-bg', '#333331');
+      r.setProperty('--overlay-bg',  'rgba(0,0,0,0.45)');
+      r.setProperty('--tape-light',  '#c9973a');
+      r.setProperty('--tape-dark',   '#f0f0ee');
+      r.setProperty('--btn-bg',      '#FAC775');
+      r.setProperty('--btn-text',    '#1a1a18');
+    }
+
+    function setLightVars() {
+      const r = document.documentElement.style;
+      r.setProperty('--bg-page',     '#f5f5f3');
+      r.setProperty('--bg-card',     '#ffffff');
+      r.setProperty('--bg-input',    '#f5f5f3');
+      r.setProperty('--bg-progress', '#f0f0ee');
+      r.setProperty('--bg-fake',     '#e8e8e6');
+      r.setProperty('--border-card', '#cccccc');
+      r.setProperty('--border-input','#cccccc');
+      r.setProperty('--border-row',  '#eeeeee');
+      r.setProperty('--border-todo', '#cccccc');
+      r.setProperty('--text-title',  '#1a1a1a');
+      r.setProperty('--text-sub',    '#666666');
+      r.setProperty('--text-percent','#999999');
+      r.setProperty('--text-task',   '#555555');
+      r.setProperty('--text-label',  '#aaaaaa');
+      r.setProperty('--dot-todo-bg', '#e0e0de');
+      r.setProperty('--overlay-bg',  'rgba(0,0,0,0.08)');
+      r.setProperty('--tape-light',  '#FAC775');
+      r.setProperty('--tape-dark',   '#2C2C2A');
+      r.setProperty('--btn-bg',      '#2C2C2A');
+      r.setProperty('--btn-text',    '#FAC775');
+    }
+  </script>
+
+</body>
+</html>

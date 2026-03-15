@@ -7,27 +7,36 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/footer.css">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-<!-- Ya PNG version ke liye -->
-<link rel="icon" type="image/png" href="/favicon.png">
+    <!-- Ya PNG version ke liye -->
+    <link rel="icon" type="image/png" href="/favicon.png">
 </head>
 
 <body>
     <nav class="navbar">
         <h2>Snap<span>Link</span></h2>
 
-        
-        
+
+
         <button class="theme-toggle" id="themeToggle" title="Toggle theme">
             <span class="icon-sun">☀</span>
             <span class="icon-moon">☽</span>
         </button>
         <!-- SignUP button -->
-         <a href="/signup" class="nav-signup-btn">Sign Up</a>
+        <a href="/signup" class="nav-signup-btn">Sign Up</a>
     </nav>
 
     <form action="/shorten" method="POST" class="card">
+
         <label for="orginalUrl">Enter the URL</label>
         <input type="text" id="orginalUrl" name="orginalUrl" placeholder="https://example.com" required>
+
+        <!-- Optional custom alias -->
+         <input 
+         type="text"
+         name="customAlias"
+         placeholder="Custom alias (Optional) - Jaisa:Mera-link"
+         >
+
         <button class="btn" type="submit">Snap URL</button>
 
         <div class="result-box">
@@ -36,16 +45,16 @@
                 <a href="<%= shortUrl %>" target="_blank" id="shortLink">
                     <%= shortUrl %>
                 </a>
-            <% } %>
+                <% } %>
         </div>
     </form>
 
 
 
 
-<%- include('partials/footer') %>
+    <%- include('partials/footer') %>
 
-    <script src="/script/script.js"></script>
+        <script src="/script/script.js"></script>
 </body>
 
 </html>
