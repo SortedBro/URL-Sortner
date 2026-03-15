@@ -27,6 +27,7 @@ exports.auth = (req, res, next) => {
     }
 
 }
+
 exports.softAuth = (req, res, next) => {
     const token = req.cookies?.token;
 

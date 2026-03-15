@@ -1,13 +1,17 @@
 const User = require('../models/userSchema.js')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+require('dotenv').config()
+
+
 
 
 exports.handleUserSignUP = async (req, res) => {
     const { firstName, lastName, email, password } = req.body
 
     //password hashed
-    const hasedPassword = await bcrypt.hash(password, 10)
+    const hasedPassword = await bcrypt.hash(password, 10);
+    
 
     // console.log("hased password" , hasedPassword)
 
