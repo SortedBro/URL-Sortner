@@ -5,9 +5,9 @@ const { nanoid } = require('nanoid')
 // Create short Url 
 
 exports.createShortUrl = async (req, res) => {
-     console.log("1. req.cookies:", req.cookies)
-    console.log("2. req.user:", req.user)
-    console.log("3. ENV secret:", process.env.jwt_secret)
+    //  console.log("1. req.cookies:", req.cookies)
+    // console.log("2. req.user:", req.user)
+    // console.log("3. ENV secret:", process.env.jwt_secret)
 
 
     try {

@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken')
 
 exports.auth = (req, res, next) => {
 
-    const token = req.cookies?.token;
+    const token = req.cookies?.accessToken;
     console.log("auth token middleware", token);
 
     // Token hai hi nahi
@@ -29,10 +29,10 @@ exports.auth = (req, res, next) => {
 }
 
 exports.softAuth = (req, res, next) => {
-    const token = req.cookies?.token;
+    const token = req.cookies?.refreshToken;
 
-    console.log("=== softAuth chala ===")
-    console.log("req.cookies:", req.cookies)
+    // console.log("=== softAuth chala ===")
+    // console.log("req.cookies:", req.cookies)
 
 
     if (!token) {
@@ -46,7 +46,7 @@ exports.softAuth = (req, res, next) => {
         next();
 
     } catch (error) {
-        res.clearCookie("token"); // kharab token delete karo
+        res.clearCookie("refreshToken"); // kharab token delete karo
 
         req.user = null;
         next();
