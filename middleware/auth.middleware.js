@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken')
 
 exports.auth = (req, res, next) => {
 
-    const token = req.cookies?.accessToken;
+    const token = req.cookies?.refreshToken;
     console.log("auth token middleware", token);
 
     // Token hai hi nahi

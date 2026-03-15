@@ -15,7 +15,7 @@ const urlSchema = new mongoose.Schema(
         },
         shortUrl:{
             type:String,
-            require:true,
+            required:true,
             unique: true,
 
 
@@ -26,7 +26,10 @@ const urlSchema = new mongoose.Schema(
           lastClickedAt:{type:Date},
 
           // Phase 2 — dashboard ke liye
-          createdBy:{type:mongoose.Schema.Types.ObjectId,ref:"User"},
+          createdBy:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User"
+        },
 
             // Phase 3 — control
 

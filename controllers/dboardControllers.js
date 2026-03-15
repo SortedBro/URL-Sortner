@@ -8,6 +8,7 @@ exports.getDashboard = async (req, res)=>{
         
     
     const urls = await Url.find({createdBy:req.user.user}).sort({createdBy:-1})
+    console.log( "URL",urls)
 
     res.render('dashboard',{urls})
 

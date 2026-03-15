@@ -11,20 +11,36 @@ exports.handleUserSignUP = async (req, res) => {
 
     //password hashed
     const hasedPassword = await bcrypt.hash(password, 10);
-    
+
 
     // console.log("hased password" , hasedPassword)
 
 
     try {
-        const user = await User.create({
-            firstName,
-            lastName,
-            email,
-            password: hasedPassword,
-        })
+        const validateUser =await User.findOne({ email })
+        if (validateUser) {
+            return res.render('signup', {
 
-        res.render('login', { shortUrl: null, error: null })
+                error: 'Email allready registered , Try another email ',
+
+                success: null,
+                shortUrl: null,
+            })
+
+        } else {
+
+            const user = await User.create({
+                firstName,
+                lastName,
+                email,
+                password: hasedPassword,
+            })
+
+
+            res.render('login', { shortUrl: null, error: null })
+
+        }
+
     } catch (error) {
         console.log("Error:", error);
 
@@ -85,11 +101,11 @@ exports.handleUserLogin = async (req, res) => {
 
         const refreshToken = jwt.sign(
 
-                { user: user._id },
-                process.env.jwt_secret,
-                { expiresIn: "10h" }
+            { user: user._id },
+            process.env.jwt_secret,
+            { expiresIn: "10h" }
 
-            )
+        )
         // console.log("token banaya " , token);
         // console.log("jwt_secret" , process.env.jwt_secret);
         //cockie
