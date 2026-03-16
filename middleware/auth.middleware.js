@@ -2,10 +2,12 @@
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 
+const User = require('../models/userSchema.js')
 
 
 
-exports.auth = (req, res, next) => {
+
+exports.auth = async (req, res, next) => {
 
     const token = req.cookies?.refreshToken;
     console.log("auth token middleware", token);
@@ -18,11 +20,25 @@ exports.auth = (req, res, next) => {
     // Token hai — verify karo
     try {
         const decoded = jwt.verify(token, process.env.jwt_secret);
+
+        // database check 
+
+        const user = await User.findById(decoded.user);
+
+        if(!user){
+            res.clearCookie('refreshToken')
+            req.user=null;
+            return res.redirect('/login')
+        }
+
         req.user = decoded;
         next(); // ✅ valid token — aage bhejo
+
+
     } catch (error) {
+
         console.error("Token invalid/expired:", error.message);
-        res.clearCookie("token"); // kharab token delete karo
+        res.clearCookie("refreshToken"); // kharab token delete karo
         return res.redirect('/login'); // ✅ login pe bhejo
     }
 
@@ -49,6 +65,7 @@ exports.softAuth = (req, res, next) => {
         res.clearCookie("refreshToken"); // kharab token delete karo
 
         req.user = null;
+        
         next();
 
     }

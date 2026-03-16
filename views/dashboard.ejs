@@ -21,7 +21,13 @@
     </a>
     <div class="nav-right">
       <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
-      <a class="btn-logout" href="/logout">Logout</a>
+      <% if (user) { %>
+        <span>👋 <%= user.name %></span>
+        <a href="/logout">Logout</a>
+        <% } else { %>
+          <a href="/login">Login</a>
+          <% } %>
+
     </div>
   </nav>
 

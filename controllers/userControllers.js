@@ -1,5 +1,6 @@
 const User = require('../models/userSchema.js')
 const bcrypt = require('bcrypt')
+const { name } = require('ejs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
@@ -101,7 +102,9 @@ exports.handleUserLogin = async (req, res) => {
 
         const refreshToken = jwt.sign(
 
-            { user: user._id },
+            { user: user._id ,
+                name:user.firstName
+            },
             process.env.jwt_secret,
             { expiresIn: "10h" }
 
@@ -112,7 +115,7 @@ exports.handleUserLogin = async (req, res) => {
 
         res.cookie("refreshToken", refreshToken.trim(), {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === 'production',
 
 
         })

@@ -2,7 +2,7 @@
 
 const express = require('express');
 const { getDashboard } = require('../controllers/dboardControllers');
-const { auth } = require('../middleware/auth.middleware');
+const { auth, softAuth  } = require('../middleware/auth.middleware');
 const { deleteUrl } = require('../controllers/urlControllers');
 
 
@@ -22,28 +22,28 @@ router.post('/delete/:code',auth,deleteUrl)
 
 router.get('/dashboard',auth, getDashboard);
 
-router.get('/pricing', (req, res) => {
+router.get('/pricing',softAuth, (req, res) => {
     res.render('under-dev', {
         pageTitle: 'Pricing',
         tasks: tasks,
         body: ''
     });
 });
-router.get('/features', (req, res) => {
+router.get('/features',softAuth, (req, res) => {
     res.render('under-dev', {
         pageTitle: 'Pricing',
         tasks: tasks,
         body: ''
     });
 });
-router.get('/privacy', (req, res) => {
+router.get('/privacy',softAuth, (req, res) => {
     res.render('under-dev', {
         pageTitle: 'Pricing',
         tasks: tasks,
         body: ''
     });
 });
-router.get('/terms', (req, res) => {
+router.get('/terms',softAuth, (req, res) => {
     res.render('under-dev', {
         pageTitle: 'Pricing',
         tasks: tasks,

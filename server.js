@@ -6,7 +6,7 @@ const urlRoutes = require('./routes/urlRoutes')
 const path = require('path')
 const cookieParser  = require('cookie-parser');
 const underDevRouter = require('./routes/under-dev');
-const { softAuth } = require('./middleware/auth.middleware');
+const { softAuth, auth } = require('./middleware/auth.middleware');
 
 
 
@@ -31,14 +31,14 @@ app.use(softAuth)
 
 // GET routes
 
-app.get("/", (req, res) => { res.render('home', { shortUrl: null, error: null }) });
+app.get("/", softAuth,(req, res) => { res.render('home', { shortUrl: null, error: null ,user:req.user}) });
 app.get('/signup', (req, res) => res.render('signup', { error: null, success: null }));
 app.get('/login', (req, res) => res.render('login', { error: null, success: null }));
 app.get("/about", (req, res) => { res.render("about", { success: null, error: null }) });
 
 app.get('/logout', (req, res) => {
-    res.clearCookie('token');
-    res.redirect('/login');
+    res.clearCookie('refreshToken');
+    res.redirect('/');
 });
 
 
@@ -47,6 +47,7 @@ app.get('/logout', (req, res) => {
 app.use("/", underDevRouter)
 app.use('/shorten', urlRoutes)
 app.use('/', urlRoutes)
+// app.use(auth)
 
 
 

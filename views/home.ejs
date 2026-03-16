@@ -21,7 +21,19 @@
             <span class="icon-moon">☽</span>
         </button>
         <!-- SignUP button -->
-        <a href="/signup" class="nav-signup-btn">Sign Up</a>
+        <!-- <a href="/signup" class="nav-signup-btn">Sign Up</a> -->
+          <% if (user) { %>
+    <!-- ✅ Logged in — naam dikhao -->
+    <span>👋 Hello, <%= user.name %></span>
+    <a href="/logout" class="nav-signup-btn">Logout</a>
+
+  <% } else { %>
+    <!-- ❌ Logged out — signup dikhao -->
+     <div>
+         <a href="/signup" class="nav-signup-btn">Signup</a>
+         <a href="/login" class="nav-signup-btn">Login</a>
+     </div>
+  <% } %>
     </nav>
 
     <form action="/shorten" method="POST" class="card">
