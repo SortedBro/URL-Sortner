@@ -39,12 +39,12 @@ exports.handleUserSignUP = async (req, res) => {
 
         res.cookie('pendingSignup', JSON.stringify({
             firstName, lastName, email, password: hasedPassword
-        },
+        }),
             {
                 httpOnly: true,
                 maxAge: 5 * 60 * 1000 // 5minites
             }
-        ))
+        )
 
         // Otp generate  and Sending
 
@@ -116,7 +116,7 @@ exports.verifyOtp = async (req, res) => {
 
         const accessToken = jwt.sign(
 
-            { user: users._id },
+            { user: newUser._id },
             process.env.jwt_secret,
             { expiresIn: "10h" }
         )
@@ -124,8 +124,8 @@ exports.verifyOtp = async (req, res) => {
         const refreshToken = jwt.sign(
 
             {
-                user: users._id,
-                name: users.firstName
+                user: newUser._id,
+                name: newUser.firstName
             },
             process.env.jwt_secret,
             { expiresIn: "10h" }
@@ -150,7 +150,7 @@ exports.verifyOtp = async (req, res) => {
 
         console.log(error);
         res.render('verify-otp', {
-            error: "Something wernt wrong",
+            error: "Something went wrong",
             email,
             user: null,
         })
