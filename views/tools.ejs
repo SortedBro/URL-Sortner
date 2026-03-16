@@ -9,6 +9,15 @@
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/home.css">
   <link rel="stylesheet" href="/css/tools.css">
+  <!-- Early stub: tools.js load hone se pehle buttons work karein -->
+  <script>
+    window.openTool = function(id, btn) {
+      document.addEventListener('DOMContentLoaded', function() {
+        if (window._toolsReady) window.openTool(id, btn);
+        else window.addEventListener('toolsReady', () => window.openTool(id, btn));
+      });
+    };
+  </script>
 </head>
 <body>
 
@@ -90,6 +99,24 @@
         <span class="tnav-icon">✂️</span>
         <span class="tnav-label">URL Shortener</span>
       </button>
+      <button class="tnav-card" onclick="openTool('pass')"><span class="tnav-icon">🔑</span><span class="tnav-label">Password Generator</span></button>
+      <button class="tnav-card" onclick="openTool('fake')"><span class="tnav-icon">👤</span><span class="tnav-label">Fake Data</span></button>
+      <button class="tnav-card" onclick="openTool('md')"><span class="tnav-icon">📄</span><span class="tnav-label">Markdown Editor</span></button>
+      <button class="tnav-card" onclick="openTool('meta')"><span class="tnav-icon">🔍</span><span class="tnav-label">Meta Tag Generator</span></button>
+      <button class="tnav-card" onclick="openTool('emoji')"><span class="tnav-icon">😀</span><span class="tnav-label">Emoji Picker</span></button>
+      <button class="tnav-card" onclick="openTool('inv')"><span class="tnav-icon">🧾</span><span class="tnav-label">Invoice Generator</span></button>
+      <button class="tnav-card" onclick="openTool('age')"><span class="tnav-icon">📅</span><span class="tnav-label">Age Calculator</span></button>
+      <button class="tnav-card" onclick="openTool('unit')"><span class="tnav-icon">📐</span><span class="tnav-label">Unit Converter</span></button>
+      <button class="tnav-card" onclick="openTool('grad')"><span class="tnav-icon">🎨</span><span class="tnav-label">Gradient Generator</span></button>
+      <button class="tnav-card" onclick="openTool('pomo')"><span class="tnav-icon">⏱️</span><span class="tnav-label">Pomodoro Timer</span></button>
+      <button class="tnav-card" onclick="openTool('num')"><span class="tnav-icon">🔢</span><span class="tnav-label">Number to Words</span></button>
+      <button class="tnav-card" onclick="openTool('aspect')"><span class="tnav-icon">📐</span><span class="tnav-label">Aspect Ratio</span></button>
+      <button class="tnav-card" onclick="openTool('gst')"><span class="tnav-icon">💰</span><span class="tnav-label">GST Calculator</span></button>
+      <button class="tnav-card" onclick="openTool('profit')"><span class="tnav-icon">📊</span><span class="tnav-label">Profit Margin</span></button>
+      <button class="tnav-card" onclick="openTool('pomo2')"><span class="tnav-icon">⏱️</span><span class="tnav-label">Pomodoro Timer</span></button>
+      <button class="tnav-card" onclick="openTool('unit2')"><span class="tnav-icon">📐</span><span class="tnav-label">Unit Converter</span></button>
+      <button class="tnav-card" onclick="openTool('grad2')"><span class="tnav-icon">🎨</span><span class="tnav-label">CSS Gradient</span></button>
+      <button class="tnav-card" onclick="openTool('age2')"><span class="tnav-icon">📅</span><span class="tnav-label">Age Calculator</span></button>
     </div>
   </section>
 
@@ -100,12 +127,30 @@
       <button class="ttab" id="ttab-img"   onclick="openTool('img',this)">🗜️ Image Compressor</button>
       <button class="ttab" id="ttab-yt"    onclick="openTool('yt',this)">▶️ YT Downloader</button>
       <button class="ttab" id="ttab-utm"   onclick="openTool('utm',this)">📊 UTM Builder</button>
+      <button class="ttab" id="ttab-pass"  onclick="openTool('pass',this)">🔑 Password</button>
+      <button class="ttab" id="ttab-fake"  onclick="openTool('fake',this)">👤 Fake Data</button>
+      <button class="ttab" id="ttab-md"    onclick="openTool('md',this)">📄 Markdown</button>
+      <button class="ttab" id="ttab-meta"  onclick="openTool('meta',this)">🔍 Meta Tags</button>
+      <button class="ttab" id="ttab-emoji" onclick="openTool('emoji',this)">😀 Emoji</button>
+      <button class="ttab" id="ttab-inv"   onclick="openTool('inv',this)">🧾 Invoice</button>
       <button class="ttab" id="ttab-json"  onclick="openTool('json',this)">{ } JSON</button>
       <button class="ttab" id="ttab-hash"  onclick="openTool('hash',this)"># Hash</button>
       <button class="ttab" id="ttab-b64"   onclick="openTool('b64',this)">🔄 Base64</button>
       <button class="ttab" id="ttab-color" onclick="openTool('color',this)">🎨 Color</button>
       <button class="ttab" id="ttab-word"  onclick="openTool('word',this)">📝 Word Count</button>
-      <button class="ttab" id="ttab-url"   onclick="openTool('url',this)">✂️ URL Short</button>
+      <button class="ttab" id="ttab-url"    onclick="openTool('url',this)">✂️ URL Short</button>
+      <button class="ttab" id="ttab-age"    onclick="openTool('age',this)">📅 Age Calc</button>
+      <button class="ttab" id="ttab-unit"   onclick="openTool('unit',this)">📐 Unit Conv</button>
+      <button class="ttab" id="ttab-grad"   onclick="openTool('grad',this)">🎨 Gradient</button>
+      <button class="ttab" id="ttab-pomo"   onclick="openTool('pomo',this)">⏱️ Pomodoro</button>
+      <button class="ttab" id="ttab-num"    onclick="openTool('num',this)">🔢 Num→Words</button>
+      <button class="ttab" id="ttab-aspect" onclick="openTool('aspect',this)">📏 Aspect</button>
+      <button class="ttab" id="ttab-gst"    onclick="openTool('gst',this)">💰 GST Calc</button>
+      <button class="ttab" id="ttab-profit" onclick="openTool('profit',this)">📊 Profit</button>
+      <button class="ttab" id="ttab-pomo2"  onclick="openTool('pomo2',this)">⏱️ Pomodoro</button>
+      <button class="ttab" id="ttab-unit2"  onclick="openTool('unit2',this)">📐 Units</button>
+      <button class="ttab" id="ttab-grad2"  onclick="openTool('grad2',this)">🎨 Gradient</button>
+      <button class="ttab" id="ttab-age2"   onclick="openTool('age2',this)">📅 Age Calc</button>
     </div>
   </div>
 
@@ -688,6 +733,618 @@
       </div>
     </div>
 
+
+    <!-- ─── PASSWORD GENERATOR ─── -->
+    <div class="tpanel" id="tp-pass">
+      <div class="tpanel-header"><div><h2>🔑 Password Generator</h2><p>Strong, secure password banao — customize karo</p></div></div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield"><label>Length: <span id="passLenVal">16</span></label><input type="range" id="passLen" min="6" max="64" value="16" class="trange" oninput="document.getElementById('passLenVal').textContent=this.value;genPass()"></div>
+          <div class="tfield">
+            <label>Include</label>
+            <div class="pass-opts">
+              <label class="pass-opt"><input type="checkbox" id="passUpper" checked onchange="genPass()"> Uppercase (A-Z)</label>
+              <label class="pass-opt"><input type="checkbox" id="passLower" checked onchange="genPass()"> Lowercase (a-z)</label>
+              <label class="pass-opt"><input type="checkbox" id="passNum"   checked onchange="genPass()"> Numbers (0-9)</label>
+              <label class="pass-opt"><input type="checkbox" id="passSym"   checked onchange="genPass()"> Symbols (!@#$)</label>
+            </div>
+          </div>
+          <div class="tfield">
+            <label>Exclude Ambiguous</label>
+            <label class="pass-opt"><input type="checkbox" id="passAmb" onchange="genPass()"> 0, O, l, 1, I hata do</label>
+          </div>
+          <div class="tfield"><label>Generated Password</label><div class="pass-output-wrap"><input type="text" id="passOutput" class="tinput" readonly><button class="tbtn-xs" onclick="copyText(document.getElementById('passOutput').value,this)">Copy</button></div></div>
+          <div class="pass-strength-wrap"><div class="pass-strength-bar" id="passStrBar"></div><span id="passStrLabel"></span></div>
+          <div class="tactions">
+            <button class="tbtn primary" onclick="genPass()">🔄 New Password</button>
+            <button class="tbtn secondary" onclick="genMultiPass()">Generate 5</button>
+          </div>
+          <div id="multiPassList" style="display:none" class="multi-pass-list"></div>
+        </div>
+        <div class="tpreview-col">
+          <div class="pass-tips-box">
+            <h4>Strong Password Tips</h4>
+            <div class="ptip"><span>✓</span><p>Minimum 12 characters use karo</p></div>
+            <div class="ptip"><span>✓</span><p>Uppercase + lowercase + numbers + symbols</p></div>
+            <div class="ptip"><span>✓</span><p>Har account ke liye alag password</p></div>
+            <div class="ptip"><span>✓</span><p>Password manager use karo (Bitwarden, 1Password)</p></div>
+            <div class="ptip"><span>✗</span><p>Name, birthday, "password123" mat use karo</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── FAKE DATA GENERATOR ─── -->
+    <div class="tpanel" id="tp-fake">
+      <div class="tpanel-header"><div><h2>👤 Fake Data Generator</h2><p>Testing ke liye fake names, emails, phone numbers banao</p></div></div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield-row">
+            <div class="tfield"><label>Count</label><select id="fakeCount" class="tinput"><option value="1">1</option><option value="5" selected>5</option><option value="10">10</option><option value="25">25</option><option value="50">50</option></select></div>
+            <div class="tfield"><label>Country</label><select id="fakeCountry" class="tinput"><option value="in" selected>🇮🇳 India</option><option value="us">🇺🇸 USA</option><option value="uk">🇬🇧 UK</option></select></div>
+          </div>
+          <div class="tfield">
+            <label>Fields</label>
+            <div class="pass-opts">
+              <label class="pass-opt"><input type="checkbox" id="fName"  checked> Full Name</label>
+              <label class="pass-opt"><input type="checkbox" id="fEmail" checked> Email</label>
+              <label class="pass-opt"><input type="checkbox" id="fPhone" checked> Phone</label>
+              <label class="pass-opt"><input type="checkbox" id="fCity"  checked> City</label>
+              <label class="pass-opt"><input type="checkbox" id="fDob">   Date of Birth</label>
+              <label class="pass-opt"><input type="checkbox" id="fComp">  Company</label>
+              <label class="pass-opt"><input type="checkbox" id="fAddr">  Address</label>
+            </div>
+          </div>
+          <div class="tfield"><label>Format</label><select id="fakeFmt" class="tinput"><option value="table">Table</option><option value="json">JSON</option><option value="csv">CSV</option></select></div>
+          <div class="tactions">
+            <button class="tbtn primary" onclick="genFakeData()">Generate</button>
+            <button class="tbtn secondary" onclick="copyText(document.getElementById('fakeOutput').textContent,this)">Copy</button>
+            <button class="tbtn secondary" onclick="dlFakeData()">Download</button>
+          </div>
+        </div>
+        <div class="tpreview-col" style="overflow:auto">
+          <div id="fakeOutput" class="fake-output">Generate button dabao...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MARKDOWN EDITOR ─── -->
+    <div class="tpanel" id="tp-md">
+      <div class="tpanel-header">
+        <div><h2>📄 Markdown Editor &amp; Preview</h2><p>Markdown likho, live preview dekho — copy ya download karo</p></div>
+        <div style="display:flex;gap:6px">
+          <button class="tbtn-xs" onclick="copyText(document.getElementById('mdInput').value,this)">Copy MD</button>
+          <button class="tbtn-xs secondary" onclick="dlMarkdown()">Download .md</button>
+        </div>
+      </div>
+      <div class="tpanel-body col-2-equal">
+        <div class="tform-col">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <label style="margin:0">Markdown Input</label>
+            <div style="display:flex;gap:4px">
+              <button class="tbtn-xs secondary" onclick="mdInsert('**bold**')"><b>B</b></button>
+              <button class="tbtn-xs secondary" onclick="mdInsert('*italic*')"><i>I</i></button>
+              <button class="tbtn-xs secondary" onclick="mdInsert('# Heading')">H</button>
+              <button class="tbtn-xs secondary" onclick="mdInsert('- item')">List</button>
+              <button class="tbtn-xs secondary" onclick="mdInsert('[text](url)')">[L]</button>
+              <button class="tbtn-xs secondary" onclick="mdInsert('\`code\`')">{ }</button>
+            </div>
+          </div>
+          <textarea id="mdInput" class="tcode" style="min-height:360px;resize:vertical" placeholder="# Hello World&#10;&#10;**Bold text**, *italic text*&#10;&#10;- List item 1&#10;- List item 2" oninput="renderMD()"></textarea>
+        </div>
+        <div class="tform-col">
+          <label style="margin-bottom:6px;display:block">Live Preview</label>
+          <div id="mdPreview" class="md-preview"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── META TAG GENERATOR ─── -->
+    <div class="tpanel" id="tp-meta">
+      <div class="tpanel-header"><div><h2>🔍 Meta Tag Generator</h2><p>SEO aur Social Media ke liye perfect meta tags banao</p></div></div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield"><label>Page Title <span class="req">*</span></label><input type="text" id="metaTitle" class="tinput" placeholder="SnapLink — Best URL Shortener India" oninput="genMeta()" maxlength="60"><div class="char-count" id="metaTitleCount">0/60</div></div>
+          <div class="tfield"><label>Description <span class="req">*</span></label><textarea id="metaDesc" class="tinput" rows="3" placeholder="SnapLink se apne links shorten karo, QR banao aur analytics dekho — bilkul free." oninput="genMeta()" maxlength="160"></textarea><div class="char-count" id="metaDescCount">0/160</div></div>
+          <div class="tfield"><label>Page URL</label><input type="url" id="metaUrl" class="tinput" placeholder="https://snaplink.fun/tools" oninput="genMeta()"></div>
+          <div class="tfield"><label>OG Image URL</label><input type="url" id="metaImg" class="tinput" placeholder="https://snaplink.fun/og-image.png" oninput="genMeta()"></div>
+          <div class="tfield-row">
+            <div class="tfield"><label>Author</label><input type="text" id="metaAuthor" class="tinput" placeholder="Azmat Ali" oninput="genMeta()"></div>
+            <div class="tfield"><label>Keywords</label><input type="text" id="metaKeywords" class="tinput" placeholder="url shortener, qr code, india" oninput="genMeta()"></div>
+          </div>
+          <div class="tfield-row">
+            <div class="tfield"><label>Twitter Card</label><select id="metaTwCard" class="tinput" onchange="genMeta()"><option value="summary">Summary</option><option value="summary_large_image" selected>Large Image</option></select></div>
+            <div class="tfield"><label>Robots</label><select id="metaRobots" class="tinput" onchange="genMeta()"><option value="index, follow" selected>Index + Follow</option><option value="noindex, nofollow">No Index</option><option value="index, nofollow">Index Only</option></select></div>
+          </div>
+          <button class="tbtn primary" onclick="copyText(document.getElementById('metaOutput').value,this)">Copy All Tags</button>
+        </div>
+        <div class="tpreview-col">
+          <div class="tfield" style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <label style="margin:0">Generated Tags</label>
+              <button class="tbtn-xs" onclick="copyText(document.getElementById('metaOutput').value,this)">Copy</button>
+            </div>
+            <textarea id="metaOutput" class="tcode" readonly style="min-height:280px" placeholder="Title aur description bharo..."></textarea>
+          </div>
+          <div class="meta-preview-card" id="metaPreviewCard">
+            <div class="mprev-site">snaplink.fun</div>
+            <div class="mprev-title" id="mpTitle">Page title yahan...</div>
+            <div class="mprev-desc" id="mpDesc">Description yahan dikhega...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── EMOJI PICKER ─── -->
+    <div class="tpanel" id="tp-emoji">
+      <div class="tpanel-header"><div><h2>😀 Emoji Picker</h2><p>Koi bhi emoji dhundho aur copy karo — 1500+ emojis</p></div></div>
+      <div class="tpanel-body" style="display:block">
+        <div class="emoji-toolbar">
+          <input type="text" id="emojiSearch" class="tinput" placeholder="Search emoji... (e.g. heart, fire, laugh)" oninput="searchEmoji(this.value)" style="max-width:300px">
+          <div class="emoji-cats" id="emojiCats"></div>
+        </div>
+        <div class="emoji-selected-bar" id="emojiSelectedBar">
+          <span id="emojiSelectedShow" style="font-size:1.5rem"></span>
+          <code id="emojiSelectedCode"></code>
+          <button class="tbtn-xs" id="emojiCopyBtn" onclick="copyEmoji()" style="display:none">Copy</button>
+        </div>
+        <div class="emoji-grid" id="emojiGrid"></div>
+      </div>
+    </div>
+
+    <!-- ─── INVOICE GENERATOR ─── -->
+    <div class="tpanel" id="tp-inv">
+      <div class="tpanel-header">
+        <div><h2>🧾 Invoice Generator</h2><p>Professional invoice banao aur PDF download karo — free</p></div>
+        <button class="tbtn primary" onclick="printInvoice()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print / Save PDF
+        </button>
+      </div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="inv-section-title">From (Tumhara Info)</div>
+          <div class="tfield"><label>Business / Name</label><input type="text" id="invFrom" class="tinput" placeholder="SnapLink Solutions" oninput="updateInv()"></div>
+          <div class="tfield"><label>Email</label><input type="email" id="invFromEmail" class="tinput" placeholder="azmat@snaplink.fun" oninput="updateInv()"></div>
+          <div class="tfield"><label>Address</label><input type="text" id="invFromAddr" class="tinput" placeholder="Mumbai, Maharashtra" oninput="updateInv()"></div>
+
+          <div class="inv-section-title" style="margin-top:1rem">To (Client Info)</div>
+          <div class="tfield"><label>Client Name</label><input type="text" id="invTo" class="tinput" placeholder="ABC Company" oninput="updateInv()"></div>
+          <div class="tfield"><label>Client Email</label><input type="email" id="invToEmail" class="tinput" placeholder="client@company.com" oninput="updateInv()"></div>
+
+          <div class="inv-section-title" style="margin-top:1rem">Invoice Details</div>
+          <div class="tfield-row">
+            <div class="tfield"><label>Invoice #</label><input type="text" id="invNum" class="tinput" value="INV-001" oninput="updateInv()"></div>
+            <div class="tfield"><label>Date</label><input type="date" id="invDate" class="tinput" oninput="updateInv()"></div>
+            <div class="tfield"><label>Due Date</label><input type="date" id="invDue" class="tinput" oninput="updateInv()"></div>
+          </div>
+
+          <div class="inv-section-title" style="margin-top:1rem">Items</div>
+          <div id="invItems"></div>
+          <button class="tbtn secondary" onclick="addInvItem()" style="margin-top:8px">+ Item Add Karo</button>
+
+          <div class="tfield-row" style="margin-top:1rem">
+            <div class="tfield"><label>GST %</label><input type="number" id="invGST" class="tinput" value="18" min="0" max="100" oninput="updateInv()"></div>
+            <div class="tfield"><label>Currency</label><select id="invCurrency" class="tinput" onchange="updateInv()"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option></select></div>
+          </div>
+          <div class="tfield"><label>Notes</label><textarea id="invNotes" class="tinput" rows="2" placeholder="Thank you for your business!" oninput="updateInv()"></textarea></div>
+        </div>
+
+        <div class="tpreview-col">
+          <div class="inv-preview" id="invPreview">
+            <div class="inv-prev-header">
+              <div><div class="inv-prev-from" id="prevFrom">Your Business</div><div class="inv-prev-from-sub" id="prevFromSub"></div></div>
+              <div class="inv-prev-title">INVOICE</div>
+            </div>
+            <div class="inv-prev-meta">
+              <div><b>Invoice #</b><span id="prevNum">INV-001</span></div>
+              <div><b>Date</b><span id="prevDate">—</span></div>
+              <div><b>Due</b><span id="prevDue">—</span></div>
+            </div>
+            <div class="inv-prev-to"><b>Bill To:</b><div id="prevTo">Client Name</div><div id="prevToEmail" style="font-size:11px;color:#888"></div></div>
+            <table class="inv-prev-table" id="prevItemsTable">
+              <thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead>
+              <tbody id="prevItems"></tbody>
+            </table>
+            <div class="inv-prev-totals">
+              <div class="inv-total-row"><span>Subtotal</span><span id="prevSubtotal">₹0</span></div>
+              <div class="inv-total-row"><span>GST (<span id="prevGSTRate">18</span>%)</span><span id="prevGST">₹0</span></div>
+              <div class="inv-total-row total"><span>Total</span><span id="prevTotal">₹0</span></div>
+            </div>
+            <div class="inv-prev-notes" id="prevNotes"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ─── AGE CALCULATOR ─── -->
+    <div class="tpanel" id="tp-age">
+      <div class="tpanel-header"><div><h2>📅 Age Calculator</h2><p>Date of birth se exact age calculate karo — years, months, days</p></div></div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield"><label>Date of Birth</label><input type="date" id="ageDob" class="tinput" onchange="calcAge()"></div>
+          <div class="tfield"><label>Calculate Age On</label><input type="date" id="ageOn" class="tinput" onchange="calcAge()"></div>
+          <button class="tbtn primary" onclick="calcAge()">Calculate Karo</button>
+        </div>
+        <div class="tpreview-col">
+          <div class="age-result" id="ageResult">
+            <div class="tplaceholder"><span>📅</span><p>Date of birth daalo</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── UNIT CONVERTER ─── -->
+    <div class="tpanel" id="tp-unit">
+      <div class="tpanel-header"><div><h2>📐 Unit Converter</h2><p>Length, Weight, Temperature, Area — sab convert karo</p></div></div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield"><label>Category</label>
+            <select id="unitCat" class="tinput" onchange="unitCatChange()">
+              <option value="length">📏 Length</option>
+              <option value="weight">⚖️ Weight</option>
+              <option value="temp">🌡️ Temperature</option>
+              <option value="area">📐 Area</option>
+              <option value="speed">🚀 Speed</option>
+              <option value="data">💾 Data</option>
+            </select>
+          </div>
+          <div class="tfield-row">
+            <div class="tfield"><label>From</label><select id="unitFrom" class="tinput" onchange="convertUnit()"></select></div>
+            <div class="tfield"><label>To</label><select id="unitTo" class="tinput" onchange="convertUnit()"></select></div>
+          </div>
+          <div class="tfield"><label>Value</label><input type="number" id="unitVal" class="tinput" placeholder="100" oninput="convertUnit()"></div>
+        </div>
+        <div class="tpreview-col">
+          <div class="unit-result-box">
+            <div class="unit-result-num" id="unitResult">—</div>
+            <div class="unit-result-label" id="unitResultLabel">Result yahan dikhega</div>
+            <div class="unit-formula" id="unitFormula"></div>
+          </div>
+          <div class="unit-quick-ref" id="unitQuickRef"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── GRADIENT GENERATOR ─── -->
+    <div class="tpanel" id="tp-grad">
+      <div class="tpanel-header">
+        <div><h2>🎨 CSS Gradient Generator</h2><p>Beautiful gradients banao — CSS copy karo</p></div>
+        <button class="tbtn-xs" onclick="copyText(document.getElementById('gradCSS').value,this)">Copy CSS</button>
+      </div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield"><label>Type</label>
+            <select id="gradType" class="tinput" onchange="buildGrad()">
+              <option value="linear">Linear</option>
+              <option value="radial">Radial</option>
+              <option value="conic">Conic</option>
+            </select>
+          </div>
+          <div class="tfield" id="gradAngleField"><label>Angle: <span id="gradAngleVal">135</span>°</label><input type="range" id="gradAngle" min="0" max="360" value="135" class="trange" oninput="document.getElementById('gradAngleVal').textContent=this.value;buildGrad()"></div>
+          <div class="tfield"><label>Color Stops</label><div id="gradStops"></div></div>
+          <button class="tbtn secondary" onclick="addGradStop()">+ Color Add Karo</button>
+          <div class="tfield" style="margin-top:1rem"><label>Generated CSS</label><textarea id="gradCSS" class="tcode" readonly style="min-height:80px"></textarea></div>
+          <div class="grad-presets"><label style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.07em;text-transform:uppercase">Presets</label><div class="grad-preset-grid" id="gradPresets"></div></div>
+        </div>
+        <div class="tpreview-col">
+          <div class="grad-preview-box" id="gradPreviewBox"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── POMODORO TIMER ─── -->
+    <div class="tpanel" id="tp-pomo">
+      <div class="tpanel-header"><div><h2>⏱️ Pomodoro Timer</h2><p>Focus karo — 25 min kaam, 5 min break</p></div></div>
+      <div class="tpanel-body" style="display:block">
+        <div class="pomo-wrap">
+          <div class="pomo-mode-btns">
+            <button class="pomo-mode active" id="pm-work"  onclick="setPomoMode('work',this)">Focus</button>
+            <button class="pomo-mode"        id="pm-short" onclick="setPomoMode('short',this)">Short Break</button>
+            <button class="pomo-mode"        id="pm-long"  onclick="setPomoMode('long',this)">Long Break</button>
+          </div>
+          <div class="pomo-timer-circle">
+            <svg viewBox="0 0 200 200" class="pomo-svg">
+              <circle cx="100" cy="100" r="90" fill="none" stroke="var(--border)" stroke-width="8"/>
+              <circle cx="100" cy="100" r="90" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round"
+                stroke-dasharray="565.48" id="pomoCircle" stroke-dashoffset="0"
+                transform="rotate(-90 100 100)"/>
+            </svg>
+            <div class="pomo-time-display" id="pomoDisplay">25:00</div>
+            <div class="pomo-mode-label" id="pomoModeLabel">Focus Time</div>
+          </div>
+          <div class="pomo-controls">
+            <button class="tbtn primary" id="pomoStartBtn" onclick="togglePomo()">▶ Start</button>
+            <button class="tbtn secondary" onclick="resetPomo()">↺ Reset</button>
+          </div>
+          <div class="pomo-sessions"><span id="pomoSessions">0</span> sessions completed today</div>
+          <div class="pomo-settings">
+            <div class="pomo-set-row"><label>Focus (min)</label><input type="number" id="pomoWork"  value="25" min="1" max="60" class="tinput" style="width:70px" onchange="resetPomo()"></div>
+            <div class="pomo-set-row"><label>Short Break</label><input type="number" id="pomoShort" value="5"  min="1" max="30" class="tinput" style="width:70px" onchange="resetPomo()"></div>
+            <div class="pomo-set-row"><label>Long Break</label><input type="number" id="pomoLong"  value="15" min="1" max="60" class="tinput" style="width:70px" onchange="resetPomo()"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── NUMBER TO WORDS ─── -->
+    <div class="tpanel" id="tp-num">
+      <div class="tpanel-header"><div><h2>🔢 Number to Words</h2><p>Number ko words mein likho — Hindi aur English</p></div></div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield"><label>Number Daalo</label><input type="number" id="numInput" class="tinput" placeholder="123456" oninput="num2words()"></div>
+          <div class="tfield"><label>Currency Mode</label>
+            <select id="numCurrency" class="tinput" onchange="num2words()">
+              <option value="none">Sirf Number</option>
+              <option value="inr">₹ Indian Rupees</option>
+              <option value="usd">$ US Dollars</option>
+            </select>
+          </div>
+          <div class="num-result-box">
+            <div class="num-result-label">English</div>
+            <div class="num-result-val" id="numEnglish">—</div>
+            <button class="tbtn-xs" onclick="copyText(document.getElementById('numEnglish').textContent,this)" style="margin-top:6px">Copy</button>
+          </div>
+          <div class="num-result-box" style="margin-top:10px">
+            <div class="num-result-label">Hindi</div>
+            <div class="num-result-val" id="numHindi">—</div>
+            <button class="tbtn-xs" onclick="copyText(document.getElementById('numHindi').textContent,this)" style="margin-top:6px">Copy</button>
+          </div>
+        </div>
+        <div class="tpreview-col">
+          <div class="num-examples">
+            <h4>Examples</h4>
+            <div class="num-ex-row" onclick="document.getElementById('numInput').value='1000';num2words()"><span>1,000</span><span>One Thousand</span></div>
+            <div class="num-ex-row" onclick="document.getElementById('numInput').value='100000';num2words()"><span>1,00,000</span><span>One Lakh</span></div>
+            <div class="num-ex-row" onclick="document.getElementById('numInput').value='10000000';num2words()"><span>1,00,00,000</span><span>One Crore</span></div>
+            <div class="num-ex-row" onclick="document.getElementById('numInput').value='1000000000';num2words()"><span>1,00,00,00,000</span><span>One Arab</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── ASPECT RATIO CALCULATOR ─── -->
+    <div class="tpanel" id="tp-aspect">
+      <div class="tpanel-header"><div><h2>📏 Aspect Ratio Calculator</h2><p>Image ya video ka aspect ratio calculate karo — resize karo proportionally</p></div></div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield-row">
+            <div class="tfield"><label>Width (px)</label><input type="number" id="arW" class="tinput" placeholder="1920" oninput="calcAR('w')"></div>
+            <div class="tfield"><label>Height (px)</label><input type="number" id="arH" class="tinput" placeholder="1080" oninput="calcAR('h')"></div>
+          </div>
+          <div class="ar-result-box" id="arResult">
+            <div class="ar-ratio" id="arRatio">—</div>
+            <div class="ar-name" id="arName"></div>
+          </div>
+          <div class="tfield" style="margin-top:1rem"><label>Scale to New Width</label><input type="number" id="arNewW" class="tinput" placeholder="Enter new width..." oninput="scaleAR()"></div>
+          <div class="tfield"><label>Scaled Height</label><input type="number" id="arNewH" class="tinput" placeholder="Auto calculated" readonly></div>
+          <div class="ar-presets-wrap">
+            <label style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px;display:block">Common Ratios</label>
+            <div class="ar-presets">
+              <button class="ar-preset" onclick="setAR(16,9)">16:9 HD</button>
+              <button class="ar-preset" onclick="setAR(9,16)">9:16 Reel</button>
+              <button class="ar-preset" onclick="setAR(1,1)">1:1 Square</button>
+              <button class="ar-preset" onclick="setAR(4,3)">4:3 Classic</button>
+              <button class="ar-preset" onclick="setAR(21,9)">21:9 Ultra</button>
+              <button class="ar-preset" onclick="setAR(4,5)">4:5 Portrait</button>
+              <button class="ar-preset" onclick="setAR(1200,628)">OG Image</button>
+              <button class="ar-preset" onclick="setAR(1080,1080)">Instagram</button>
+            </div>
+          </div>
+        </div>
+        <div class="tpreview-col">
+          <div class="ar-visual-wrap">
+            <div class="ar-visual-box" id="arVisual">
+              <span id="arVisualLabel">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ─── GST CALCULATOR ─── -->
+    <div class="tpanel" id="tp-gst">
+      <div class="tpanel-header"><div><h2>💰 GST Calculator</h2><p>GST add karo ya nikalo — 5%, 12%, 18%, 28% sab rates</p></div></div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield"><label>Amount (₹)</label><input type="number" id="gstAmt" class="tinput" placeholder="1000" oninput="calcGST()"></div>
+          <div class="tfield"><label>GST Rate</label>
+            <div class="gst-rates">
+              <button class="gst-rate-btn active" onclick="setGSTRate(5,this)">5%</button>
+              <button class="gst-rate-btn" onclick="setGSTRate(12,this)">12%</button>
+              <button class="gst-rate-btn" onclick="setGSTRate(18,this)">18%</button>
+              <button class="gst-rate-btn" onclick="setGSTRate(28,this)">28%</button>
+            </div>
+          </div>
+          <div class="tfield"><label>Type</label>
+            <div class="gst-types">
+              <label class="pass-opt"><input type="radio" name="gstType" value="add" checked onchange="calcGST()"> GST Add karo (exclusive)</label>
+              <label class="pass-opt"><input type="radio" name="gstType" value="remove" onchange="calcGST()"> GST Nikalo (inclusive)</label>
+            </div>
+          </div>
+        </div>
+        <div class="tpreview-col">
+          <div class="gst-result-box" id="gstResult">
+            <div class="gst-res-row"><span>Original Amount</span><strong id="gstOrig">₹0</strong></div>
+            <div class="gst-res-row"><span>CGST (<span class="gst-half">0</span>%)</span><strong id="gstCGST">₹0</strong></div>
+            <div class="gst-res-row"><span>SGST (<span class="gst-half">0</span>%)</span><strong id="gstSGST">₹0</strong></div>
+            <div class="gst-res-row total"><span>Total Amount</span><strong id="gstTotal">₹0</strong></div>
+            <div class="gst-res-row"><span>GST Amount</span><strong id="gstAmt2">₹0</strong></div>
+            <button class="tbtn-xs" style="margin-top:12px" onclick="copyText(document.getElementById('gstTotal').textContent,this)">Copy Total</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── PROFIT MARGIN CALCULATOR ─── -->
+    <div class="tpanel" id="tp-profit">
+      <div class="tpanel-header"><div><h2>📊 Profit Margin Calculator</h2><p>Cost aur selling price se profit, margin aur markup nikalo</p></div></div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield"><label>Cost Price (₹)</label><input type="number" id="profCost" class="tinput" placeholder="500" oninput="calcProfit()"></div>
+          <div class="tfield"><label>Selling Price (₹)</label><input type="number" id="profSell" class="tinput" placeholder="800" oninput="calcProfit()"></div>
+          <div class="tfield"><label>Quantity (optional)</label><input type="number" id="profQty" class="tinput" placeholder="1" value="1" oninput="calcProfit()"></div>
+          <div class="tfield"><label>Currency</label>
+            <select id="profCur" class="tinput" onchange="calcProfit()">
+              <option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option>
+            </select>
+          </div>
+        </div>
+        <div class="tpreview-col">
+          <div class="profit-result-box" id="profitResult">
+            <div class="profit-main"><div class="profit-big" id="profMarginBig">0%</div><div class="profit-label">Profit Margin</div></div>
+            <div class="profit-rows">
+              <div class="profit-row"><span>Revenue</span><strong id="profRevenue">₹0</strong></div>
+              <div class="profit-row"><span>Total Cost</span><strong id="profTotalCost">₹0</strong></div>
+              <div class="profit-row green"><span>Gross Profit</span><strong id="profGross">₹0</strong></div>
+              <div class="profit-row"><span>Markup %</span><strong id="profMarkup">0%</strong></div>
+              <div class="profit-row"><span>Break-even Units</span><strong id="profBreak">—</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── POMODORO TIMER ─── -->
+    <div class="tpanel" id="tp-pomo2">
+      <div class="tpanel-header"><div><h2>⏱️ Pomodoro Timer</h2><p>Focus karo — 25 min kaam, 5 min break. Proven productivity technique.</p></div></div>
+      <div class="tpanel-body" style="display:block">
+        <div class="pomo-container">
+          <div class="pomo-mode-tabs">
+            <button class="pomo-mode active" id="pomoModeFocus" onclick="setPomoMode('focus',this)">🎯 Focus (25 min)</button>
+            <button class="pomo-mode" id="pomoModeShort" onclick="setPomoMode('short',this)">☕ Short Break (5 min)</button>
+            <button class="pomo-mode" id="pomoModeLong"  onclick="setPomoMode('long',this)">🛌 Long Break (15 min)</button>
+          </div>
+          <div class="pomo-clock">
+            <svg class="pomo-ring" viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="90" fill="none" stroke="var(--border)" stroke-width="8"/>
+              <circle id="pomoProgress" cx="100" cy="100" r="90" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="565" stroke-dashoffset="0" transform="rotate(-90 100 100)" style="transition:stroke-dashoffset 1s linear"/>
+            </svg>
+            <div class="pomo-time" id="pomoTime">25:00</div>
+            <div class="pomo-status" id="pomoStatus">Ready</div>
+          </div>
+          <div class="pomo-controls">
+            <button class="tbtn primary" id="pomoStartBtn" onclick="togglePomo()">▶ Start</button>
+            <button class="tbtn secondary" onclick="resetPomo()">↺ Reset</button>
+          </div>
+          <div class="pomo-stats">
+            <div class="pomo-stat"><div class="pomo-stat-num" id="pomoCount">0</div><div class="pomo-stat-label">Pomodoros Done</div></div>
+            <div class="pomo-stat"><div class="pomo-stat-num" id="pomoTotalMin">0</div><div class="pomo-stat-label">Minutes Focused</div></div>
+          </div>
+          <div class="tfield" style="max-width:300px;margin:0 auto">
+            <label>Current Task (optional)</label>
+            <input type="text" id="pomoTask" class="tinput" placeholder="Kya kaam kar rahe ho?">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── UNIT CONVERTER ─── -->
+    <div class="tpanel" id="tp-unit2">
+      <div class="tpanel-header"><div><h2>📐 Unit Converter</h2><p>Length, Weight, Temperature, Area, Speed — sab ek jagah</p></div></div>
+      <div class="tpanel-body" style="display:block">
+        <div class="unit-cats">
+          <button class="unit-cat active" onclick="setUnitCat('length',this)">📏 Length</button>
+          <button class="unit-cat" onclick="setUnitCat('weight',this)">⚖️ Weight</button>
+          <button class="unit-cat" onclick="setUnitCat('temp',this)">🌡️ Temperature</button>
+          <button class="unit-cat" onclick="setUnitCat('area',this)">▭ Area</button>
+          <button class="unit-cat" onclick="setUnitCat('speed',this)">💨 Speed</button>
+          <button class="unit-cat" onclick="setUnitCat('data',this)">💾 Data</button>
+        </div>
+        <div class="unit-converter-wrap">
+          <div class="unit-input-side">
+            <select id="unitFrom" class="tinput" onchange="convertUnit()"></select>
+            <input type="number" id="unitVal" class="tinput" placeholder="Value daalo..." oninput="convertUnit()" value="1">
+          </div>
+          <button class="unit-swap-btn" onclick="swapUnits()">⇄</button>
+          <div class="unit-input-side">
+            <select id="unitTo" class="tinput" onchange="convertUnit()"></select>
+            <input type="number" id="unitResult" class="tinput" readonly>
+          </div>
+        </div>
+        <div class="unit-formula" id="unitFormula"></div>
+        <div class="unit-all-results" id="unitAllResults"></div>
+      </div>
+    </div>
+
+    <!-- ─── CSS GRADIENT GENERATOR ─── -->
+    <div class="tpanel" id="tp-grad2">
+      <div class="tpanel-header"><div><h2>🎨 CSS Gradient Generator</h2><p>Beautiful gradients banao — CSS copy karo, live preview dekho</p></div></div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield"><label>Type</label>
+            <div class="grad-types">
+              <button class="grad-type-btn active" onclick="setGradType('linear',this)">Linear</button>
+              <button class="grad-type-btn" onclick="setGradType('radial',this)">Radial</button>
+              <button class="grad-type-btn" onclick="setGradType('conic',this)">Conic</button>
+            </div>
+          </div>
+          <div class="tfield" id="gradAngleField"><label>Angle: <span id="gradAngleVal">135</span>°</label><input type="range" id="gradAngle" min="0" max="360" value="135" class="trange" oninput="document.getElementById('gradAngleVal').textContent=this.value;updateGrad()"></div>
+          <div class="tfield">
+            <label>Colors</label>
+            <div id="gradColorsList"></div>
+            <button class="tbtn-xs secondary" onclick="addGradColor()" style="margin-top:8px">+ Color Add Karo</button>
+          </div>
+          <div class="tfield"><label>Presets</label>
+            <div class="grad-presets" id="gradPresets"></div>
+          </div>
+          <div class="tfield">
+            <label>Generated CSS</label>
+            <div class="grad-css-output">
+              <code id="gradCSS"></code>
+              <button class="tbtn-xs" onclick="copyText(document.getElementById('gradCSS').textContent,this)">Copy</button>
+            </div>
+          </div>
+        </div>
+        <div class="tpreview-col">
+          <div class="grad-preview" id="gradPreview"></div>
+          <div class="grad-usage-preview">
+            <div class="grad-btn-prev" id="gradBtnPrev">Button Example</div>
+            <div class="grad-text-prev" id="gradTextPrev">Text Background</div>
+            <div class="grad-card-prev" id="gradCardPrev">Card Header</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── AGE CALCULATOR ─── -->
+    <div class="tpanel" id="tp-age2">
+      <div class="tpanel-header"><div><h2>📅 Age &amp; Date Calculator</h2><p>Exact age nikalo, days count karo, koi bhi date difference</p></div></div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield"><label>Date of Birth</label><input type="date" id="ageDOB" class="tinput" oninput="calcAge()"></div>
+          <div class="tfield"><label>Calculate Age As Of</label><input type="date" id="ageAsOf" class="tinput" oninput="calcAge()"></div>
+          <hr style="border:none;border-top:0.5px solid var(--border);margin:8px 0">
+          <div class="tfield"><label>Date Difference (2 dates ke beech)</label></div>
+          <div class="tfield-row">
+            <div class="tfield"><label>Start Date</label><input type="date" id="dateStart" class="tinput" oninput="calcDateDiff()"></div>
+            <div class="tfield"><label>End Date</label><input type="date" id="dateEnd" class="tinput" oninput="calcDateDiff()"></div>
+          </div>
+          <div class="tfield"><label>Upcoming Event</label><input type="date" id="dateEvent" class="tinput" oninput="calcCountdown()"><div id="countdownResult" style="margin-top:6px;font-size:13px;color:var(--accent);font-family:var(--mono)"></div></div>
+        </div>
+        <div class="tpreview-col">
+          <div class="age-result-box" id="ageResult">
+            <div class="age-main"><div class="age-big" id="ageYears">—</div><div class="age-label">Years Old</div></div>
+            <div class="age-breakdown">
+              <div class="age-row"><span>Months</span><strong id="ageMonths">—</strong></div>
+              <div class="age-row"><span>Weeks</span><strong id="ageWeeks">—</strong></div>
+              <div class="age-row"><span>Days</span><strong id="ageDays">—</strong></div>
+              <div class="age-row"><span>Hours</span><strong id="ageHours">—</strong></div>
+              <div class="age-row accent"><span>Next Birthday</span><strong id="ageNextBday">—</strong></div>
+            </div>
+          </div>
+          <div class="date-diff-result" id="dateDiffResult" style="display:none">
+            <div class="age-row"><span>Total Days</span><strong id="ddDays">—</strong></div>
+            <div class="age-row"><span>Weeks</span><strong id="ddWeeks">—</strong></div>
+            <div class="age-row"><span>Months (approx)</span><strong id="ddMonths">—</strong></div>
+            <div class="age-row"><span>Working Days (approx)</span><strong id="ddWork">—</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /tools-panels-wrap -->
 
 </main>
@@ -740,379 +1397,11 @@
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-<script>
-/* ── Theme ── */
-const saved = localStorage.getItem('theme') || 'dark';
-document.documentElement.setAttribute('data-theme', saved);
-document.getElementById('themeBtn').textContent = saved === 'dark' ? '🌙' : '☀️';
-function toggleTheme() {
-  const d = document.documentElement.getAttribute('data-theme') === 'dark';
-  const n = d ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', n);
-  localStorage.setItem('theme', n);
-  document.getElementById('themeBtn').textContent = n === 'dark' ? '🌙' : '☀️';
-}
 
-/* ── Copy ── */
-function copyText(t, btn) {
-  if (!t || t === '—') return;
-  navigator.clipboard.writeText(t).then(() => {
-    if (btn) { const o = btn.textContent; btn.textContent = '✓ Copied'; setTimeout(() => btn.textContent = o, 2000); }
-  });
-}
 
-/* ── Tool switching ── */
-function openTool(id, btn) {
-  document.querySelectorAll('.tpanel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.ttab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tnav-card').forEach(c => c.classList.remove('active'));
-  const panel = document.getElementById('tp-' + id);
-  const tab = document.getElementById('ttab-' + id);
-  if (panel) panel.classList.add('active');
-  if (tab) { tab.classList.add('active'); tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }
-  if (btn) btn.classList.add('active');
-  document.querySelector('.tool-tabs-bar').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-/* ── Check URL hash on load ── */
-window.addEventListener('DOMContentLoaded', () => {
-  const hash = window.location.hash.replace('#', '');
-  if (hash) openTool(hash);
-  updColor('#FAC775');
-});
-
-/* ════ 1. QR Generator ════ */
-function genQR() {
-  const val = document.getElementById('qrInput').value.trim();
-  const ph = document.getElementById('qrPlaceholder');
-  if (!val) { ph.style.display = 'flex'; return; }
-  ph.style.display = 'none';
-  const size = parseInt(document.getElementById('qrSize').value);
-  const ec = document.getElementById('qrEC').value;
-  const fg = document.getElementById('qrFg').value;
-  const bg = document.getElementById('qrBg').value;
-  QRCode.toCanvas(document.getElementById('qrCanvas'), val, {
-    width: Math.min(size, 320), margin: 2,
-    errorCorrectionLevel: ec,
-    color: { dark: fg, light: bg }
-  }, err => { if (err) console.error(err); });
-}
-function dlQR() {
-  const val = document.getElementById('qrInput').value.trim();
-  if (!val) { alert('Pehle URL ya text daalo!'); return; }
-  const size = parseInt(document.getElementById('qrSize').value);
-  const ec = document.getElementById('qrEC').value;
-  const fg = document.getElementById('qrFg').value;
-  const bg = document.getElementById('qrBg').value;
-  const c = document.createElement('canvas');
-  QRCode.toCanvas(c, val, { width: size, margin: 2, errorCorrectionLevel: ec, color: { dark: fg, light: bg } }, err => {
-    if (err) return;
-    const a = document.createElement('a'); a.download = 'snaplink-qr.png'; a.href = c.toDataURL(); a.click();
-  });
-}
-function copyQRDataURL() {
-  const canvas = document.getElementById('qrCanvas');
-  canvas.toBlob(blob => {
-    const item = new ClipboardItem({ 'image/png': blob });
-    navigator.clipboard.write([item]).then(() => alert('Image copied to clipboard!'));
-  });
-}
-
-/* ════ 2. Image Compressor ════ */
-let origFile = null;
-function loadImg(input) {
-  origFile = input.files[0]; if (!origFile) return;
-  document.getElementById('imgDZText').textContent = origFile.name;
-  document.getElementById('imgStatsRow').style.display = 'flex';
-  document.getElementById('iOrig').textContent = fmtBytes(origFile.size);
-  compressImg();
-}
-function imgDrop(e) {
-  e.preventDefault();
-  const f = e.dataTransfer.files[0];
-  if (f && f.type.startsWith('image/')) { origFile = f; document.getElementById('imgDZText').textContent = f.name; document.getElementById('imgStatsRow').style.display = 'flex'; document.getElementById('iOrig').textContent = fmtBytes(f.size); compressImg(); }
-}
-function compressImg() {
-  if (!origFile) return;
-  const q = parseInt(document.getElementById('imgQ').value) / 100;
-  const fmt = document.getElementById('imgFmt').value || origFile.type;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      const c = document.getElementById('imgCanvas');
-      c.width = img.width; c.height = img.height;
-      c.getContext('2d').drawImage(img, 0, 0);
-      c.style.display = 'block';
-      document.getElementById('imgPlaceholder').style.display = 'none';
-      document.getElementById('imgDlBtn').style.display = 'flex';
-      c.toBlob(blob => {
-        document.getElementById('iComp').textContent = fmtBytes(blob.size);
-        const sv = Math.round((1 - blob.size / origFile.size) * 100);
-        document.getElementById('iSave').textContent = sv > 0 ? sv + '% saved' : 'Same size';
-      }, fmt, q);
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(origFile);
-}
-function dlImg() {
-  if (!origFile) return;
-  const q = parseInt(document.getElementById('imgQ').value) / 100;
-  const fmt = document.getElementById('imgFmt').value || origFile.type;
-  const ext = fmt.split('/')[1] || 'jpg';
-  document.getElementById('imgCanvas').toBlob(blob => {
-    const a = document.createElement('a'); a.download = 'compressed-' + origFile.name.replace(/\.[^.]+$/, '') + '.' + ext; a.href = URL.createObjectURL(blob); a.click();
-  }, fmt, q);
-}
-function fmtBytes(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'; return (b / 1048576).toFixed(2) + ' MB'; }
-
-/* ════ 3. YT Video Downloader ════ */
-function ytTypeChange() {
-  const type = document.getElementById('ytType').value;
-  document.getElementById('ytAudioFmtField').style.display = type === 'audio' ? 'block' : 'none';
-  document.getElementById('ytQuality').closest('.tfield').style.display = type === 'audio' ? 'none' : 'block';
-}
-
-function extractVidId(raw) {
-  const m = raw.match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([a-zA-Z0-9_-]{11})/);
-  if (m) return m[1];
-  if (/^[a-zA-Z0-9_-]{11}$/.test(raw)) return raw;
-  return null;
-}
-
-function ytSetStatus(msg, isError = false, loading = false) {
-  const box = document.getElementById('ytStatus');
-  const msgEl = document.getElementById('ytStatusMsg');
-  box.style.display = 'block';
-  msgEl.innerHTML = loading
-    ? `<div class="yt-loading"><div class="yt-spinner"></div>${msg}</div>`
-    : `<div class="${isError ? 'yt-error-msg' : 'yt-success-msg'}">${msg}</div>`;
-  document.getElementById('ytDlLink').style.display = 'none';
-}
-
-async function downloadYTVideo() {
-  const raw = document.getElementById('ytVidUrl').value.trim();
-  if (!raw) { ytSetStatus('YouTube URL daalo pehle!', true); return; }
-
-  const vid = extractVidId(raw);
-  if (!vid) { ytSetStatus('Valid YouTube URL nahi hai!', true); return; }
-
-  const type    = document.getElementById('ytType').value;
-  const quality = document.getElementById('ytQuality').value;
-  const audioFmt = document.getElementById('ytAudioFmt').value;
-
-  // Show preview first
-  const thumbUrl = `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
-  document.getElementById('ytPreviewThumb').src = thumbUrl;
-  document.getElementById('ytMetaVidId').textContent = vid;
-  document.getElementById('ytVidPlaceholder').style.display = 'none';
-  document.getElementById('ytVideoCard').style.display = 'block';
-  document.getElementById('ytThumbSection').style.display = 'block';
-  buildThumbButtons(vid);
-
-  // Download via our backend proxy route
-  ytSetStatus('Download process shuru ho raha hai...', false, true);
-  document.getElementById('ytDlBtn').disabled = true;
-
-  try {
-    const body = {
-      url: `https://www.youtube.com/watch?v=${vid}`,
-      videoQuality: quality,
-      filenameStyle: 'basic',
-    };
-    if (type === 'audio') {
-      body.downloadMode = 'audio';
-      body.audioFormat  = audioFmt;
-    } else if (type === 'mute') {
-      body.downloadMode = 'mute';
-    }
-
-    // Call our backend route /tools/yt-download which proxies cobalt API
-    const res = await fetch('/tools/yt-download', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-
-    const data = await res.json();
-
-    if (data.status === 'redirect' || data.status === 'stream' || data.status === 'tunnel') {
-      const dlUrl = data.url;
-      document.getElementById('ytDlLink').href = dlUrl;
-      document.getElementById('ytDlLink').style.display = 'flex';
-      document.getElementById('ytStatusMsg').innerHTML =
-        '<div class="yt-success-msg">✓ Download link ready hai! Button click karo.</div>';
-      // Also try auto-download
-      const a = document.createElement('a');
-      a.href = dlUrl; a.target = '_blank'; a.download = '';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-
-    } else if (data.status === 'picker') {
-      // Multiple streams available — show all options
-      let html = '<div class="yt-success-msg">Multiple streams available — choose karo:</div>';
-      document.getElementById('ytStatusMsg').innerHTML = html;
-      const dlLink = document.getElementById('ytDlLink');
-      dlLink.href = data.picker[0]?.url || '#';
-      dlLink.textContent = '⬇ Best Quality Download';
-      dlLink.style.display = 'flex';
-
-    } else if (data.status === 'error') {
-      ytSetStatus(`❌ Error: ${data.error?.code || 'Unknown error'} — ${data.error?.context?.service || 'Try karo dobara'}`, true);
-    } else {
-      ytSetStatus('❌ Unexpected response. Dobara try karo ya cobalt.tools directly use karo.', true);
-    }
-  } catch (err) {
-    console.error(err);
-    ytSetStatus('❌ Server se connect nahi ho saka. Route add kiya hai? cobalt.tools directly try karo.', true);
-  }
-
-  document.getElementById('ytDlBtn').disabled = false;
-}
-
-function ytOpenVideo() {
-  const vid = document.getElementById('ytMetaVidId').textContent;
-  if (vid && vid !== '—') window.open(`https://youtube.com/watch?v=${vid}`, '_blank');
-}
-
-function buildThumbButtons(vid) {
-  const qualities = [
-    { label: 'Max HD', key: 'maxresdefault', size: '1280×720' },
-    { label: 'High',   key: 'hqdefault',     size: '480×360'  },
-    { label: 'Medium', key: 'mqdefault',      size: '320×180'  },
-    { label: 'SD',     key: 'sddefault',      size: '640×480'  },
-  ];
-  const wrap = document.getElementById('ytThumbBtns');
-  wrap.innerHTML = '';
-  qualities.forEach(q => {
-    const url = `https://img.youtube.com/vi/${vid}/${q.key}.jpg`;
-    const btn = document.createElement('button');
-    btn.className = 'yt-qbtn';
-    btn.innerHTML = `<b>${q.label}</b><span>${q.size}</span>`;
-    btn.onclick = () => dlThumb(url, vid, q.key);
-    wrap.appendChild(btn);
-  });
-}
-async function dlThumb(url, vid, q) {
-  try {
-    const res = await fetch(url); const blob = await res.blob();
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${vid}-${q}.jpg`; a.click();
-  } catch { window.open(url, '_blank'); }
-}
-
-/* ════ 4. UTM Builder ════ */
-function buildUTM() {
-  const base = document.getElementById('utmBase').value.trim();
-  const src = document.getElementById('utmSrc').value.trim();
-  if (!base || !src) { document.getElementById('utmOut').textContent = 'URL aur Source bharo...'; document.getElementById('utmParams').innerHTML = ''; return; }
-  const p = new URLSearchParams();
-  p.set('utm_source', src);
-  const fields = [['utmMed','utm_medium'],['utmCamp','utm_campaign'],['utmCont','utm_content'],['utmTerm','utm_term']];
-  fields.forEach(([id, key]) => { const v = document.getElementById(id).value.trim(); if (v) p.set(key, v); });
-  const url = base + (base.includes('?') ? '&' : '?') + p.toString();
-  document.getElementById('utmOut').textContent = url;
-  let html = '';
-  for (const [k, v] of p.entries()) html += `<span class="utm-param"><b>${k}</b>${v}</span>`;
-  document.getElementById('utmParams').innerHTML = html;
-}
-function copyUTM() { const v = document.getElementById('utmOut').textContent; if (!v.includes('bharo')) { navigator.clipboard.writeText(v).then(() => alert('UTM Link copied!')); } }
-function resetUTM() { ['utmBase','utmSrc','utmMed','utmCamp','utmCont','utmTerm'].forEach(id => document.getElementById(id).value = ''); document.getElementById('utmOut').textContent = 'URL aur Source bharo...'; document.getElementById('utmParams').innerHTML = ''; }
-
-/* ════ 5. JSON ════ */
-function fmtJSON() {
-  const inp = document.getElementById('jsonIn').value;
-  const st = document.getElementById('jsonStat');
-  if (!inp.trim()) { document.getElementById('jsonOut').value = ''; st.textContent = ''; return; }
-  try { document.getElementById('jsonOut').value = JSON.stringify(JSON.parse(inp), null, 2); st.textContent = '✓ Valid'; st.style.color = 'var(--green)'; }
-  catch (e) { document.getElementById('jsonOut').value = 'Error: ' + e.message; st.textContent = '✕ Invalid'; st.style.color = 'var(--red)'; }
-}
-function minJSON() { try { document.getElementById('jsonOut').value = JSON.stringify(JSON.parse(document.getElementById('jsonIn').value)); } catch {} }
-function sortJSON() { try { const sort = obj => Array.isArray(obj) ? obj.map(sort) : obj && typeof obj === 'object' ? Object.fromEntries(Object.entries(obj).sort().map(([k,v]) => [k, sort(v)])) : obj; document.getElementById('jsonOut').value = JSON.stringify(sort(JSON.parse(document.getElementById('jsonIn').value)), null, 2); } catch {} }
-function clearJSON() { document.getElementById('jsonIn').value = ''; document.getElementById('jsonOut').value = ''; document.getElementById('jsonStat').textContent = ''; }
-
-/* ════ 6. Hash ════ */
-async function genHash() {
-  const text = document.getElementById('hashIn').value;
-  const ids = ['hMD5','hSHA1','hSHA256','hSHA512'];
-  if (!text) { ids.forEach(id => document.getElementById(id).textContent = '—'); return; }
-  const enc = new TextEncoder().encode(text);
-  const hex = buf => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-  const [s1, s256, s512] = await Promise.all([
-    crypto.subtle.digest('SHA-1', enc),
-    crypto.subtle.digest('SHA-256', enc),
-    crypto.subtle.digest('SHA-512', enc)
-  ]);
-  document.getElementById('hSHA1').textContent = hex(s1);
-  document.getElementById('hSHA256').textContent = hex(s256);
-  document.getElementById('hSHA512').textContent = hex(s512);
-  document.getElementById('hMD5').textContent = md5(text);
-}
-/* MD5 */
-function md5(s){function sa(x,y){const l=(x&0xFFFF)+(y&0xFFFF);return((x>>16)+(y>>16)+(l>>16))<<16|(l&0xFFFF);}function rl(n,c){return n<<c|n>>>32-c;}function cm(q,a,b,x,s,t){return sa(rl(sa(sa(a,q),sa(x,t)),s),b);}function ff(a,b,c,d,x,s,t){return cm(b&c|~b&d,a,b,x,s,t);}function gg(a,b,c,d,x,s,t){return cm(b&d|c&~d,a,b,x,s,t);}function hh(a,b,c,d,x,s,t){return cm(b^c^d,a,b,x,s,t);}function ii(a,b,c,d,x,s,t){return cm(c^(b|~d),a,b,x,s,t);}const u=unescape(encodeURIComponent(s));const x=[];for(let i=0;i<u.length;i+=4)x.push(u.charCodeAt(i)|u.charCodeAt(i+1)<<8|u.charCodeAt(i+2)<<16|u.charCodeAt(i+3)<<24);x[u.length>>2]|=0x80<<(u.length%4*8);x[(u.length+8>>>6<<4)+14]=u.length*8;let a=0x67452301,b=0xEFCDAB89,c=0x98BADCFE,d=0x10325476;for(let i=0;i<x.length;i+=16){const[A,B,C,D]=[a,b,c,d];a=ff(a,b,c,d,x[i],7,-680876936);d=ff(d,a,b,c,x[i+1],12,-389564586);c=ff(c,d,a,b,x[i+2],17,606105819);b=ff(b,c,d,a,x[i+3],22,-1044525330);a=ff(a,b,c,d,x[i+4],7,-176418897);d=ff(d,a,b,c,x[i+5],12,1200080426);c=ff(c,d,a,b,x[i+6],17,-1473231341);b=ff(b,c,d,a,x[i+7],22,-45705983);a=ff(a,b,c,d,x[i+8],7,1770035416);d=ff(d,a,b,c,x[i+9],12,-1958414417);c=ff(c,d,a,b,x[i+10],17,-42063);b=ff(b,c,d,a,x[i+11],22,-1990404162);a=ff(a,b,c,d,x[i+12],7,1804603682);d=ff(d,a,b,c,x[i+13],12,-40341101);c=ff(c,d,a,b,x[i+14],17,-1502002290);b=ff(b,c,d,a,x[i+15],22,1236535329);a=gg(a,b,c,d,x[i+1],5,-165796510);d=gg(d,a,b,c,x[i+6],9,-1069501632);c=gg(c,d,a,b,x[i+11],14,643717713);b=gg(b,c,d,a,x[i],20,-373897302);a=gg(a,b,c,d,x[i+5],5,-701558691);d=gg(d,a,b,c,x[i+10],9,38016083);c=gg(c,d,a,b,x[i+15],14,-660478335);b=gg(b,c,d,a,x[i+4],20,-405537848);a=gg(a,b,c,d,x[i+9],5,568446438);d=gg(d,a,b,c,x[i+14],9,-1019803690);c=gg(c,d,a,b,x[i+3],14,-187363961);b=gg(b,c,d,a,x[i+8],20,1163531501);a=gg(a,b,c,d,x[i+13],5,-1444681467);d=gg(d,a,b,c,x[i+2],9,-51403784);c=gg(c,d,a,b,x[i+7],14,1735328473);b=gg(b,c,d,a,x[i+12],20,-1926607734);a=hh(a,b,c,d,x[i+5],4,-378558);d=hh(d,a,b,c,x[i+8],11,-2022574463);c=hh(c,d,a,b,x[i+11],16,1839030562);b=hh(b,c,d,a,x[i+14],23,-35309556);a=hh(a,b,c,d,x[i+1],4,-1530992060);d=hh(d,a,b,c,x[i+4],11,1272893353);c=hh(c,d,a,b,x[i+7],16,-155497632);b=hh(b,c,d,a,x[i+10],23,-1094730640);a=hh(a,b,c,d,x[i+13],4,681279174);d=hh(d,a,b,c,x[i],11,-358537222);c=hh(c,d,a,b,x[i+3],16,-722521979);b=hh(b,c,d,a,x[i+6],23,76029189);a=hh(a,b,c,d,x[i+9],4,-640364487);d=hh(d,a,b,c,x[i+12],11,-421815835);c=hh(c,d,a,b,x[i+15],16,530742520);b=hh(b,c,d,a,x[i+2],23,-995338651);a=ii(a,b,c,d,x[i],6,-198630844);d=ii(d,a,b,c,x[i+7],10,1126891415);c=ii(c,d,a,b,x[i+14],15,-1416354905);b=ii(b,c,d,a,x[i+5],21,-57434055);a=ii(a,b,c,d,x[i+12],6,1700485571);d=ii(d,a,b,c,x[i+3],10,-1894986606);c=ii(c,d,a,b,x[i+10],15,-1051523);b=ii(b,c,d,a,x[i+1],21,-2054922799);a=ii(a,b,c,d,x[i+8],6,1873313359);d=ii(d,a,b,c,x[i+15],10,-30611744);c=ii(c,d,a,b,x[i+6],15,-1560198380);b=ii(b,c,d,a,x[i+13],21,1309151649);a=ii(a,b,c,d,x[i+4],6,-145523070);d=ii(d,a,b,c,x[i+11],10,-1120210379);c=ii(c,d,a,b,x[i+2],15,718787259);b=ii(b,c,d,a,x[i+9],21,-343485551);a=sa(a,A);b=sa(b,B);c=sa(c,C);d=sa(d,D);}return[a,b,c,d].map(n=>(n>>>0).toString(16).padStart(8,'0').match(/../g).map(s=>s[1]+s[0]).join('')).join('');}
-
-/* ════ 7. Base64 ════ */
-function b64Mode(m, btn) {
-  document.querySelectorAll('.mtab').forEach(b => b.classList.remove('active')); btn.classList.add('active');
-  document.getElementById('b64TextMode').style.display = m === 'text' ? 'flex' : 'none';
-  document.getElementById('b64ImgMode').style.display = m === 'image' ? 'block' : 'none';
-}
-function doB64Enc() { try { document.getElementById('b64Out').value = btoa(unescape(encodeURIComponent(document.getElementById('b64In').value))); } catch { document.getElementById('b64Out').value = 'Error encoding'; } }
-function doB64Dec() { try { document.getElementById('b64Out').value = decodeURIComponent(escape(atob(document.getElementById('b64In').value))); } catch { document.getElementById('b64Out').value = 'Error: Invalid Base64 string'; } }
-function imgToB64(input) { const f = input.files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { document.getElementById('b64ImgOut').value = e.target.result; }; r.readAsDataURL(f); }
-
-/* ════ 8. Color Picker ════ */
-function updColor(hex) {
-  document.getElementById('cHexIn').value = hex;
-  document.getElementById('cHex').textContent = hex;
-  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
-  document.getElementById('cRGB').textContent = `rgb(${r}, ${g}, ${b})`;
-  const h = rgb2hsl(r,g,b);
-  document.getElementById('cHSL').textContent = `hsl(${h[0]}, ${h[1]}%, ${h[2]}%)`;
-  document.getElementById('cCSS').textContent = `--color: ${hex};`;
-  document.getElementById('cTW').textContent = `bg-[${hex}]`;
-  document.getElementById('cBigPrev').style.background = hex;
-  document.getElementById('cPrevTxt').textContent = hex;
-  const lum = (0.299*r+0.587*g+0.114*b)/255;
-  const txtCol = lum > 0.5 ? '#1a1a18' : '#f0f0ee';
-  document.getElementById('cPrevTxt').style.color = txtCol;
-  document.getElementById('cupBtn').style.background = hex;
-  document.getElementById('cupBtn').style.color = txtCol;
-  document.getElementById('cupText').style.color = hex;
-  document.getElementById('cupBorder').style.borderColor = hex;
-  const ratio = lum > 0.5 ? (lum+0.05)/0.05 : 0.05/(lum+0.05);
-  document.getElementById('contrastInfo').innerHTML = `<span>Contrast on white: ${ratio.toFixed(1)}:1 ${ratio >= 4.5 ? '✓ AA' : ratio >= 3 ? '~ AA Large' : '✕ Low'}</span>`;
-  buildShades(h[0], h[1]);
-}
-function updFromHex(hex) { if (/^#[0-9a-fA-F]{6}$/.test(hex)) { document.getElementById('cPick').value = hex; updColor(hex); } }
-function rgb2hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h,s,l=(mx+mn)/2;if(mx===mn){h=s=0;}else{const d=mx-mn;s=l>0.5?d/(2-mx-mn):d/(mx+mn);switch(mx){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;default:h=((r-g)/d+4)/6;}}return[Math.round(h*360),Math.round(s*100),Math.round(l*100)];}
-function hsl2hex(h,s,l){s/=100;l/=100;const a=s*Math.min(l,1-l);const f=n=>{const k=(n+h/30)%12;return Math.round(255*(l-a*Math.max(Math.min(k-3,9-k,1),-1))).toString(16).padStart(2,'0');};return`#${f(0)}${f(8)}${f(4)}`;}
-function buildShades(h, s) {
-  const row = document.getElementById('shadesRow'); row.innerHTML = '';
-  [95,85,75,65,55,45,35,25,15,8].forEach(l => {
-    const hex = hsl2hex(h, s, l);
-    const sw = document.createElement('div'); sw.className = 'shade-sw'; sw.style.background = hex; sw.title = hex;
-    sw.onclick = () => { document.getElementById('cPick').value = hex; updColor(hex); };
-    row.appendChild(sw);
-  });
-}
-
-/* ════ 9. Word Counter ════ */
-function countWords() {
-  const t = document.getElementById('wordIn').value;
-  const w = t.trim() ? t.trim().split(/\s+/).length : 0;
-  document.getElementById('wWords').textContent = w;
-  document.getElementById('wChars').textContent = t.length;
-  document.getElementById('wNoSp').textContent = t.replace(/\s/g,'').length;
-  document.getElementById('wSent').textContent = t.trim() ? (t.match(/[.!?]+/g)||[]).length : 0;
-  document.getElementById('wPara').textContent = t.trim() ? t.split(/\n\n+/).filter(p=>p.trim()).length : 0;
-  document.getElementById('wLines').textContent = t ? t.split('\n').length : 0;
-  const uniq = t.trim() ? new Set(t.toLowerCase().match(/\b\w+\b/g)||[]).size : 0;
-  document.getElementById('wUniq').textContent = uniq;
-  const mins = Math.ceil(w / 200);
-  document.getElementById('wRead').textContent = w < 1 ? '0 min' : mins < 1 ? '<1 min' : mins + ' min';
-}
-</script>
-
+  <!-- QR Library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <!-- Tools JS -->
+  <script src="/script/tools.js"></script>
 </body>
 </html>
