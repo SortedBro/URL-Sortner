@@ -1,19 +1,9 @@
-const nodemailer = require('nodemailer')
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',  // ✅ yeh hona chahiye
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.BREVO_USER,
-    pass: process.env.BREVO_PASS,
-  }
-});
-
-
-exports.sendOtpEmail = async (email , otp)=>{
-    await transporter.sendMail({
-          from: `"URL Shortener" <a509a4001@smtp-brevo.com>`,
+exports.sendOtpEmail = async (email, otp) => {
+    await resend.emails.send({
+        from: 'URL Shortener <noreply@snaplink.fun>',
         to: email,
         subject: 'Your OTP Code',
         html: `
@@ -30,5 +20,5 @@ exports.sendOtpEmail = async (email , otp)=>{
                 </p>
             </div>
         `
-    })
-}
+    });
+};
