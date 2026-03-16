@@ -52,6 +52,8 @@ const userSchema = new mongoose.Schema(
             status: { type: String, enum: ['active', 'cancelled', 'expired'], default: 'active' },
         },
 
+        role: { type: String, enum: ['user', 'admin'], default: 'user' },
+        isBanned: { type: Boolean, default: false },
 
 
 

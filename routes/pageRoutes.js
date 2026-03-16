@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
+
 const { softAuth } = require('../middleware/auth.middleware');
 const { createShortUrl } = require('../controllers/urlControllers');
+const { checkPlanLimit, incrementUrlCount } = require('../middleware/planLimit.middleware');
 const fetch = require('node-fetch');
 
 // ── Home ──
@@ -14,9 +16,12 @@ router.get('/', softAuth, (req, res) => {
 });
 
 // ── Tools Page ──
-router.get('/tools', (req, res) => {
+router.get('/tools', softAuth, (req, res) => {
     res.render('tools', { user: req.user || null, shortUrl: null, error: null });
 });
+
+// ── URL Shortener (plan limit check ke saath) ──
+router.post('/tools/shorten', softAuth, checkPlanLimit, incrementUrlCount, createShortUrl);
 
 // ── YT Video Downloader ──
 router.post('/tools/yt-download', async (req, res) => {
@@ -33,7 +38,7 @@ router.post('/tools/yt-download', async (req, res) => {
             return res.status(400).json({ status: 'error', error: { code: 'no_url' } });
         }
 
-        // Step 1: Working instances ki list fetch karo
+        // Step 1: Working instances fetch karo
         let workingInstances = [];
         try {
             const instancesRes = await fetch('https://instances.cobalt.best/api/instances.json', {
@@ -42,7 +47,6 @@ router.post('/tools/yt-download', async (req, res) => {
             });
             const allInstances = await instancesRes.json();
 
-            // Sirf woh instances lo jo online hain, auth nahi chahiye, aur CORS support karte hain
             workingInstances = allInstances.filter(i =>
                 i.online === true &&
                 i.info?.cors === true &&
@@ -52,7 +56,7 @@ router.post('/tools/yt-download', async (req, res) => {
             console.error('Instances fetch failed:', e.message);
         }
 
-        // Step 2: Ek ek instance try karo
+        // Step 2: Ek ek instance try karo (max 5)
         for (const instance of workingInstances.slice(0, 5)) {
             try {
                 const apiUrl = `${instance.protocol}://${instance.api}`;
@@ -83,12 +87,10 @@ router.post('/tools/yt-download', async (req, res) => {
                     }
                 }
             } catch (e) {
-                // Yeh instance nahi chala, agla try karo
-                continue;
+                continue; // Agla instance try karo
             }
         }
 
-        // Sab instances fail ho gaye
         return res.status(503).json({
             status: 'error',
             error: { code: 'all_failed', message: 'Koi bhi server available nahi hai. Thodi der baad try karo.' }
@@ -102,8 +104,5 @@ router.post('/tools/yt-download', async (req, res) => {
         });
     }
 });
-
-// ── URL Shortener ──
-router.post('/tools/shorten', createShortUrl);
 
 module.exports = router;

@@ -1,28 +1,9 @@
-const express = require("express")
-const { createShortUrl, redirectUrl, serverOn } = require('../controllers/urlControllers');
-const { handleUserSignUP, handleUserLogin } = require("../controllers/userControllers");
-const { handleContact } = require("../controllers/contactControllers");
-const { softAuth } = require("../middleware/auth.middleware");
-
-const { checkPlanLimit, incrementUrlCount } = require('../middleware/planLimit.middleware');
-
-
+const express = require("express");
 const router = express.Router();
 
+const { redirectUrl } = require('../controllers/urlControllers');
 
-
-router.post("/", softAuth, createShortUrl);
-router.post("/signup", handleUserSignUP);
-router.post("/login", handleUserLogin);
-router.post('/contact', handleContact);
-
-router.post('/shorten', checkPlanLimit, createShortUrl);
-
-
-// router.get("/health",serverOn);
+// ── Redirect short URL — wildcard, isliye sabse neeche ──
 router.get("/:code", redirectUrl);
-
-
-
 
 module.exports = router;

@@ -11,7 +11,7 @@ const userRouter = require('./routes/userRouters')
 const pageRouter = require('./routes/pageRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 
-
+const adminRoutes = require('./routes/adminRoutes');
 
 
 
@@ -78,8 +78,10 @@ app.use('/', pageRouter)
 app.use('/', userRouter)
 app.use("/", underDevRouter)
 
-// API routs 
-app.use('/shorten', urlRoutes)
+app.use('/', adminRoutes);
+
+// // API routs 
+// app.use('/shorten', urlRoutes)
 
 
 

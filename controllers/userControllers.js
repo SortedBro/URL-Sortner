@@ -181,6 +181,22 @@ exports.handleUserLogin = async (req, res) => {
             )
         }
 
+
+        const decodePass = await bcrypt.compare(password, user.password);
+        // console.log("decode pass " ,decodePass);
+
+        if (!decodePass) {
+            return res.render(
+                "login"
+                , {
+                    error: 'Invalid email or password',
+                    success: null,
+                    shortUrl: null,
+
+                }
+            )
+        }
+
         // ✅ JWT token banao
         const refreshToken = jwt.sign(
             {
@@ -199,21 +215,6 @@ exports.handleUserLogin = async (req, res) => {
 
         // password decode 
 
-        const decodePass = await bcrypt.compare(password, user.password);
-        // console.log("decode pass " ,decodePass);
-
-
-        if (!decodePass) {
-            return res.render(
-                "login"
-                , {
-                    error: 'Invalid email or password',
-                    success: null,
-                    shortUrl: null,
-
-                }
-            )
-        }
 
         // ✅ Home pe redirect
         res.redirect('/')

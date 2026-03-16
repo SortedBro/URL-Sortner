@@ -24,6 +24,11 @@ exports.auth = async (req, res, next) => {
         // database check 
 
         const user = await User.findById(decoded.user);
+        // auth.middleware.js mein
+if (user.isBanned) {
+    res.clearCookie('refreshToken');
+    return res.redirect('/login?banned=true');
+}
 
         if(!user){
             res.clearCookie('refreshToken')
