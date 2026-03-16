@@ -1,20 +1,19 @@
 const nodemailer = require('nodemailer')
 
 const transporter = nodemailer.createTransport({
-host: 'smtp.gmail.com',
+  host: 'smtp-relay.brevo.com',  // ✅ yeh hona chahiye
   port: 587,
-secure: false,
-    
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
+  secure: false,
+  auth: {
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_PASS,
+  }
 });
 
 
 exports.sendOtpEmail = async (email , otp)=>{
     await transporter.sendMail({
-          from: `"URL Shortener" <${process.env.EMAIL_USER}>`,
+          from: `"URL Shortener" <a509a4001@smtp-brevo.com>`,
         to: email,
         subject: 'Your OTP Code',
         html: `
