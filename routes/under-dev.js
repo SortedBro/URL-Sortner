@@ -2,7 +2,7 @@
 
 const express = require('express');
 const { getDashboard } = require('../controllers/dboardControllers');
-const { auth, softAuth  } = require('../middleware/auth.middleware');
+const { auth, softAuth } = require('../middleware/auth.middleware');
 const { deleteUrl } = require('../controllers/urlControllers');
 const { getAnalytics } = require('../controllers/urlControllers');
 
@@ -18,33 +18,31 @@ const tasks = [
 ];
 
 
-router.post('/delete/:code',auth,deleteUrl)
+router.post('/delete/:code', auth, deleteUrl)
 
-router.get('/dashboard',auth, getDashboard);
+router.get('/dashboard', auth, getDashboard);
 router.get('/analytics/:code', auth, getAnalytics);
 
-router.get('/pricing',softAuth, (req, res) => {
+router.get('/pricing', softAuth, (req, res) => {
+    res.render('pricing', {
+        user: req.user,
+    });
+});
+router.get('/features', softAuth, (req, res) => {
     res.render('under-dev', {
         pageTitle: 'Pricing',
         tasks: tasks,
         body: ''
     });
 });
-router.get('/features',softAuth, (req, res) => {
+router.get('/privacy', softAuth, (req, res) => {
     res.render('under-dev', {
         pageTitle: 'Pricing',
         tasks: tasks,
         body: ''
     });
 });
-router.get('/privacy',softAuth, (req, res) => {
-    res.render('under-dev', {
-        pageTitle: 'Pricing',
-        tasks: tasks,
-        body: ''
-    });
-});
-router.get('/terms',softAuth, (req, res) => {
+router.get('/terms', softAuth, (req, res) => {
     res.render('under-dev', {
         pageTitle: 'Pricing',
         tasks: tasks,

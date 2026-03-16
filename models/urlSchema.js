@@ -7,6 +7,7 @@ const clickSchema = new mongoose.Schema({
     city: { type: String, default: 'Unknown' },
     device: { type: String, default: 'Unknown' }, // Mobile / Desktop / Tablet
     browser: { type: String, default: 'Unknown' },
+    os: { type: String, default: 'Unknown' },
     referrer: { type: String, default: 'Direct' },
     ip: { type: String, default: '' },
 }, { _id: false });

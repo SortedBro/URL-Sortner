@@ -3,6 +3,7 @@ const { nanoid } = require('nanoid')
 
 const UAParser = require('ua-parser-js');
 const geoip = require('geoip-lite');
+const { incrementUrlCount } = require('../middleware/planLimit.middleware');
 
 
 // ══════════════════════
@@ -66,6 +67,7 @@ exports.createShortUrl = async (req, res) => {
             createdBy: userId,
         });
 
+        await incrementUrlCount(userId); // ✅ yeh add karo
         req.session.shortUrl = shortUrl;
         res.redirect('/');
 
@@ -121,7 +123,8 @@ exports.redirectUrl = async (req, res) => {
             country: geo.country || 'Unknown',
             city: geo.city || 'Unknown',
             device,
-            browser: ua.browser || 'Unknown',
+            browser: browser || 'Unknown',
+            os: os,
             referrer,
             ip,
         });
@@ -267,10 +270,10 @@ exports.getAnalytics = async (req, res) => {
 }
 
 
-// ══════════════════════
-//  Server Check
-// ══════════════════════
+// // ══════════════════════
+// //  Server Check
+// // ══════════════════════
 
-exports.serverOn = (req, res) => {
-    res.json({ message: "Server is on" });
-}
+// exports.serverOn = (req, res) => {
+//     res.json({ message: "Server is on" });
+// }
