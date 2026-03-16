@@ -4,7 +4,7 @@ const User = require('../models/userSchema');
 
 // ✅ Razorpay instance
 const razorpay = new Razorpay({
-    key_id:     process.env.RAZORPAY_KEY_ID,
+    key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
@@ -12,11 +12,11 @@ const razorpay = new Razorpay({
 const PLANS = {
     pro: {
         monthly: 9900,   // ₹99
-        yearly:  99000,  // ₹990
+        yearly: 99000,  // ₹990
     },
     business: {
         monthly: 29900,  // ₹299
-        yearly:  299000, // ₹2990
+        yearly: 299000, // ₹2990
     },
 };
 
@@ -51,19 +51,19 @@ exports.createOrder = async (req, res) => {
         const order = await razorpay.orders.create({
             amount,
             currency: 'INR',
-            receipt:  `receipt_${req.user.user}_${Date.now()}`,
+            receipt: `rcpt_${Date.now()}`,
             notes: {
-                userId:  req.user.user,
+                userId: req.user.user,
                 plan,
                 billing,
             },
         });
 
         res.json({
-            orderId:  order.id,
-            amount:   order.amount,
+            orderId: order.id,
+            amount: order.amount,
             currency: order.currency,
-            keyId:    process.env.RAZORPAY_KEY_ID,
+            keyId: process.env.RAZORPAY_KEY_ID,
         });
 
     } catch (error) {
@@ -110,10 +110,10 @@ exports.verifyPayment = async (req, res) => {
             plan,
             subscription: {
                 razorpayPaymentId: razorpay_payment_id,
-                startDate:         now,
+                startDate: now,
                 endDate,
-                billingCycle:      billing,
-                status:            'active',
+                billingCycle: billing,
+                status: 'active',
             },
         });
 
@@ -160,10 +160,10 @@ exports.webhook = async (req, res) => {
                     plan,
                     subscription: {
                         razorpayPaymentId: payment.id,
-                        startDate:         now,
+                        startDate: now,
                         endDate,
-                        billingCycle:      billing || 'monthly',
-                        status:            'active',
+                        billingCycle: billing || 'monthly',
+                        status: 'active',
                     },
                 });
                 console.log(`✅ Plan upgraded: ${userId} → ${plan}`);
