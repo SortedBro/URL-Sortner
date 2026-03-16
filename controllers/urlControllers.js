@@ -14,24 +14,37 @@ exports.createShortUrl = async (req, res) => {
         const { orginalUrl, customAlias } = req.body;
 
         if (!orginalUrl) {
-            return res.render('home', { error: "Url daalna zaroori hai" })
+            return res.render('home', {
+                error: "Url daalna zaroori hai",
+                shortUrl: null,
+                user: req.user,
+            })
         }
         if (customAlias) {
             const aliasExists = await Url.findOne({ shortCode: customAlias });
             if (aliasExists) {
                 return res.render('home', {
                     error: "Ye alias already le liya gaya hai ",
-                    shortUrl: null
+                    shortUrl: null,
+                    user: req.user,
+
                 })
             }
         }
 
-        console.log('custom code -', customAlias)
-        const existingUrl = await Url.findOne({ orginalUrl })
+        const userId = req.user?.user ?? null;
+        // console.log('custom code -', customAlias)
+        const existingUrl = await Url.findOne({ orginalUrl, createdBy: userId })
 
         if (existingUrl) {
             const shortUrl = `${req.protocol}://${req.get("host")}/${existingUrl.shortCode}`;
-            return res.render('home', { shortUrl, error: null })
+
+            return res.render('home',
+                {
+                    shortUrl,
+                    error: null,
+                    user: req.user
+                })
 
         }
 
@@ -48,12 +61,21 @@ exports.createShortUrl = async (req, res) => {
 
         })
         res.render(
-            "home", { shortUrl, error: null }
+            "home", {
+            shortUrl,
+            error: null,
+            user: req.user
+        }
         )
+       
 
     } catch (error) {
-        console.log(error);
-        res.render("home", { error: "Kuch gadbad hui", shortUrl: null })
+
+        res.render("home", {
+            error: "Kuch gadbad hui",
+            shortUrl: null,
+            user: req.user
+        })
 
     }
 }
@@ -97,7 +119,7 @@ exports.deleteUrl = async (req, res) => {
         });
 
         if (!url) {
-            return res.status(404).json({ message: "URL naji mili ya nahi hai" })
+            return res.status(404).render('404')
         }
 
         await url.deleteOne();

@@ -10,7 +10,7 @@ const User = require('../models/userSchema.js')
 exports.auth = async (req, res, next) => {
 
     const token = req.cookies?.refreshToken;
-    console.log("auth token middleware", token);
+    // console.log("auth token middleware", token);
 
     // Token hai hi nahi
     if (!token) {

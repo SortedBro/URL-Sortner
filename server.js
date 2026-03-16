@@ -63,6 +63,7 @@ app.get("/", softAuth, (req, res) => { res.render('home', { shortUrl: null, erro
 app.get('/signup', (req, res) => res.render('signup', { error: null, success: null }));
 app.get('/login', (req, res) => res.render('login', { error: null, success: null }));
 app.get("/about", (req, res) => { res.render("about", { success: null, error: null }) });
+app.get('/404',(req,res)=>{res.render("404")})
 
 app.get('/logout', (req, res) => {
     res.clearCookie('refreshToken');

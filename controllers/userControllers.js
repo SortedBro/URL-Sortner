@@ -124,8 +124,8 @@ exports.verifyOtp = async (req, res) => {
         const refreshToken = jwt.sign(
 
             {
-                user: User._id,
-                name: User.firstName
+                user: newUser._id,
+                name: newUser.firstName
             },
             process.env.jwt_secret,
             { expiresIn: "10h" }
