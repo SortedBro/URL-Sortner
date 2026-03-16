@@ -9,6 +9,7 @@ const underDevRouter = require('./routes/under-dev');
 const { softAuth, auth } = require('./middleware/auth.middleware');
 const { error } = require('console');
 const { verifyOtp } = require('./controllers/userControllers');
+const session = require('express-session');
 
 
 
@@ -26,11 +27,23 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.set('view engine', 'ejs');
 app.use(cookieParser())
-app.use(softAuth);
+
+app.use(session({              // ← pehle session
+    secret: process.env.SESSION_SECRET || 'snaplink_secret_2026',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 5 * 60 * 1000
+    }
+}))
+
+app.use(softAuth)             // ← baad mein softAuth
+
 
 // Sirf production mein HTTPS redirect karo
 app.use((req, res, next) => {
-    if (process.env.NODE_ENV === 'production' && 
+    if (process.env.NODE_ENV === 'production' &&
         req.headers['x-forwarded-proto'] !== 'https') {
         return res.redirect('https://' + req.headers.host + req.url);
     }
@@ -59,11 +72,18 @@ app.get('/verify-otp', (req, res) => {
 // GET routes
 
 
-app.get("/", softAuth, (req, res) => { res.render('home', { shortUrl: null, error: null, user: req.user }) });
+// app.get("/", softAuth, (req, res) => { res.render('home', { shortUrl: null, error: null, user: req.user }) });
+app.get("/", softAuth, (req, res) => {
+    const shortUrl = req.session.shortUrl || null;
+    const error    = req.session.error    || null;
+    req.session.shortUrl = null;
+    req.session.error    = null;
+    res.render('home', { shortUrl, error, user: req.user })
+});
 app.get('/signup', (req, res) => res.render('signup', { error: null, success: null }));
 app.get('/login', (req, res) => res.render('login', { error: null, success: null }));
 app.get("/about", (req, res) => { res.render("about", { success: null, error: null }) });
-app.get('/404',(req,res)=>{res.render("404")})
+app.get('/404', (req, res) => { res.render("404") })
 
 app.get('/logout', (req, res) => {
     res.clearCookie('refreshToken');

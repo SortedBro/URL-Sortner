@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analytics — <%= url.shortCode %> | SnapLink</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #0d0d0c;
+      --surface:   #161614;
+      --card:      #1c1c1a;
+      --border:    #2a2a28;
+      --text:      #f0f0ee;
+      --muted:     #666662;
+      --accent:    #FAC775;
+      --green:     #5DCAA5;
+      --red:       #F09595;
+      --blue:      #7EB8F7;
+    }
+    [data-theme="light"] {
+      --bg:      #f5f5f3;
+      --surface: #ffffff;
+      --card:    #ffffff;
+      --border:  #e0e0de;
+      --text:    #1a1a1a;
+      --muted:   #888884;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Nav */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 56px;
+      background: var(--surface);
+      border-bottom: 0.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-logo span {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+    .nav-right a { color: var(--muted); text-decoration: none; }
+    .nav-right a:hover { color: var(--text); }
+    .btn-theme {
+      background: none;
+      border: 0.5px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* Main */
+    main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* Header */
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .back-link:hover { color: var(--accent); }
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+    .page-title span { color: var(--accent); }
+    .url-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+    .url-pill {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: var(--accent);
+    }
+    .url-original-pill {
+      font-size: 11px;
+      color: var(--muted);
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+    }
+    .stat-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-value.green { color: var(--green); }
+    .stat-sub { font-size: 10px; color: var(--muted); }
+
+    /* Section */
+    .section { margin-bottom: 2rem; }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 0.5px;
+      background: var(--border);
+    }
+
+    /* 2 col grid */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media(max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+    }
+    .card-title {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    /* Bar chart */
+    .chart-wrap {
+      background: var(--card);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 120px;
+      margin-top: 1rem;
+    }
+    .chart-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .chart-bar {
+      width: 100%;
+      background: var(--accent);
+      border-radius: 4px 4px 0 0;
+      min-height: 2px;
+      transition: height 0.6s ease;
+      position: relative;
+    }
+    .chart-bar:hover::after {
+      content: attr(data-count);
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--bg);
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .chart-date {
+      font-size: 9px;
+      color: var(--muted);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    /* Bar rows */
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .bar-row:last-child { margin-bottom: 0; }
+    .bar-name {
+      font-size: 11px;
+      color: var(--text);
+      min-width: 90px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--accent);
+      transition: width 0.8s ease;
+    }
+    .bar-fill.green  { background: var(--green); }
+    .bar-fill.blue   { background: var(--blue);  }
+    .bar-fill.red    { background: var(--red);   }
+    .bar-count {
+      font-size: 11px;
+      color: var(--muted);
+      min-width: 24px;
+      text-align: right;
+    }
+
+    /* Device pills */
+    .device-grid {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .device-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 20px;
+      flex: 1;
+      min-width: 80px;
+    }
+    .device-icon { font-size: 22px; }
+    .device-name { font-size: 10px; color: var(--muted); }
+    .device-count {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Empty */
+    .empty-row {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      padding: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="/"><span></span>SnapLink</a>
+    <div class="nav-right">
+      <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
+      <% if (user) { %>
+        <span>👋 <%= user.name %></span>
+        <a href="/logout">Logout</a>
+      <% } %>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <a href="/dashboard" class="back-link">← Dashboard pe wapas</a>
+        <div class="page-title">Analytics — <span>/<%= url.shortCode %></span></div>
+        <div class="url-info">
+          <span class="url-pill"><%= url.shortUrl %></span>
+          <span class="url-original-pill" title="<%= url.orginalUrl %>">→ <%= url.orginalUrl %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overview Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Clicks</div>
+        <div class="stat-value"><%= totalClicks %></div>
+        <div class="stat-sub">ab tak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Unique Visitors</div>
+        <div class="stat-value green"><%= uniqueVisitors %></div>
+        <div class="stat-sub">alag IPs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Last Click</div>
+        <div class="stat-value" style="font-size:1.1rem;padding-top:4px">
+          <%= url.lastClickedAt ? new Date(url.lastClickedAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'2-digit'}) : '—' %>
+        </div>
+        <div class="stat-sub">
+          <%= url.lastClickedAt ? new Date(url.lastClickedAt).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}) : 'koi click nahi' %>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Created</div>
+        <div class="stat-value" style="font-size:1.1rem;padding-top:4px">
+          <%= new Date(url.createdAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'2-digit'}) %>
+        </div>
+        <div class="stat-sub">banaya gaya</div>
+      </div>
+    </div>
+
+    <!-- Clicks Graph — Last 7 Days -->
+    <div class="section">
+      <div class="section-title">Clicks Over Time</div>
+      <div class="chart-wrap">
+        <div class="card-title">Last 7 Days</div>
+        <% const maxClicks = Math.max(...last7Days.map(d => d.count), 1); %>
+        <div class="chart-bars">
+          <% last7Days.forEach(day => { %>
+            <div class="chart-col">
+              <div class="chart-bar"
+                data-count="<%= day.count %>"
+                style="height: <%= Math.max((day.count / maxClicks) * 100, day.count > 0 ? 8 : 2) %>%">
+              </div>
+              <div class="chart-date"><%= day.date %></div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audience -->
+    <div class="section">
+      <div class="section-title">Audience</div>
+      <div class="two-col">
+
+        <!-- Countries -->
+        <div class="card">
+          <div class="card-title">🌍 Countries</div>
+          <% if (countries.length === 0) { %>
+            <div class="empty-row">Abhi koi data nahi</div>
+          <% } else { %>
+            <% const maxC = countries[0]?.count || 1; %>
+            <% countries.forEach(c => { %>
+              <div class="bar-row">
+                <div class="bar-name"><%= c.name %></div>
+                <div class="bar-track">
+                  <div class="bar-fill green" style="width:<%= (c.count/maxC)*100 %>%"></div>
+                </div>
+                <div class="bar-count"><%= c.count %></div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+
+        <!-- Cities -->
+        <div class="card">
+          <div class="card-title">🏙️ Cities</div>
+          <% if (cities.length === 0) { %>
+            <div class="empty-row">Abhi koi data nahi</div>
+          <% } else { %>
+            <% const maxCi = cities[0]?.count || 1; %>
+            <% cities.forEach(c => { %>
+              <div class="bar-row">
+                <div class="bar-name"><%= c.name %></div>
+                <div class="bar-track">
+                  <div class="bar-fill blue" style="width:<%= (c.count/maxCi)*100 %>%"></div>
+                </div>
+                <div class="bar-count"><%= c.count %></div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Devices -->
+    <div class="section">
+      <div class="section-title">Devices</div>
+      <div class="card">
+        <% if (devices.length === 0) { %>
+          <div class="empty-row">Abhi koi data nahi</div>
+        <% } else { %>
+          <div class="device-grid">
+            <% const deviceIcons = { Mobile: '📱', Desktop: '💻', Tablet: '📟' }; %>
+            <% devices.forEach(d => { %>
+              <div class="device-pill">
+                <div class="device-icon"><%= deviceIcons[d.name] || '🖥️' %></div>
+                <div class="device-count"><%= d.count %></div>
+                <div class="device-name"><%= d.name %></div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Traffic Sources + Browsers -->
+    <div class="section">
+      <div class="section-title">Traffic</div>
+      <div class="two-col">
+
+        <!-- Referrers -->
+        <div class="card">
+          <div class="card-title">🔗 Traffic Sources</div>
+          <% if (referrers.length === 0) { %>
+            <div class="empty-row">Abhi koi data nahi</div>
+          <% } else { %>
+            <% const maxR = referrers[0]?.count || 1; %>
+            <% referrers.forEach(r => { %>
+              <div class="bar-row">
+                <div class="bar-name" title="<%= r.name %>"><%= r.name === 'Direct' ? 'Direct' : r.name.replace(/https?:\/\//, '').split('/')[0] %></div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width:<%= (r.count/maxR)*100 %>%"></div>
+                </div>
+                <div class="bar-count"><%= r.count %></div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+
+        <!-- Browsers -->
+        <div class="card">
+          <div class="card-title">🌐 Browsers</div>
+          <% if (browsers.length === 0) { %>
+            <div class="empty-row">Abhi koi data nahi</div>
+          <% } else { %>
+            <% const maxB = browsers[0]?.count || 1; %>
+            <% browsers.forEach(b => { %>
+              <div class="bar-row">
+                <div class="bar-name"><%= b.name %></div>
+                <div class="bar-track">
+                  <div class="bar-fill red" style="width:<%= (b.count/maxB)*100 %>%"></div>
+                </div>
+                <div class="bar-count"><%= b.count %></div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Theme
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('theme-btn').textContent = isDark ? '☾ Dark' : '☀ Light';
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    }
+    const saved = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀ Light' : '☾ Dark';
+  </script>
+
+</body>
+</html>

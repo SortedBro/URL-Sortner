@@ -4,7 +4,7 @@ const express = require('express');
 const { getDashboard } = require('../controllers/dboardControllers');
 const { auth, softAuth  } = require('../middleware/auth.middleware');
 const { deleteUrl } = require('../controllers/urlControllers');
-
+const { getAnalytics } = require('../controllers/urlControllers');
 
 const router = express.Router();
 
@@ -21,6 +21,7 @@ const tasks = [
 router.post('/delete/:code',auth,deleteUrl)
 
 router.get('/dashboard',auth, getDashboard);
+router.get('/analytics/:code', auth, getAnalytics);
 
 router.get('/pricing',softAuth, (req, res) => {
     res.render('under-dev', {
