@@ -26,7 +26,16 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.set('view engine', 'ejs');
 app.use(cookieParser())
-app.use(softAuth)
+app.use(softAuth);
+
+// Sirf production mein HTTPS redirect karo
+app.use((req, res, next) => {
+    if (process.env.NODE_ENV === 'production' && 
+        req.headers['x-forwarded-proto'] !== 'https') {
+        return res.redirect('https://' + req.headers.host + req.url);
+    }
+    next();
+});
 
 // Ye middleware sab routes pe user available karega
 app.use((req, res, next) => {
@@ -66,7 +75,7 @@ app.get('/logout', (req, res) => {
 app.use("/", underDevRouter)
 app.use('/shorten', urlRoutes)
 app.use('/', urlRoutes)
-app.post('/verify-otp',verifyOtp)
+app.post('/verify-otp', verifyOtp)
 // app.use(auth)
 
 
