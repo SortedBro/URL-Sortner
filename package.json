@@ -27,6 +27,7 @@
     "mongodb": "^7.1.0",
     "mongoose": "^9.3.0",
     "nanoid": "^5.1.6",
+    "nodemailer": "^8.0.2",
     "nodemon": "^3.1.14"
   }
 }

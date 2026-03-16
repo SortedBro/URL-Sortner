@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify OTP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f5f5f3;
+            --card-bg: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #666666;
+            --border: #dddddd;
+            --input-bg: #f5f5f3;
+            --input-focus: #1a1a1a;
+            --btn-bg: #1a1a1a;
+            --btn-text: #ffffff;
+            --error-color: #E24B4A;
+            --success-color: #1D9E75;
+            --resend-color: #888888;
+        }
+
+        body.dark {
+            --bg: #111110;
+            --card-bg: #1c1c1a;
+            --text: #f0f0ee;
+            --text-muted: #888888;
+            --border: #2e2e2c;
+            --input-bg: #252523;
+            --input-focus: #FAC775;
+            --btn-bg: #FAC775;
+            --btn-text: #1a1a18;
+            --resend-color: #666666;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        /* Theme toggle */
+        .theme-btn {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 0.5px solid var(--border);
+            background: var(--card-bg);
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, border-color 0.3s;
+            z-index: 100;
+        }
+
+        /* Card */
+        .card {
+            background: var(--card-bg);
+            border: 0.5px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        /* Icon */
+        .otp-icon {
+            font-size: 36px;
+            margin-bottom: 1rem;
+            display: block;
+            animation: bounce 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes bounce {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Title */
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+            transition: color 0.3s;
+        }
+
+        .card-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 1.8rem;
+            transition: color 0.3s;
+        }
+
+        .card-sub strong {
+            color: var(--text);
+        }
+
+        /* OTP inputs */
+        .otp-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .otp-box {
+            width: 48px;
+            height: 56px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            color: var(--text);
+            background: var(--input-bg);
+            border: 0.5px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            caret-color: transparent;
+            transition: border-color 0.2s, background 0.3s, color 0.3s;
+        }
+
+        .otp-box:focus {
+            border-color: var(--input-focus);
+            border-width: 1.5px;
+        }
+
+        .otp-box.filled {
+            border-color: var(--success-color);
+        }
+
+        .otp-box.error {
+            border-color: var(--error-color);
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* Submit button */
+        .verify-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: opacity 0.2s, background 0.3s, color 0.3s;
+            margin-bottom: 1.2rem;
+        }
+
+        .verify-btn:hover {
+            opacity: 0.85;
+        }
+
+        .verify-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Error / success message */
+        .msg {
+            font-size: 11px;
+            min-height: 18px;
+            margin-bottom: 1rem;
+            transition: color 0.3s;
+        }
+
+        .msg.error {
+            color: var(--error-color);
+        }
+
+        .msg.success {
+            color: var(--success-color);
+        }
+
+        /* Resend */
+        .resend-row {
+            font-size: 11px;
+            color: var(--text-muted);
+            transition: color 0.3s;
+        }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--resend-color);
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .resend-btn:disabled {
+            cursor: not-allowed;
+            text-decoration: none;
+            opacity: 0.5;
+        }
+
+        .resend-btn:not(:disabled):hover {
+            color: var(--text);
+        }
+
+        #timer {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* Divider */
+        .divider {
+            height: 0.5px;
+            background: var(--border);
+            margin: 1.5rem 0;
+            transition: background 0.3s;
+        }
+
+        .back-link {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text);
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+
+    <div class="card">
+        <span class="otp-icon">📩</span>
+
+        <div class="card-title">OTP verify karo</div>
+        <div class="card-sub">
+            Humne ek 6-digit code bheja hai<br>
+            <!-- Server se email pass karo: -->
+            <strong>
+                <%= email %>
+            </strong> pe
+        </div>
+        <% if (typeof error !=='undefined' && error) { %>
+            <div class="msg error">
+                <%= error %>
+            </div>
+            <% } else if (typeof success !=='undefined' && success) { %>
+                <div class="msg success">
+                    <%= success %>
+                </div>
+                <% } else { %>
+                    <div class="msg" id="clientMsg"></div>
+                    <% } %>
+
+
+                        <form action="/verify-otp" method="POST" id="otpForm">
+                            <!-- Hidden field — email bhi saath bhejo -->
+                            <input type="hidden" name="email" value="<%= email %>" />
+
+                            <!-- 6 OTP boxes -->
+                            <div class="otp-inputs">
+                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                                    autocomplete="off" id="o1" />
+                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                                    autocomplete="off" id="o2" />
+                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                                    autocomplete="off" id="o3" />
+                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                                    autocomplete="off" id="o4" />
+                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                                    autocomplete="off" id="o5" />
+                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                                    autocomplete="off" id="o6" />
+                            </div>
+
+                            <!-- Hidden combined OTP -->
+                            <input type="hidden" name="otp" id="otpValue" />
+
+                            <button class="verify-btn" type="submit" id="verifyBtn" disabled>
+                                Verify karo
+                            </button>
+                        </form>
+
+                        <!-- Resend -->
+                        <div class="resend-row">
+                            Code nahi aaya?
+                            <button class="resend-btn" id="resendBtn" disabled onclick="resendOtp()">
+                                Resend karo (<span id="timer">30</span>s)
+                            </button>
+                        </div>
+
+                        <div class="divider"></div>
+                        <a href="/login" class="back-link">← Login pe wapas jao</a>
+    </div>
+
+    <script>
+        // ── Dark mode ──
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === 'dark' || (!saved && prefersDark)) {
+            document.body.classList.add('dark');
+            document.getElementById('themeBtn').textContent = '☀️';
+        }
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
+        }
+
+        // ── OTP boxes logic ──
+        const boxes = Array.from(document.querySelectorAll('.otp-box'));
+        const verifyBtn = document.getElementById('verifyBtn');
+        const otpValue = document.getElementById('otpValue');
+        const clientMsg = document.getElementById('clientMsg');
+
+        boxes.forEach((box, i) => {
+            box.addEventListener('input', (e) => {
+                // Sirf number allow karo
+                box.value = box.value.replace(/[^0-9]/g, '');
+
+                if (box.value) {
+                    box.classList.add('filled');
+                    box.classList.remove('error');
+                    // Agla box pe focus
+                    if (i < 5) boxes[i + 1].focus();
+                } else {
+                    box.classList.remove('filled');
+                }
+                checkComplete();
+            });
+
+            // Backspace — pichle box pe jao
+            box.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !box.value && i > 0) {
+                    boxes[i - 1].focus();
+                    boxes[i - 1].value = '';
+                    boxes[i - 1].classList.remove('filled');
+                    checkComplete();
+                }
+            });
+
+            // Paste support — 6 digit ek saath paste
+            box.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasted = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+                pasted.split('').forEach((char, idx) => {
+                    if (boxes[idx]) {
+                        boxes[idx].value = char;
+                        boxes[idx].classList.add('filled');
+                    }
+                });
+                if (pasted.length === 6) boxes[5].focus();
+                checkComplete();
+            });
+        });
+
+        function checkComplete() {
+            const otp = boxes.map(b => b.value).join('');
+            otpValue.value = otp;
+            verifyBtn.disabled = otp.length < 6;
+        }
+
+    // Shake on server error
+     if (typeof error !== 'undefined' && error) { 
+            boxes.forEach(b => b.classList.add('error'));
+     } 
+
+            // ── Resend timer ──
+            let seconds = 30;
+        const timerEl = document.getElementById('timer');
+        const resendBtn = document.getElementById('resendBtn');
+
+        const countdown = setInterval(() => {
+            seconds--;
+            timerEl.textContent = seconds;
+            if (seconds <= 0) {
+                clearInterval(countdown);
+                resendBtn.disabled = false;
+                resendBtn.innerHTML = 'Resend karo';
+            }
+        }, 1000);
+
+        async function resendOtp() {
+            resendBtn.disabled = true;
+            resendBtn.textContent = 'Bhej raha hai...';
+
+            try {
+                const res = await fetch('/resend-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: '<%= email %>' })
+                });
+
+                if (res.ok) {
+                    if (clientMsg) {
+                        clientMsg.textContent = '✓ OTP dobara bhej diya!';
+                        clientMsg.className = 'msg success';
+                    }
+                    // Timer reset
+                    seconds = 30;
+                    timerEl.textContent = seconds;
+                    resendBtn.innerHTML = `Resend karo (<span id="timer">${seconds}</span>s)`;
+                    const newTimer = setInterval(() => {
+                        seconds--;
+                        document.getElementById('timer').textContent = seconds;
+                        if (seconds <= 0) {
+                            clearInterval(newTimer);
+                            resendBtn.disabled = false;
+                            resendBtn.innerHTML = 'Resend karo';
+                        }
+                    }, 1000);
+                }
+            } catch (e) {
+                resendBtn.disabled = false;
+                resendBtn.textContent = 'Resend karo';
+            }
+        }
+
+        // Auto focus first box
+        boxes[0].focus();
+    </script>
+
+</body>
+
+</html>

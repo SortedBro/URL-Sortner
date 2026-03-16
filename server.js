@@ -4,9 +4,11 @@ const connectDB = require('./config/db');
 require('dotenv').config();
 const urlRoutes = require('./routes/urlRoutes')
 const path = require('path')
-const cookieParser  = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 const underDevRouter = require('./routes/under-dev');
 const { softAuth, auth } = require('./middleware/auth.middleware');
+const { error } = require('console');
+const { verifyOtp } = require('./controllers/userControllers');
 
 
 
@@ -27,11 +29,24 @@ app.use(cookieParser())
 app.use(softAuth)
 
 
+// Get Otp page
 
+app.get('/verify-otp', (req, res) => {
+
+    res.render('verify-otp', {
+        error: null,
+        email: req.query.email,
+        user: null
+
+    }
+    )
+
+})
 
 // GET routes
 
-app.get("/", softAuth,(req, res) => { res.render('home', { shortUrl: null, error: null ,user:req.user}) });
+
+app.get("/", softAuth, (req, res) => { res.render('home', { shortUrl: null, error: null, user: req.user }) });
 app.get('/signup', (req, res) => res.render('signup', { error: null, success: null }));
 app.get('/login', (req, res) => res.render('login', { error: null, success: null }));
 app.get("/about", (req, res) => { res.render("about", { success: null, error: null }) });
@@ -47,6 +62,7 @@ app.get('/logout', (req, res) => {
 app.use("/", underDevRouter)
 app.use('/shorten', urlRoutes)
 app.use('/', urlRoutes)
+app.post('/verify-otp',verifyOtp)
 // app.use(auth)
 
 

@@ -13,7 +13,7 @@
 
 <body>
     <nav class="navbar">
-        
+
         <h2>Snap<span>Link</span></h2>
 
         <button class="theme-toggle" id="themeToggle" title="Toggle theme">
@@ -22,18 +22,18 @@
         </button>
         <!-- SignUP button -->
         <!-- <a href="/signup" class="nav-signup-btn">Sign Up</a> -->
-          <% if (user) { %>
-    <!-- ✅ Logged in — naam dikhao -->
-    <span>👋 Hello, <%= user.name %></span>
-    <a href="/logout" class="nav-signup-btn">Logout</a>
+        <% if (user) { %>
+            <!-- ✅ Logged in — naam dikhao -->
+            <span>👋 Hello, <%= user.name %></span>
+            <a href="/logout" class="nav-signup-btn">Logout</a>
 
-  <% } else { %>
-    <!-- ❌ Logged out — signup dikhao -->
-     <div>
-         <a href="/signup" class="nav-signup-btn">Signup</a>
-         <a href="/login" class="nav-signup-btn">Login</a>
-     </div>
-  <% } %>
+            <% } else { %>
+                <!-- ❌ Logged out — signup dikhao -->
+
+                <a href="/signup" class="nav-signup-btn">Signup</a>
+
+
+                <% } %>
     </nav>
 
     <form action="/shorten" method="POST" class="card">
@@ -42,11 +42,7 @@
         <input type="text" id="orginalUrl" name="orginalUrl" placeholder="https://example.com" required>
 
         <!-- Optional custom alias -->
-         <input 
-         type="text"
-         name="customAlias"
-         placeholder="Custom alias (Optional) - Jaisa:Mera-link"
-         >
+        <input type="text" name="customAlias" placeholder="Custom alias (Optional) - Jaisa:Mera-link">
 
         <button class="btn" type="submit">Snap URL</button>
 
