@@ -9,8 +9,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap"
     rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/dashboard.css">
-  <!-- ✅ Yeh lagao -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
   <style>
@@ -183,17 +184,20 @@
 
   <nav>
     <a class="nav-logo" href="/">
-      <span></span>
-      SnapLink
+      <span class="logo-dot"></span>
+      Snap<em>Link</em>
     </a>
     <div class="nav-right">
-      <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
+      <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">🌙</button>
       <% if (user) { %>
-        <span>👋 <%= user.name %></span>
-        <a href="/logout">Logout</a>
-        <% } else { %>
-          <a href="/login">Login</a>
-          <% } %>
+        <div class="nav-user">
+          <div class="nav-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+          <span class="nav-username"><%= user.name %></span>
+        </div>
+        <a href="/logout" class="btn-logout">Logout</a>
+      <% } else { %>
+        <a href="/login" class="btn-logout">Login</a>
+      <% } %>
     </div>
   </nav>
 
@@ -340,13 +344,14 @@
     function toggleTheme() {
       const html = document.documentElement;
       const isDark = html.getAttribute('data-theme') === 'dark';
-      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-      document.getElementById('theme-btn').textContent = isDark ? '☾ Dark' : '☀ Light';
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      const next = isDark ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      document.getElementById('theme-btn').textContent = next === 'dark' ? '🌙' : '☀️';
     }
     const saved = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', saved);
-    document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀ Light' : '☾ Dark';
+    document.getElementById('theme-btn').textContent = saved === 'dark' ? '🌙' : '☀️';
 
     // ── Copy URL ──
     function copyUrl(url, btn) {

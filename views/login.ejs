@@ -1,90 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In — SnapLink</title>
-    <link rel="stylesheet" href="/css/login.css">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-<!-- Ya PNG version ke liye -->
-<link rel="icon" type="image/png" href="/favicon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In — SnapLink</title>
+  <link rel="stylesheet" href="/css/login.css">
+  <link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="/" class="logo">Snap<span>Link</span></a>
-        <a href="/signup" class="nav-link">Don't have an account? <strong>Sign up</strong></a>
-    </nav>
+  <nav class="navbar">
+    <a href="/" class="logo">
+      <span class="logo-dot"></span>
+      Snap<span>Link</span>
+    </a>
+    <div class="nav-right">
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+      <a href="/signup" class="nav-link">Account nahi hai? <strong>Sign up</strong></a>
+    </div>
+  </nav>
 
-    <main class="page-center">
-        <div class="card">
+  <main class="page-center">
 
-            <div class="card-top">
-                <div class="brand-icon">⚡</div>
-                <h2>Welcome back</h2>
-                <p>Log in to your SnapLink account</p>
-            </div>
+    <!-- Left deco — only on wide screens -->
+    <div class="auth-deco">
+      <div class="deco-stat">
+        <span class="deco-num">₹99</span>
+        <span class="deco-label">Pro plan / month</span>
+      </div>
+      <div class="deco-stat">
+        <span class="deco-num">10K+</span>
+        <span class="deco-label">Links shortened</span>
+      </div>
+      <div class="deco-stat">
+        <span class="deco-num">99.9%</span>
+        <span class="deco-label">Uptime</span>
+      </div>
+    </div>
 
-            <% if (typeof error !== 'undefined' && error) { %>
-                <div class="alert alert-error"><%= error %></div>
-            <% } %>
+    <div class="card">
 
-            <% if (typeof success !== 'undefined' && success) { %>
-                <div class="alert alert-success"><%= success %></div>
-            <% } %>
+      <div class="card-top">
+        <div class="brand-icon">⚡</div>
+        <h2>Wapas aao! 👋</h2>
+        <p>Apne SnapLink account mein login karo</p>
+      </div>
 
-            <form action="/login" method="POST" class="form" novalidate>
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-error">⚠ <%= error %></div>
+      <% } %>
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success">✓ <%= success %></div>
+      <% } %>
 
-                <div class="form-group">
-                    <label for="email">Email address</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="you@example.com"
-                        required
-                        value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>"
-                    >
-                </div>
+      <form action="/login" method="POST" class="form" novalidate>
 
-                <div class="form-group">
-                    <div class="label-row">
-                        <label for="password">Password</label>
-                        <a href="/forgot-password" class="forgot-link">Forgot password?</a>
-                    </div>
-                    <div class="input-wrap">
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="Enter your password"
-                            required
-                        >
-                        <button type="button" class="eye-btn" id="togglePass" title="Show password">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                <circle cx="12" cy="12" r="3"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="checkbox-group">
-                    <input type="checkbox" id="remember" name="remember">
-                    <label for="remember">Remember me</label>
-                </div>
-
-                <button type="submit" class="btn-submit">Log in</button>
-
-            </form>
-
-            <div class="divider"><span>or</span></div>
-
-            <p class="signup-hint">New to SnapLink? <a href="/signup">Create a free account</a></p>
-
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="tum@example.com"
+            required
+            autocomplete="email"
+            value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>"
+          >
         </div>
-    </main>
 
-<script src="/script/login.js"></script>
+        <div class="form-group">
+          <div class="label-row">
+            <label for="password">Password</label>
+            <a href="/forgot-password" class="forgot-link">Password bhool gaye?</a>
+          </div>
+          <div class="input-wrap">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+              required
+              autocomplete="current-password"
+            >
+            <button type="button" class="eye-btn" id="togglePass" title="Show password">
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="remember" name="remember">
+          <label for="remember">Remember me</label>
+        </div>
+
+        <button type="submit" class="btn-submit">Login karo →</button>
+
+      </form>
+
+      <div class="divider">ya</div>
+
+      <p class="signup-hint">Naya account chahiye? <a href="/signup">Free mein banao</a></p>
+
+    </div>
+
+  </main>
+
+  <script>
+    // Theme
+    const saved = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('themeBtn').textContent = saved === 'dark' ? '🌙' : '☀️';
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const next = isDark ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
+    }
+
+    // Eye toggle
+    const togglePass = document.getElementById('togglePass');
+    const passInput  = document.getElementById('password');
+    togglePass.addEventListener('click', () => {
+      const isPass = passInput.type === 'password';
+      passInput.type = isPass ? 'text' : 'password';
+      togglePass.querySelector('svg').style.opacity = isPass ? '1' : '0.5';
+    });
+  </script>
+
 </body>
 </html>

@@ -125,6 +125,147 @@
         <span>Secure & Reliable</span>
       </div>
     </section>
+
+    <!-- ═══════════════════════════
+         WHY SNAPLINK — Value Props
+    ═══════════════════════════ -->
+    <section class="why-section">
+      <div class="why-inner">
+        <div class="section-badge">✦ Why SnapLink?</div>
+        <h2 class="why-title">Bitly se <span class="accent">30x sasta</span>,<br>wahi features</h2>
+        <p class="why-sub">India ke creators, marketers aur small businesses ke liye banaya — dollar pricing nahi, rupee pricing.</p>
+
+        <div class="why-grid">
+          <div class="why-card">
+            <div class="why-icon">💸</div>
+            <h3>₹99/month mein Pro</h3>
+            <p>Bitly ka Pro plan ₹2,900/month hai. Humara sirf ₹99 — wahi unlimited links, wahi analytics.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">🇮🇳</div>
+            <h3>India-first tool</h3>
+            <p>UPI se payment, rupee pricing, Hindi support — koi foreign card ki zaroorat nahi.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">📊</div>
+            <h3>Real-time analytics</h3>
+            <p>Har click track hota hai — country, city, device, browser, referrer sab kuch ek jagah.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">🔗</div>
+            <h3>Custom short URLs</h3>
+            <p>snap.link/tumhara-naam — apni marzi ka alias banao. Brand recall instantly badhta hai.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">🔒</div>
+            <h3>Password protection</h3>
+            <p>Links ko password se protect karo — sirf sahi log access kar sakein.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">⏰</div>
+            <h3>Link expiry date</h3>
+            <p>Ek date ke baad link automatically expire ho jaata hai — limited time offers ke liye perfect.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════
+         HOW IT WORKS
+    ═══════════════════════════ -->
+    <section class="how-section">
+      <div class="how-inner">
+        <div class="section-badge">✦ Itna aasaan</div>
+        <h2 class="how-title">3 steps mein <span class="accent">done</span></h2>
+        <div class="steps-row">
+          <div class="step-card">
+            <div class="step-num">01</div>
+            <h3>URL paste karo</h3>
+            <p>Apna lamba URL home page pe paste karo</p>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step-card">
+            <div class="step-num">02</div>
+            <h3>Snap karo</h3>
+            <p>1 click mein clean short link ready</p>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step-card">
+            <div class="step-num">03</div>
+            <h3>Share & Track</h3>
+            <p>Link share karo, har click real-time track hota hai</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════
+         COMPETITOR COMPARISON
+    ═══════════════════════════ -->
+    <section class="compare-section">
+      <div class="compare-inner">
+        <div class="section-badge">💰 Price comparison</div>
+        <h2 class="compare-title">Doosron se <span class="accent">compare karo</span></h2>
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Tool</th>
+                <th>Free Plan</th>
+                <th>Pro Price</th>
+                <th>India Payments</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Bitly</td>
+                <td><span class="tag red">5 links/mo</span></td>
+                <td>~₹2,900/mo</td>
+                <td><span class="tag red">✕</span></td>
+              </tr>
+              <tr>
+                <td>TinyURL</td>
+                <td><span class="tag yellow">Limited</span></td>
+                <td>~₹1,100/mo</td>
+                <td><span class="tag red">✕</span></td>
+              </tr>
+              <tr>
+                <td>Dub.co</td>
+                <td><span class="tag yellow">25/mo</span></td>
+                <td>~₹1,600/mo</td>
+                <td><span class="tag red">✕</span></td>
+              </tr>
+              <tr class="our-row">
+                <td><strong>SnapLink 🇮🇳</strong></td>
+                <td><span class="tag green">10/mo</span></td>
+                <td><strong class="accent">₹99/mo</strong></td>
+                <td><span class="tag green">✓ UPI/Card</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════
+         CTA SECTION
+    ═══════════════════════════ -->
+    <section class="cta-section">
+      <div class="cta-inner">
+        <h2 class="cta-title">Abhi shuru karo — <span class="accent">free mein</span></h2>
+        <p class="cta-sub">No credit card. No hidden charges. Seedha signup karo aur apna pehla link banao.</p>
+        <div class="cta-btns">
+          <% if (!user) { %>
+            <a href="/signup" class="snap-btn" style="display:inline-flex;width:auto;padding:13px 32px">Free account banao →</a>
+            <a href="/pricing" class="nav-btn-outline" style="padding:13px 24px;font-size:14px">Pricing dekho</a>
+          <% } else { %>
+            <a href="/dashboard" class="snap-btn" style="display:inline-flex;width:auto;padding:13px 32px">Dashboard pe jao →</a>
+          <% } %>
+        </div>
+        <p class="cta-note">✓ Free forever plan &nbsp;•&nbsp; ✓ 10 links/month &nbsp;•&nbsp; ✓ QR code included</p>
+      </div>
+    </section>
+
   </main>
 
   <!-- ═══════════════════════════
