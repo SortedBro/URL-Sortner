@@ -28,7 +28,11 @@ app.set('view engine', 'ejs');
 app.use(cookieParser())
 app.use(softAuth)
 
-
+// Ye middleware sab routes pe user available karega
+app.use((req, res, next) => {
+    res.locals.user = req.user || null;
+    next();
+});
 // Get Otp page
 
 app.get('/verify-otp', (req, res) => {
