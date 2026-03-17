@@ -79,7 +79,7 @@ exports.createShortUrl = async (req, res) => {
         req.session.shortUrl = `${baseUrl}/${newUrl.shortCode}`;
 
         // ✅ Sirf ek redirect — jahan se form submit hua wahan wapas
-        return res.redirect('back');
+        
         
         res.redirect('/');
 
