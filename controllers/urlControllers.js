@@ -70,7 +70,7 @@ exports.createShortUrl = async (req, res) => {
 
          // ✅ Count badhao
 
-        if(useId){
+        if(userId){
 
             await incrementUrlCount(userId); 
         }
@@ -87,7 +87,7 @@ exports.createShortUrl = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        req.session.error = "Kuch gadbad hui";
+        req.session.error = "Something went wrong";
         res.redirect('/');
     }
 }

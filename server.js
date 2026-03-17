@@ -87,11 +87,11 @@ app.use("/", underDevRouter)
 
 app.post('/shorten', checkPlanLimit,createShortUrl)
 
+app.use('/', adminRoutes);
 
 // redirect last may 
 app.use('/', urlRoutes)
 
-app.use('/', adminRoutes);
 
 // server listing
 
