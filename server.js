@@ -12,6 +12,8 @@ const pageRouter = require('./routes/pageRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 
 const adminRoutes = require('./routes/adminRoutes');
+const { checkPlanLimit } = require('./middleware/planLimit.middleware');
+const { createShortUrl } = require('./controllers/urlControllers');
 
 
 
@@ -80,16 +82,16 @@ app.use('/', pageRouter)
 app.use('/', userRouter)
 app.use("/", underDevRouter)
 
-app.use('/', adminRoutes);
 
 // // API routs 
-// app.use('/shorten', urlRoutes)
 
+app.post('/shorten', checkPlanLimit,createShortUrl)
 
 
 // redirect last may 
 app.use('/', urlRoutes)
 
+app.use('/', adminRoutes);
 
 // server listing
 
