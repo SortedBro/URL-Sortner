@@ -27,6 +27,7 @@ const urlSchema = new mongoose.Schema(
             type: String,
             required: true,
             unique: true,
+            index:true
         },
 
         // Phase 1 — basic analytics

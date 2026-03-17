@@ -1,10 +1,9 @@
 const User = require('../models/userSchema.js')
 const bcrypt = require('bcrypt')
-const { name } = require('ejs')
 const jwt = require('jsonwebtoken')
 const Otp = require('../models/otpSchema.js')
 const { sendOtpEmail } = require('../utils/sendEmail.js')
-require('dotenv').config()
+require('dotenv').config();
 
 
 
@@ -17,8 +16,6 @@ const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString()
 
 exports.handleUserSignUP = async (req, res) => {
     const { firstName, lastName, email, password } = req.body
-
-
     try {
 
         //Already refistered ? 
@@ -116,7 +113,10 @@ exports.verifyOtp = async (req, res) => {
 
         const accessToken = jwt.sign(
 
-            { user: User._id },
+            {
+                user: newUser._id,
+
+            },
             process.env.jwt_secret,
             { expiresIn: "10h" }
         )
@@ -125,7 +125,10 @@ exports.verifyOtp = async (req, res) => {
 
             {
                 user: newUser._id,
-                name: newUser.firstName
+                name: newUser.firstName,
+                plan: newUser.plan
+
+
             },
             process.env.jwt_secret,
             { expiresIn: "10h" }
@@ -141,6 +144,10 @@ exports.verifyOtp = async (req, res) => {
 
 
         })
+        // url count 
+        if (req.user) {
+            await incrementUrlCount(req.user.user);
+        }
 
         res.redirect(
             '/'
@@ -201,7 +208,8 @@ exports.handleUserLogin = async (req, res) => {
         const refreshToken = jwt.sign(
             {
                 user: user._id,
-                name: user.firstName
+                name: user.firstName,
+                plan: user.plan
             },
             process.env.jwt_secret,
             { expiresIn: "10h" }

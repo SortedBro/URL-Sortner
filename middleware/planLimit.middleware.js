@@ -6,8 +6,16 @@ const checkPlanLimit = async (req, res, next) => {
     try {
         // ✅ Login nahi hai — guest user, allow karo (logged out bhi URL bana sakta)
         if (!req.user) return next();
+         console.log('=== FREE USER DEBUG ===');
+        console.log('req.user:', req.user);
+        
+       
+       
 
         const user = await User.findById(req.user.user);
+         console.log('DB Plan:', user?.plan);
+        console.log('urlsThisMonth:', user?.urlsThisMonth);
+        console.log('======================');
         if (!user) return next();
 
         // ✅ Pro/Business user — koi limit nahi

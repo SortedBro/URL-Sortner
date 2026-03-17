@@ -95,10 +95,7 @@
         <span class="tnav-icon">📝</span>
         <span class="tnav-label">Word Counter</span>
       </button>
-      <button class="tnav-card" onclick="openTool('url')">
-        <span class="tnav-icon">✂️</span>
-        <span class="tnav-label">URL Shortener</span>
-      </button>
+
       <button class="tnav-card" onclick="openTool('pass')"><span class="tnav-icon">🔑</span><span class="tnav-label">Password Generator</span></button>
       <button class="tnav-card" onclick="openTool('fake')"><span class="tnav-icon">👤</span><span class="tnav-label">Fake Data</span></button>
       <button class="tnav-card" onclick="openTool('md')"><span class="tnav-icon">📄</span><span class="tnav-label">Markdown Editor</span></button>
@@ -138,7 +135,7 @@
       <button class="ttab" id="ttab-b64"   onclick="openTool('b64',this)">🔄 Base64</button>
       <button class="ttab" id="ttab-color" onclick="openTool('color',this)">🎨 Color</button>
       <button class="ttab" id="ttab-word"  onclick="openTool('word',this)">📝 Word Count</button>
-      <button class="ttab" id="ttab-url"    onclick="openTool('url',this)">✂️ URL Short</button>
+
       <button class="ttab" id="ttab-age"    onclick="openTool('age',this)">📅 Age Calc</button>
       <button class="ttab" id="ttab-unit"   onclick="openTool('unit',this)">📐 Unit Conv</button>
       <button class="ttab" id="ttab-grad"   onclick="openTool('grad',this)">🎨 Gradient</button>
@@ -672,7 +669,8 @@
     <!-- ────────────────────────────
          10. URL SHORTENER (redirect to home)
     ──────────────────────────── -->
-    <div class="tpanel" id="tp-url">
+   
+    <!-- <div class="tpanel" id="tp-url">
       <div class="tpanel-header">
         <div>
           <h2>✂️ URL Shortener</h2>
@@ -693,7 +691,7 @@
               </div>
             </div>
           <% } %>
-          <form action="/shorten" method="POST">
+          <form action="/tools/shorten" method="POST">
             <div class="tfield">
               <label>Long URL</label>
               <input type="url" name="orginalUrl" class="tinput" placeholder="https://example.com/bahut-lamba-url..." required>
@@ -731,7 +729,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
 
     <!-- ─── PASSWORD GENERATOR ─── -->
@@ -1403,5 +1401,17 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <!-- Tools JS -->
   <script src="/script/tools.js"></script>
+  <!-- ... baaki tools content ... -->
+<% if (typeof shortUrl !== 'undefined' && shortUrl) { %>
+<script>
+    window.onload = () => {
+        const el = document.getElementById('tp-url');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+</script>
+<% } %>
+
+</body>
+</html>
 </body>
 </html>

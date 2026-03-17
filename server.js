@@ -38,7 +38,7 @@ app.use(session({              // ← pehle session
     saveUninitialized: false,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 5 * 60 * 1000
+        maxAge: 5 * 60 * 60 * 1000
     }
 }))
 
@@ -56,6 +56,8 @@ app.use((req, res, next) => {
 
 // Ye middleware sab routes pe user available karega
 app.use((req, res, next) => {
+    console.log('req.user:', req.user);        // undefined aa raha hai?
+    console.log('session:', req.session);      // session empty hai?
     res.locals.user = req.user || null;
     next();
 });
