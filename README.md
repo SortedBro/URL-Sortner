@@ -1,5 +1,5 @@
 # URL-Sortner
-# 🔗 URL Shortener - https://url-sortner-oxgz.onrender.com
+# 🔗 URL Shortener -https://snaplink.fun/
 
 A simple and fast **URL Shortener Web Application** built using **Node.js, Express, and MongoDB**.
 It allows users to convert long URLs into short, shareable links.
