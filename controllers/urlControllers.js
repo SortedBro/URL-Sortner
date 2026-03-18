@@ -60,7 +60,7 @@ exports.createShortUrl = async (req, res) => {
         const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
         const shortUrl = `${baseUrl}/${shortCode}`;
 
-        await Url.create({
+      const newUrl=  await Url.create({
             orginalUrl,
             shortCode,
             shortUrl,
