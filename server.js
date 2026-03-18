@@ -16,6 +16,8 @@ const { checkPlanLimit } = require('./middleware/planLimit.middleware');
 const { createShortUrl } = require('./controllers/urlControllers');
 
 
+const { createClient } = require('redis')
+const { RedisStore } = require('connect-redis')
 
 
 const port = process.env.PORT || 3000;
@@ -34,20 +36,31 @@ app.use(cookieParser())
 
 
 app.set('view engine', 'ejs');
-app.set('trust proxy', 1); // ← Railway ke liye zaroori
 
-//session
+// Redis client
+const redisClient = createClient({
+    url: process.env.REDIS_URL  // Railway dega automatically
+})
+
+redisClient.on('error', (err) => console.error('Redis Error:', err))
+redisClient.connect()
+
+// Express setup
+app.set('trust proxy', 1)
+
 app.use(session({
+    store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET || 'snaplink_secret_2026',
     resave: false,
     saveUninitialized: false,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',   // ← add karo
-        httpOnly: true,    // ← add karo
+        sameSite: 'lax',
+        httpOnly: true,
         maxAge: 5 * 60 * 60 * 1000
     }
 }))
+
 app.use(softAuth)             // ← baad mein softAuth
 
 
