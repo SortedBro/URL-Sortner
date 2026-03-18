@@ -31,24 +31,43 @@ app.set('trust proxy', 1)
 // ✅ Async wrapper — sab kuch Redis connect hone ke BAAD
 const startServer = async () => {
 
-    const redisClient = createClient({ url: process.env.REDIS_URL })
-    redisClient.on('error', (err) => console.error('Redis Error:', err))
+    if (process.env.REDIS_URL) {
+        const redisClient = createClient({ url: process.env.REDIS_URL })
+        redisClient.on('error', (err) => console.error('Redis Error:', err))
 
-    await redisClient.connect() // ✅ await karo
-    console.log('Redis connected ✅')
+        await redisClient.connect() // ✅ await karo
+        console.log('Redis connected ✅')
 
-    app.use(session({
-        store: new RedisStore({ client: redisClient }),
-        secret: process.env.SESSION_SECRET || 'snaplink_secret_2026',
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            httpOnly: true,
-            maxAge: 5 * 60 * 60 * 1000
-        }
-    }))
+        app.use(session({
+            store: new RedisStore({ client: redisClient }),
+            secret: process.env.SESSION_SECRET || 'snaplink_secret_2026',
+            resave: false,
+            saveUninitialized: false,
+            cookie: {
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                httpOnly: true,
+                maxAge: 5 * 60 * 60 * 1000
+            }
+        }))
+
+    } else {
+        // locally — bina Redis ke normal session
+        console.log('Redis nahi mila — memory session use ho raha hai')
+        app.use(session({
+            secret: process.env.SESSION_SECRET || 'snaplink_secret_2026',
+            resave: false,
+            saveUninitialized: false,
+            cookie: {
+                secure: false,  // locally HTTP
+                sameSite: 'lax',
+                httpOnly: true,
+                maxAge: 5 * 60 * 60 * 1000
+            }
+        }))
+    }
+
+
 
     app.use(softAuth)
 

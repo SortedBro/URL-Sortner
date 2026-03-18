@@ -76,9 +76,29 @@
 
             <form action="/shorten" method="POST" class="url-form">
               <div class="input-group">
-                <input type="url" name="orginalUrl" placeholder="https://example.com/bahut-lamba-url..." required
-                  class="url-input" />
-                <input type="text" name="customAlias" placeholder="Custom alias (optional)" class="alias-input" />
+                <% const isLoggedIn=typeof user !=='undefined' && user; %>
+                  <% const isFree=isLoggedIn && user.plan==='free' ; %>
+
+                    <!-- URL input: hamesha show hoga -->
+                    <input type="url" name="orginalUrl" placeholder="https://example.com/bahut-lamba-url..." required
+                      class="url-input" />
+
+                    <!-- Custom alias: sirf logged in users ko dikhega -->
+                    <% if (isLoggedIn) { %>
+                      <div class="alias-wrapper">
+                        <input type="text" name="customAlias" placeholder="Custom alias (optional)" class="alias-input"
+                          <%=isFree ? 'disabled' : '' %>
+                        />
+                        <% if (isFree) { %>
+                          <a href="/pricing" class="pro-chip-link">
+                            <span class="pro-chip">PRO</span>
+                          </a>
+                          <% } %>
+                      </div>
+                      <% } %>
+
+
+
               </div>
               <button type="submit" class="snap-btn">
                 <span>Snap URL</span>

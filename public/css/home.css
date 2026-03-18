@@ -313,6 +313,33 @@ main { flex: 1; }
   color: var(--muted);
 }
 
+/* +++ Pro chip ++ */
+.pro-chip-link {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.pro-chip {
+  font-size: 9px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  background: var(--accent);
+  color: #1a1a18;
+  padding: 2px 7px;
+  border-radius: 99px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.pro-chip:hover {
+  opacity: 0.8;
+}
 .snap-btn {
   display: flex;
   align-items: center;
