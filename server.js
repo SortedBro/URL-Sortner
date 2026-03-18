@@ -31,19 +31,23 @@ app.use(express.static("public"))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
+
+
 app.set('view engine', 'ejs');
+app.set('trust proxy', 1); // ← Railway ke liye zaroori
 
 //session
-app.use(session({              // ← pehle session
+app.use(session({
     secret: process.env.SESSION_SECRET || 'snaplink_secret_2026',
     resave: false,
     saveUninitialized: false,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',   // ← add karo
+        httpOnly: true,    // ← add karo
         maxAge: 5 * 60 * 60 * 1000
     }
 }))
-
 app.use(softAuth)             // ← baad mein softAuth
 
 
