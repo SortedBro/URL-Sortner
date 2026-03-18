@@ -19,22 +19,28 @@ exports.auth = async (req, res, next) => {
 
     // Token hai — verify karo
     try {
+
         const decoded = jwt.verify(token, process.env.jwt_secret);
 
         // database check 
-
         const user = await User.findById(decoded.user);
+
+        if(!user){
+            res.clearCookie('refreshToken');
+            return res.redirect('/login')
+        }
+
         // auth.middleware.js mein
 if (user.isBanned) {
     res.clearCookie('refreshToken');
     return res.redirect('/login?banned=true');
 }
 
-        if(!user){
-            res.clearCookie('refreshToken')
-            req.user=null;
-            return res.redirect('/login')
-        }
+        // if(!user){
+        //     res.clearCookie('refreshToken')
+        //     req.user=null;
+        //     return res.redirect('/login')
+        // }
 
         req.user = decoded;
         next(); // ✅ valid token — aage bhejo
