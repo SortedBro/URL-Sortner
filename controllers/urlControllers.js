@@ -102,7 +102,7 @@ exports.redirectUrl = async (req, res) => {
         const url = await Url.findOne({ shortCode: req.params.code });
 
         if (!url) {
-            return res.status(404).json({m:"this is the end"})
+            return res.status(404).render('404')
         }
 
         // instant response 
