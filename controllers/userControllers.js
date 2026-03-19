@@ -2,7 +2,7 @@ const User = require('../models/userSchema.js')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const Otp = require('../models/otpSchema.js')
-const { sendOtpEmail } = require('../utils/sendEmail.js')
+const { sendOtpEmail, sendWelcomeEmail } = require('../utils/sendEmail.js')
 require('dotenv').config();
 
 
@@ -34,21 +34,16 @@ exports.handleUserSignUP = async (req, res) => {
 
         // Temp data cookie mein rakho
 
-        res.cookie('pendingSignup', JSON.stringify({
-            firstName, lastName, email, password: hasedPassword
-        },
-            {
-                httpOnly: true,
-                maxAge: 5 * 60 * 1000 // 5minites
-            }
-        ))
+        res.cookie('pendingSignup', JSON.stringify({firstName, lastName, email, password: hasedPassword }),
+            { httpOnly: true, maxAge: 5 * 60 * 1000 }  // ← cookie options
+        )
 
         // Otp generate  and Sending
 
         const otp = generateOtp();
         await Otp.deleteMany({ email }); // delete old otp
         await Otp.create({ email, otp });
-        await sendOtpEmail(email, otp)
+        await sendOtpEmail(email, otp);
 
         res.redirect(`/verify-otp?email=${encodeURIComponent(email)}`);
 
@@ -106,6 +101,8 @@ exports.verifyOtp = async (req, res) => {
             email: pending.email,
             password: pending.password,
         })
+        await sendWelcomeEmail(newUser.email, newUser.firstName,newUser.lastName);
+
 
         res.clearCookie('pendingSignup');
 
@@ -148,6 +145,8 @@ exports.verifyOtp = async (req, res) => {
         if (req.user) {
             await incrementUrlCount(req.user.user);
         }
+
+
 
         res.redirect(
             '/'

@@ -15,6 +15,8 @@ const { checkPlanLimit } = require('./middleware/planLimit.middleware');
 const { createShortUrl } = require('./controllers/urlControllers');
 const { createClient } = require('redis')
 const { RedisStore } = require('connect-redis')
+const manageRoutes = require('./routes/manageRoutes')
+const bulkroutes = require('./routes/bulk')
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -99,6 +101,8 @@ const startServer = async () => {
     app.use("/", underDevRouter)
     app.post('/shorten', checkPlanLimit, createShortUrl)
     app.use('/', adminRoutes);
+    app.use('/', manageRoutes);
+    app.use('/', bulkroutes);
     app.use('/', urlRoutes)
 
     // ✅ listen bhi async ke andar
