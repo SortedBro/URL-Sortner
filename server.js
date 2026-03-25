@@ -99,6 +99,32 @@ const startServer = async () => {
     });
 
     app.get("/about", (req, res) => { res.render("about", { success: null, error: null }) });
+    // sitemap.xml route — Google ke liye
+    app.get('/sitemap.xml', (req, res) => {
+  const pages = [
+    'https://snaplink.fun/',
+    'https://snaplink.fun/features',
+    'https://snaplink.fun/pricing',
+    'https://snaplink.fun/about',
+    'https://snaplink.fun/faq',
+    'https://snaplink.fun/tools',
+  ];
+
+  const urls = pages.map(url => `
+    <url>
+      <loc>${url}</loc>
+      <changefreq>weekly</changefreq>
+      <priority>0.8</priority>
+    </url>`).join('');
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+
+  res.header('Content-Type', 'application/xml');
+  res.send(xml);
+});
 
     app.get('/logout', (req, res) => {
         res.clearCookie('refreshToken');
