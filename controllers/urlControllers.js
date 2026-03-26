@@ -122,8 +122,13 @@ exports.redirectUrl = async (req, res) => {
 
         // ══════════════════════════════════════
         // 🗄️ STEP 2: Cache miss — hit MongoDB
+        // Only fetch orginalUrl field — don't load
+        // entire document with full clickHistory!
         // ══════════════════════════════════════
-        const url = await Url.findOne({ shortCode: code });
+        const url = await Url.findOne(
+            { shortCode: code },
+            { orginalUrl: 1 }  // ✅ projection — fetch ONLY what we need
+        );
 
         if (!url) {
             return res.status(404).render('404');
@@ -154,34 +159,32 @@ exports.redirectUrl = async (req, res) => {
 // ══════════════════════
 
 async function trackClick(code, req) {
-    const url = await Url.findOne({ shortCode: code });
-    if (!url) return;
-
     const ip = (req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '').trim();
     const geo = geoip.lookup(ip) || {};
-
     const ua = new UAParser(req.headers['user-agent']);
     const result = ua.getResult();
 
-    const device = result.device.type || "Desktop";
-    const browser = result.browser.name;
-    const os = result.os.name;
-    const referrer = req.headers['referer'] || 'Direct';
-
-    url.clicks += 1;
-    url.lastClickedAt = new Date();
-    url.clickHistory.push({
-        clickedAt: new Date(),
-        country: geo.country || 'Unknown',
-        city: geo.city || 'Unknown',
-        device,
-        browser: browser || 'Unknown',
-        os,
-        referrer,
-        ip,
-    });
-
-    await url.save();
+    // ✅ Fix 3 — atomic update, never loads full document into memory
+    // No findOne → modify → save. One DB op, minimal RAM usage.
+    await Url.findOneAndUpdate(
+        { shortCode: code },
+        {
+            $inc: { clicks: 1 },
+            $set: { lastClickedAt: new Date() },
+            $push: {
+                clickHistory: {
+                    clickedAt: new Date(),
+                    country: geo.country || 'Unknown',
+                    city: geo.city || 'Unknown',
+                    device: result.device.type || 'Desktop',
+                    browser: result.browser.name || 'Unknown',
+                    os: result.os.name,
+                    referrer: req.headers['referer'] || 'Direct',
+                    ip,
+                }
+            }
+        }
+    );
 }
 
 
