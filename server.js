@@ -17,6 +17,7 @@ const { createClient } = require('redis')
 const { RedisStore } = require('connect-redis')
 const manageRoutes = require('./routes/manageRoutes')
 const bulkroutes = require('./routes/bulk')
+const affiliateRoutes = require('./routes/affiliateRoutes');
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -129,11 +130,13 @@ ${urls}
         res.clearCookie('refreshToken');
         res.redirect('/');
     });
+    app.use('/a', affiliateRoutes);
 
     app.use('/', paymentRoutes);
     app.use('/', pageRouter);
     app.use('/', userRouter);
     app.use("/", underDevRouter);
+
     app.post('/shorten', checkPlanLimit, createShortUrl);
     app.use('/', adminRoutes);
     app.use('/', manageRoutes);

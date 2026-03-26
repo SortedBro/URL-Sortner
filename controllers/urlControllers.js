@@ -72,6 +72,7 @@ exports.createShortUrl = async (req, res) => {
             shortCode,
             shortUrl,
             createdBy: userId,
+            refParam: req.body.refParam || null  // form se aayega
         });
 
         // ✅ Cache the new URL in Redis immediately
@@ -147,10 +148,50 @@ exports.redirectUrl = async (req, res) => {
         // Track click async (don't block redirect)
         setImmediate(() => trackClick(code, req).catch(console.error));
 
+
+
+
+        // // ✅ Affiliate tracking ke liye
+         try {
+        const url = await Url.findOne({ shortCode: req.params.code });
+
+        if (!url) return res.status(404).render('404');
+
+        // ✅ click detail save karo
+        url.clicks += 1;
+        url.lastClickedAt = new Date();
+        url.clickDetails.push({
+            ip: req.ip,
+            clickedAt: new Date()
+        });
+        await url.save();
+
+        // ✅ refParam original URL mein add karo
+        let redirectTo = url.originalUrl;
+        if (url.refParam) {
+            // already ? hai URL mein?
+            const separator = redirectTo.includes('?') ? '&' : '?';
+            redirectTo += `${separator}${url.refParam}`;
+        }
+
+        res.redirect(redirectTo);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+
+
+    
+
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Server Error" });
     }
+
+
+    //
+
 }
 
 

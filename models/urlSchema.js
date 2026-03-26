@@ -27,7 +27,7 @@ const urlSchema = new mongoose.Schema(
             type: String,
             required: true,
             unique: true,
-            index:true
+            index: true
         },
 
         // Phase 1 — basic analytics
@@ -45,8 +45,16 @@ const urlSchema = new mongoose.Schema(
 
         // Phase 4 — control
         expiresAt: { type: Date },
-        isActive: { type: Boolean, default: true }
+        isActive: { type: Boolean, default: true },
+        // ✅ Affiliate tracking ke liye
+        refParam: { type: String }, // ?ref=azmat — tracking parameter
+        clickDetails: [{ // har click ka detail
+            ip: String,
+            country: String,
+            clickedAt: { type: Date, default: Date.now }
+        }]
     },
+
     {
         timestamps: true,
     }
