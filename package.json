@@ -27,6 +27,7 @@
     "express-session": "^1.19.0",
     "express-useragent": "^2.1.0",
     "geoip-lite": "^1.2.1",
+    "ioredis": "^5.10.1",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.1.0",
     "mongoose": "^9.3.0",
