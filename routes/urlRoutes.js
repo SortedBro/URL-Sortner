@@ -1,22 +1,39 @@
 const express = require("express");
+const { createShortUrl, redirectUrl, serverOn } = require('../controllers/urlControllers');
+
 const router = express.Router();
-const { redirectUrl } = require('../controllers/urlControllers');
 
-// Yeh saare known routes hain — redirect se bachao
-const SKIP_ROUTES = [
-  'login', 'register', 'dashboard', 'about',
-  'pricing', 'features', 'faq', 'tools',
-  'admin', 'api', 'shorten', 'logout',
-  'sitemap.xml', 'manage', 'bulk', 'payment',
-  'profile', 'settings', 'affiliate', 'contact'
-];
+// ✅ Specific routes PEHLE
+// router.get("/health", serverOn);
 
+// ✅ Wildcard BAAD MEIN — sirf 6-7 char codes match karo
 router.get("/:code", (req, res, next) => {
-  // Known route hai toh skip karo
-  if (SKIP_ROUTES.includes(req.params.code.toLowerCase())) {
-    return next('router'); // Agli route pe jaao
-  }
-  redirectUrl(req, res, next);
+    const code = req.params.code;
+    
+    // Ye words URL codes nahi hain — skip karo
+    const reserved = [
+        'signup', 'login', 'logout', 'about', 'dashboard',
+        'pricing', 'features', 'privacy', 'terms', 'faq',
+        'tools', 'sitemap.xml', 'verify-otp', 'contact',
+        'shorten', 'a', 'admin', 'manage'
+    ];
+    
+    if (reserved.includes(code)) return next(); // ✅ aage bhejo
+    
+    redirectUrl(req, res, next); // real short code hai — redirect karo
 });
 
 module.exports = router;
+// ```
+
+// ---
+
+// ## Kyun Ye Problem Aayi
+// ```
+// Request: GET /signup
+// ↓
+// app.use('/', urlRoutes)  ← pehle match hua
+// ↓
+// router.get("/:code")     ← "signup" ko code samjha
+// ↓
+// DB mein "signup" shortCode dhundha → nahi mila → 404

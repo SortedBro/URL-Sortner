@@ -130,13 +130,13 @@ ${urls}
         res.clearCookie('refreshToken');
         res.redirect('/');
     });
-    app.use('/a', affiliateRoutes);
-
+    
     app.use('/', paymentRoutes);
     app.use('/', pageRouter);
     app.use('/', userRouter);
     app.use("/", underDevRouter);
-
+    
+    app.use('/a',checkPlanLimit, affiliateRoutes);
     app.post('/shorten', checkPlanLimit, createShortUrl);
     app.use('/', adminRoutes);
     app.use('/', manageRoutes);
