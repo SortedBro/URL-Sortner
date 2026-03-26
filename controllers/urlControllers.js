@@ -4,8 +4,21 @@ const UAParser = require('ua-parser-js');
 const geoip = require('geoip-lite');
 const { incrementUrlCount } = require('../middleware/planLimit.middleware');
 
+// ══════════════════════
+//  Redis Setup
+// ══════════════════════
+const redis = require('ioredis');
+const redisClient = new redis(process.env.REDIS_URL, {
+    maxRetriesPerRequest: 2,
+    connectTimeout: 5000,
+    lazyConnect: true,
+});
+
+redisClient.on('connect', () => console.log('✅ Redis connected'));
+redisClient.on('error', (err) => console.warn('⚠️ Redis error (non-fatal):', err.message));
 
 console.log("urlcontroller page")
+
 // ══════════════════════
 //  Create Short URL
 // ══════════════════════
@@ -14,13 +27,11 @@ exports.createShortUrl = async (req, res) => {
     try {
         const { orginalUrl, customAlias } = req.body;
 
-        // ✅ URL validation
         if (!orginalUrl) {
             req.session.error = "URL daalna zaroori hai";
             return res.redirect('/');
         }
 
-        // ✅ Valid URL check
         try {
             new URL(orginalUrl);
         } catch {
@@ -28,14 +39,12 @@ exports.createShortUrl = async (req, res) => {
             return res.redirect('/');
         }
 
-        // ✅ Apne domain ka URL block karo
         const ownDomain = req.get('host');
         if (orginalUrl.includes(ownDomain)) {
             req.session.error = "Apne hi domain ka URL short nahi kar sakte!";
             return res.redirect('/');
         }
 
-        // ✅ Custom alias check
         if (customAlias) {
             const aliasExists = await Url.findOne({ shortCode: customAlias });
             if (aliasExists) {
@@ -46,7 +55,6 @@ exports.createShortUrl = async (req, res) => {
 
         const userId = req.user?.user ?? null;
 
-        // ✅ Already exists check
         const existingUrl = await Url.findOne({ orginalUrl, createdBy: userId });
         if (existingUrl) {
             const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
@@ -55,35 +63,30 @@ exports.createShortUrl = async (req, res) => {
             return res.redirect('/');
         }
 
-        // ✅ Naya URL banao
         const shortCode = customAlias || nanoid(6);
         const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
         const shortUrl = `${baseUrl}/${shortCode}`;
 
-      const newUrl=  await Url.create({
+        const newUrl = await Url.create({
             orginalUrl,
             shortCode,
             shortUrl,
             createdBy: userId,
         });
 
-
-         // ✅ Count badhao
-
-        if(userId){
-
-            await incrementUrlCount(userId); 
+        // ✅ Cache the new URL in Redis immediately
+        try {
+            await redisClient.setex(`link:${shortCode}`, 86400, orginalUrl);
+        } catch (e) {
+            console.warn('Redis set failed (non-fatal):', e.message);
         }
-        // Tools page pe wapas bhejo
-  // ✅ Sirf ek baar shortUrl set karo
+
+        if (userId) {
+            await incrementUrlCount(userId);
+        }
+
         req.session.shortUrl = `${baseUrl}/${newUrl.shortCode}`;
-
-        // ✅ Sirf ek redirect — jahan se form submit hua wahan wapas
-        
-        
         res.redirect('/');
-
-
 
     } catch (error) {
         console.log(error);
@@ -99,61 +102,86 @@ exports.createShortUrl = async (req, res) => {
 
 exports.redirectUrl = async (req, res) => {
     try {
-        const url = await Url.findOne({ shortCode: req.params.code });
+        const code = req.params.code;
 
-        if (!url) {
-            return res.status(404).render('404')
+        // ══════════════════════════════════════
+        // ⚡ STEP 1: Check Redis cache first
+        // ══════════════════════════════════════
+        try {
+            const cachedUrl = await redisClient.get(`link:${code}`);
+            if (cachedUrl) {
+                res.redirect(cachedUrl); // ~5ms — instant!
+
+                // Track click async (don't block redirect)
+                setImmediate(() => trackClick(code, req).catch(console.error));
+                return;
+            }
+        } catch (e) {
+            console.warn('Redis get failed, falling back to DB:', e.message);
         }
 
-        // instant response 
+        // ══════════════════════════════════════
+        // 🗄️ STEP 2: Cache miss — hit MongoDB
+        // ══════════════════════════════════════
+        const url = await Url.findOne({ shortCode: code });
 
+        if (!url) {
+            return res.status(404).render('404');
+        }
+
+        // Cache it for next time (24 hours)
+        try {
+            await redisClient.setex(`link:${code}`, 86400, url.orginalUrl);
+        } catch (e) {
+            console.warn('Redis set failed (non-fatal):', e.message);
+        }
+
+        // Send redirect immediately
         res.redirect(url.orginalUrl);
 
-
-        // ✅ IP detect karo
-        const ip = (req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '').trim();
-
-        // ✅ Country / City — geoip se
-        const geo = geoip.lookup(ip) || {};
-
-        // ✅ Device / Browser — useragent se
-
-        // const ua = expressUseragent.parse(req.headers['user-agent'] || '');
-        // // const ua = parse(req.headers['user-agent'] || '');
-        // const device = ua.isMobile ? 'Mobile'
-        //     : ua.isTablet ? 'Tablet'
-        //         : 'Desktop';
-
-        const ua = new UAParser(req.headers['user-agent']);
-        const result = ua.getResult();
-
-        const device = result.device.type || "Desktop";
-        const browser = result.browser.name;
-        const os = result.os.name;
-
-        // ✅ Referrer
-        const referrer = req.headers['referer'] || 'Direct';
-
-        // ✅ Click data save karo
-        url.clicks += 1;
-        url.lastClickedAt = new Date();
-        url.clickHistory.push({
-            clickedAt: new Date(),
-            country: geo.country || 'Unknown',
-            city: geo.city || 'Unknown',
-            device,
-            browser: browser || 'Unknown',
-            os: os,
-            referrer,
-            ip,
-        });
-
-        await url.save();
+        // Track click async (don't block redirect)
+        setImmediate(() => trackClick(code, req).catch(console.error));
 
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Server Error" });
     }
+}
+
+
+// ══════════════════════
+//  Click Tracking (async, non-blocking)
+// ══════════════════════
+
+async function trackClick(code, req) {
+    const url = await Url.findOne({ shortCode: code });
+    if (!url) return;
+
+    const ip = (req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '').trim();
+    const geo = geoip.lookup(ip) || {};
+
+    const ua = new UAParser(req.headers['user-agent']);
+    const result = ua.getResult();
+
+    const device = result.device.type || "Desktop";
+    const browser = result.browser.name;
+    const os = result.os.name;
+    const referrer = req.headers['referer'] || 'Direct';
+
+    url.clicks += 1;
+    url.lastClickedAt = new Date();
+    url.clickHistory.push({
+        clickedAt: new Date(),
+        country: geo.country || 'Unknown',
+        city: geo.city || 'Unknown',
+        device,
+        browser: browser || 'Unknown',
+        os,
+        referrer,
+        ip,
+    });
+
+    await url.save();
 }
 
 
@@ -170,6 +198,13 @@ exports.deleteUrl = async (req, res) => {
 
         if (!url) {
             return res.status(404).render('404');
+        }
+
+        // ✅ Remove from Redis cache too
+        try {
+            await redisClient.del(`link:${req.params.code}`);
+        } catch (e) {
+            console.warn('Redis del failed (non-fatal):', e.message);
         }
 
         await url.deleteOne();
@@ -197,7 +232,6 @@ exports.getAnalytics = async (req, res) => {
             return res.status(404).render('404');
         }
 
-        // ✅ Clicks per day — last 7 days
         const last7Days = [];
         for (let i = 6; i >= 0; i--) {
             const date = new Date();
@@ -212,7 +246,6 @@ exports.getAnalytics = async (req, res) => {
             last7Days.push({ date: dateStr, count });
         }
 
-        // ✅ Countries
         const countryCounts = {};
         url.clickHistory.forEach(c => {
             const key = c.country || 'Unknown';
@@ -223,7 +256,6 @@ exports.getAnalytics = async (req, res) => {
             .slice(0, 5)
             .map(([name, count]) => ({ name, count }));
 
-        // ✅ Cities
         const cityCounts = {};
         url.clickHistory.forEach(c => {
             const key = c.city || 'Unknown';
@@ -234,7 +266,6 @@ exports.getAnalytics = async (req, res) => {
             .slice(0, 5)
             .map(([name, count]) => ({ name, count }));
 
-        // ✅ Devices
         const deviceCounts = {};
         url.clickHistory.forEach(c => {
             const key = c.device || 'Unknown';
@@ -243,7 +274,6 @@ exports.getAnalytics = async (req, res) => {
         const devices = Object.entries(deviceCounts)
             .map(([name, count]) => ({ name, count }));
 
-        // ✅ Browsers
         const browserCounts = {};
         url.clickHistory.forEach(c => {
             const key = c.browser || 'Unknown';
@@ -254,7 +284,6 @@ exports.getAnalytics = async (req, res) => {
             .slice(0, 5)
             .map(([name, count]) => ({ name, count }));
 
-        // ✅ Referrers
         const referrerCounts = {};
         url.clickHistory.forEach(c => {
             const key = c.referrer || 'Direct';
@@ -265,7 +294,6 @@ exports.getAnalytics = async (req, res) => {
             .slice(0, 5)
             .map(([name, count]) => ({ name, count }));
 
-        // ✅ Unique visitors — unique IPs
         const uniqueIps = new Set(url.clickHistory.map(c => c.ip).filter(Boolean));
 
         res.render('analytics', {
@@ -286,12 +314,3 @@ exports.getAnalytics = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 }
-
-
-// // ══════════════════════
-// //  Server Check
-// // ══════════════════════
-
-// exports.serverOn = (req, res) => {
-//     res.json({ message: "Server is on" });
-// }
