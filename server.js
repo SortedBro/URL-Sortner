@@ -18,7 +18,8 @@ const { RedisStore } = require('connect-redis')
 const manageRoutes = require('./routes/manageRoutes')
 const bulkroutes = require('./routes/bulk')
 const affiliateRoutes = require('./routes/affiliateRoutes');
-
+const brandRoutes=require('./routes/brandRoutes')
+const payoutRoutes = require('./routes/payoutRoutes');
 const port = process.env.PORT || 3000;
 const app = express();
 
@@ -130,17 +131,20 @@ ${urls}
         res.clearCookie('refreshToken');
         res.redirect('/');
     });
-    
+
     app.use('/', paymentRoutes);
+    app.use('/', payoutRoutes);
     app.use('/', pageRouter);
     app.use('/', userRouter);
     app.use("/", underDevRouter);
-    
-    app.use('/a',checkPlanLimit, affiliateRoutes);
+
+    app.use('/a', checkPlanLimit, affiliateRoutes);
     app.post('/shorten', checkPlanLimit, createShortUrl);
     app.use('/', adminRoutes);
     app.use('/', manageRoutes);
     app.use('/', bulkroutes);
+    app.use('/brand', brandRoutes);
+    app.use('/admin', adminRoutes);
 
     app.listen(port, () => {
         console.log(`Server is running at ${port}`);

@@ -3,23 +3,29 @@ const mongoose = require('mongoose');
 const affiliateLinkSchema = new mongoose.Schema({
 
     // Link details
-    title:       { type: String, required: true },  // "Amazon Shoes Campaign"
+    title: { type: String, required: true },  // "Amazon Shoes Campaign"
     originalUrl: { type: String, required: true },  // merchant URL
-    shortCode:   { type: String, required: true, unique: true },
-    shortUrl:    { type: String, required: true },
-    refParam:    { type: String },                  // ?tag=azmat123
+    shortCode: { type: String, required: true, unique: true },
+    shortUrl: { type: String, required: true },
+    refParam: { type: String },                  // ?tag=azmat123
 
+    // capgign track
+    campaign: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'BrandCampaign',
+        default: null  // personal link bhi ho sakta hai
+    },
     // Owner
-    createdBy: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User', 
-        required: true 
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     },
 
     // Stats
-    totalClicks:  { type: Number, default: 0 },
+    totalClicks: { type: Number, default: 0 },
     uniqueClicks: { type: Number, default: 0 },
-    isActive:     { type: Boolean, default: true },
+    isActive: { type: Boolean, default: true },
 
 }, { timestamps: true });
 

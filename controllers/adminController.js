@@ -1,6 +1,8 @@
 const User = require('../models/userSchema');
 const Url  = require('../models/urlSchema');
 const os   = require('os');
+const BrandCampaign = require('../models/brandCampaignSchema');
+
 
 // ══════════════════════════════════
 //  Admin Dashboard — Main Stats
@@ -226,5 +228,63 @@ exports.deleteUrl = async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
+
+// ✅ Admin Panel — saare campaigns (pending pehle)
+exports.getAdminPanel = async (req, res) => {
+    try {
+        const campaigns = await BrandCampaign.find()
+                                              .populate('createdBy', 'name email')
+                                              .sort({ status: 1, createdAt: -1 });
+        // status: 1 → pending pehle aayega (alphabetical: a-p-r)
+
+        const stats = {
+            total:    campaigns.length,
+            pending:  campaigns.filter(c => c.status === 'pending').length,
+            approved: campaigns.filter(c => c.status === 'approved').length,
+            rejected: campaigns.filter(c => c.status === 'rejected').length,
+        };
+
+        res.render('admin-panel', { campaigns, stats });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// ✅ Campaign approve karo
+exports.approveCampaign = async (req, res) => {
+    try {
+        const campaign = await BrandCampaign.findById(req.params.id);
+        if (!campaign) return res.status(404).json({ error: 'Campaign nahi mila' });
+
+        campaign.status = 'approved';
+        campaign.adminNote = req.body.note || '';
+        await campaign.save();
+
+        res.redirect('/admin/panel');
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// ✅ Campaign reject karo
+exports.rejectCampaign = async (req, res) => {
+    try {
+        const campaign = await BrandCampaign.findById(req.params.id);
+        if (!campaign) return res.status(404).json({ error: 'Campaign nahi mila' });
+
+        campaign.status = 'rejected';
+        campaign.adminNote = req.body.note || 'Admin ne reject kiya';
+        await campaign.save();
+
+        res.redirect('/admin/panel');
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
     }
 };

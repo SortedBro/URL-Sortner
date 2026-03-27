@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Brand Dashboard — SnapLink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:           #07080f;
+      --bg2:          #0d0f1a;
+      --bg3:          #141728;
+      --bg4:          #1b2038;
+      --border:       rgba(139,92,246,0.08);
+      --border2:      rgba(139,92,246,0.18);
+      --accent:       #7c3aed;
+      --accent2:      #a78bfa;
+      --accent-soft:  rgba(124,58,237,0.15);
+      --green:        #34d399;
+      --green-bg:     rgba(52,211,153,0.08);
+      --red:          #f87171;
+      --red-bg:       rgba(248,113,113,0.08);
+      --amber:        #fbbf24;
+      --amber-bg:     rgba(251,191,36,0.08);
+      --text:         #eeeaf8;
+      --text2:        #9d96c0;
+      --text3:        #4d4870;
+      --mono:         'JetBrains Mono', monospace;
+      --display:      'Clash Display', sans-serif;
+      --body:         'Outfit', sans-serif;
+      --radius:       16px;
+      --radius-sm:    10px;
+      --radius-xs:    6px;
+    }
+    [data-theme="light"] {
+      --bg: #f5f3ff; --bg2: #ffffff; --bg3: #ede9fe; --bg4: #ddd6fe;
+      --border: rgba(124,58,237,0.1); --border2: rgba(124,58,237,0.22);
+      --accent: #6d28d9; --accent2: #7c3aed;
+      --accent-soft: rgba(109,40,217,0.1);
+      --text: #1a1535; --text2: #5b5280; --text3: #a89fc8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--body); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.4;
+    }
+    body::after {
+      content: ''; position: fixed; top: -200px; left: -200px; width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 60px;
+      background: rgba(7,8,15,0.88); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    [data-theme="light"] nav { background: rgba(245,243,255,0.92); }
+    .nav-logo { font-family: var(--display); font-size: 1.15rem; font-weight: 700; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+    .logo-mark { width: 28px; height: 28px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; box-shadow: 0 0 20px rgba(124,58,237,0.4); }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-link { padding: 6px 14px; border-radius: var(--radius-xs); font-size: 0.82rem; font-weight: 500; color: var(--text2); text-decoration: none; transition: all 0.15s; }
+    .nav-link:hover { color: var(--text); background: var(--bg3); }
+    .nav-link.active { color: var(--accent2); background: var(--accent-soft); }
+    .nav-right { display: flex; gap: 8px; align-items: center; }
+    .btn-nav { padding: 7px 16px; border-radius: var(--radius-sm); font-family: var(--body); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid var(--border2); background: transparent; color: var(--text2); text-decoration: none; }
+    .btn-nav:hover { color: var(--text); border-color: var(--accent2); }
+    .btn-nav.ghost { color: var(--text3); border-color: var(--border); }
+    .btn-nav.ghost:hover { color: var(--red); border-color: var(--red); }
+
+    /* MAIN */
+    main { position: relative; z-index: 1; max-width: 1160px; margin: 0 auto; padding: 2.5rem 1.5rem 6rem; }
+
+    /* HERO */
+    .hero { margin-bottom: 2.5rem; animation: fadeUp 0.5s ease both; }
+    .hero-eyebrow { font-family: var(--mono); font-size: 0.72rem; color: var(--accent2); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .hero-eyebrow::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--accent2); }
+    .hero h1 { font-family: var(--display); font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: var(--text); }
+    .hero h1 em { font-style: normal; color: var(--accent2); }
+    .hero-sub { margin-top: 10px; color: var(--text2); font-size: 0.95rem; }
+
+    /* STATS */
+    .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    @media(max-width:700px){ .stats-bar { grid-template-columns: repeat(2,1fr); } }
+    .stat-tile { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1.4rem; display: flex; flex-direction: column; gap: 6px; transition: border-color 0.2s, transform 0.2s; position: relative; overflow: hidden; }
+    .stat-tile::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); opacity: 0; transition: opacity 0.2s; }
+    .stat-tile:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .stat-tile:hover::before { opacity: 1; }
+    .stat-label { font-size: 0.72rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); }
+    .stat-val { font-family: var(--display); font-size: 2rem; font-weight: 700; color: var(--text); line-height: 1; }
+    .stat-val.accent { color: var(--accent2); }
+    .stat-val.green { color: var(--green); }
+    .stat-val.amber { color: var(--amber); }
+    .stat-val.red { color: var(--red); }
+
+    /* TOOLBAR */
+    .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+    .toolbar-left { display: flex; align-items: center; gap: 10px; }
+    .section-title { font-family: var(--display); font-size: 1.1rem; font-weight: 600; color: var(--text); }
+    .count-badge { font-family: var(--mono); font-size: 0.72rem; color: var(--text3); background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 2px 10px; }
+
+    /* NEW CAMPAIGN BTN */
+    .btn-new { display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: var(--radius-sm); background: var(--accent); color: #fff; font-family: var(--body); font-size: 0.85rem; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; text-decoration: none; box-shadow: 0 0 24px rgba(124,58,237,0.35); }
+    .btn-new:hover { background: #6d28d9; box-shadow: 0 0 32px rgba(124,58,237,0.5); transform: translateY(-1px); }
+    .btn-new-icon { font-size: 1.1rem; line-height: 1; }
+
+    /* CAMPAIGNS LIST */
+    .campaigns-grid { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .campaign-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.3rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+      gap: 1.5rem; transition: border-color 0.2s, transform 0.15s;
+    }
+    .campaign-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+
+    .card-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+    .card-top { display: flex; align-items: center; gap: 10px; }
+    .card-title { font-family: var(--display); font-size: 1rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Status badges */
+    .badge { font-family: var(--mono); font-size: 0.68rem; font-weight: 500; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; }
+    .badge.pending  { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+    .badge.approved { background: var(--green-bg); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+    .badge.rejected { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+
+    .card-url { font-family: var(--mono); font-size: 0.75rem; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+    .meta-chip { font-family: var(--mono); font-size: 0.68rem; color: var(--text3); background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; }
+    .meta-chip.commission { color: var(--green); background: var(--green-bg); border-color: rgba(52,211,153,0.15); }
+
+    .card-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .btn-action { padding: 6px 14px; border-radius: var(--radius-xs); font-size: 0.78rem; font-weight: 500; font-family: var(--body); border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-flex; align-items: center; }
+    .btn-action:hover { color: var(--text); border-color: var(--accent2); }
+    .btn-action.danger { color: var(--red); border-color: rgba(248,113,113,0.2); }
+    .btn-action.danger:hover { background: var(--red-bg); border-color: var(--red); }
+
+    /* ADMIN NOTE */
+    .admin-note { font-size: 0.78rem; color: var(--text3); font-style: italic; margin-top: 2px; }
+    .admin-note.rejection { color: var(--red); }
+
+    /* EMPTY STATE */
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 5rem 2rem; text-align: center; color: var(--text3); background: var(--bg2); border: 1px dashed var(--border2); border-radius: var(--radius); }
+    .empty-glyph { font-size: 3rem; }
+    .empty-state h3 { font-family: var(--display); font-size: 1.2rem; color: var(--text2); }
+    .empty-state p { font-size: 0.9rem; max-width: 300px; }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: 20px; padding: 2rem; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.6); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .modal-title { font-family: var(--display); font-size: 1.2rem; font-weight: 700; color: var(--text); }
+    .modal-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border2); background: transparent; color: var(--text3); cursor: pointer; font-size: 1rem; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+    .modal-close:hover { color: var(--red); border-color: var(--red); }
+
+    /* FORM */
+    .form-group { margin-bottom: 1.2rem; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .form-label span { color: var(--accent2); }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius-sm);
+      padding: 10px 14px; color: var(--text); font-family: var(--body); font-size: 0.9rem;
+      transition: border-color 0.15s, box-shadow 0.15s; outline: none;
+    }
+    .form-textarea { min-height: 90px; resize: vertical; }
+    .form-select { cursor: pointer; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(124,58,237,0.12); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-hint { font-size: 0.74rem; color: var(--text3); margin-top: 5px; }
+    .form-error { font-size: 0.82rem; color: var(--red); background: var(--red-bg); border: 1px solid rgba(248,113,113,0.2); border-radius: var(--radius-xs); padding: 8px 12px; margin-bottom: 1rem; display: none; }
+    .form-error.show { display: block; }
+    .btn-submit { width: 100%; padding: 12px; border-radius: var(--radius-sm); background: var(--accent); color: #fff; font-family: var(--body); font-size: 0.9rem; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 24px rgba(124,58,237,0.35); }
+    .btn-submit:hover { background: #6d28d9; }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">
+    <div class="logo-mark">⚡</div>
+    SnapLink
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="/dashboard">URLs</a>
+    <a class="nav-link" href="/a/dashboard">Affiliate</a>
+    <a class="nav-link active" href="/brand/dashboard">Brand</a>
+  </div>
+  <div class="nav-right">
+    <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
+    <a class="btn-nav ghost" href="/logout">Logout</a>
+  </div>
+</nav>
+
+<main>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Brand Portal</div>
+    <h1>Your <em>Campaigns</em></h1>
+    <p class="hero-sub">Campaign submit karo, approval ka wait karo, affiliates aayenge</p>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-tile">
+      <span class="stat-label">Total Campaigns</span>
+      <span class="stat-val accent"><%= stats.total %></span>
+    </div>
+    <div class="stat-tile">
+      <span class="stat-label">Pending</span>
+      <span class="stat-val amber"><%= stats.pending %></span>
+    </div>
+    <div class="stat-tile">
+      <span class="stat-label">Approved</span>
+      <span class="stat-val green"><%= stats.approved %></span>
+    </div>
+    <div class="stat-tile">
+      <span class="stat-label">Rejected</span>
+      <span class="stat-val red"><%= stats.rejected %></span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <span class="section-title">All Campaigns</span>
+      <span class="count-badge"><%= campaigns.length %> total</span>
+    </div>
+    <button class="btn-new" onclick="openModal()">
+      <span class="btn-new-icon">+</span>
+      New Campaign
+    </button>
+  </div>
+
+  <div class="campaigns-grid">
+    <% if (campaigns.length === 0) { %>
+      <div class="empty-state">
+        <span class="empty-glyph">📢</span>
+        <h3>Koi campaign nahi hai abhi</h3>
+        <p>Pehla brand campaign submit karo, admin approve karega</p>
+        <button class="btn-new" onclick="openModal()" style="display:inline-flex">
+          <span class="btn-new-icon">+</span> Submit Campaign
+        </button>
+      </div>
+    <% } else { %>
+      <% campaigns.forEach((c, i) => { %>
+      <div class="campaign-card" style="animation: fadeUp 0.4s <%= 0.1 + i * 0.05 %>s ease both; opacity:0">
+        <div class="card-main">
+          <div class="card-top">
+            <span class="card-title"><%= c.title %></span>
+            <span class="badge <%= c.status %>">
+              <%= c.status === 'pending' ? '⏳ Pending' : c.status === 'approved' ? '✅ Approved' : '❌ Rejected' %>
+            </span>
+          </div>
+          <div class="card-url"><%= c.targetUrl %></div>
+          <div class="card-meta">
+            <span class="meta-chip"><%= new Date(c.createdAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'2-digit'}) %></span>
+            <span class="meta-chip commission">
+              <%= c.commissionType === 'percentage' ? c.commissionValue + '%' : '₹' + c.commissionValue %> / conversion
+            </span>
+            <% if (c.budget) { %><span class="meta-chip">Budget: ₹<%= c.budget %></span><% } %>
+          </div>
+          <% if (c.adminNote) { %>
+            <div class="admin-note <%= c.status === 'rejected' ? 'rejection' : '' %>">
+              Admin note: "<%= c.adminNote %>"
+            </div>
+          <% } %>
+        </div>
+        <div class="card-right">
+          <% if (c.status === 'pending') { %>
+            <form action="/brand/delete/<%= c._id %>" method="POST" style="margin:0">
+              <button class="btn-action danger" type="submit" onclick="return confirm('Campaign delete karo?')">✕ Delete</button>
+            </form>
+          <% } %>
+        </div>
+      </div>
+      <% }) %>
+    <% } %>
+  </div>
+
+</main>
+
+<!-- New Campaign Modal -->
+<div class="modal-overlay" id="modal" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Submit Campaign</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="form-error" id="form-error"></div>
+
+    <div class="form-group">
+      <label class="form-label">Brand Name <span>*</span></label>
+      <input class="form-input" type="text" id="brandName" placeholder="e.g. Nike India"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Brand Email <span>*</span></label>
+        <input class="form-input" type="email" id="brandEmail" placeholder="contact@brand.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Website</label>
+        <input class="form-input" type="url" id="website" placeholder="https://brand.com"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Campaign Title <span>*</span></label>
+      <input class="form-input" type="text" id="title" placeholder="e.g. Summer Shoes Sale 2025"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description <span>*</span></label>
+      <textarea class="form-textarea" id="description" placeholder="Campaign ke baare mein batao..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Target URL <span>*</span></label>
+      <input class="form-input" type="url" id="targetUrl" placeholder="https://brand.com/product"/>
+      <div class="form-hint">Affiliate yahan redirect honge</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tracking Param</label>
+      <input class="form-input" type="text" id="refParam" placeholder="ref=AFFCODE"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Commission Type <span>*</span></label>
+        <select class="form-select" id="commissionType">
+          <option value="fixed">Fixed (₹)</option>
+          <option value="percentage">Percentage (%)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Commission Value <span>*</span></label>
+        <input class="form-input" type="number" id="commissionValue" placeholder="e.g. 150" min="1"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Total Budget (₹)</label>
+      <input class="form-input" type="number" id="budget" placeholder="Optional — e.g. 50000" min="0"/>
+    </div>
+
+    <button class="btn-submit" onclick="submitCampaign()" id="submit-btn">
+      Submit for Approval
+    </button>
+  </div>
+</div>
+
+<script>
+  // THEME
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('theme-btn').textContent = isDark ? '☾ Dark' : '☀ Light';
+    localStorage.setItem('snaplink-theme', isDark ? 'light' : 'dark');
+  }
+  const saved = localStorage.getItem('snaplink-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀ Light' : '☾ Dark';
+
+  // MODAL
+  function openModal() { document.getElementById('modal').classList.add('open'); }
+  function closeModal() { document.getElementById('modal').classList.remove('open'); document.getElementById('form-error').classList.remove('show'); }
+  function handleOverlayClick(e) { if (e.target === document.getElementById('modal')) closeModal(); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // SUBMIT
+  async function submitCampaign() {
+    const errEl = document.getElementById('form-error');
+    const btn   = document.getElementById('submit-btn');
+    errEl.classList.remove('show');
+
+    const payload = {
+      brandName:       document.getElementById('brandName').value.trim(),
+      brandEmail:      document.getElementById('brandEmail').value.trim(),
+      website:         document.getElementById('website').value.trim(),
+      title:           document.getElementById('title').value.trim(),
+      description:     document.getElementById('description').value.trim(),
+      targetUrl:       document.getElementById('targetUrl').value.trim(),
+      refParam:        document.getElementById('refParam').value.trim() || null,
+      commissionType:  document.getElementById('commissionType').value,
+      commissionValue: document.getElementById('commissionValue').value,
+      budget:          document.getElementById('budget').value || null,
+    };
+
+    if (!payload.brandName || !payload.brandEmail || !payload.title || !payload.description || !payload.targetUrl || !payload.commissionValue) {
+      errEl.textContent = 'Saare zaroori fields fill karo (*)';
+      errEl.classList.add('show');
+      return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Submitting...';
+
+    try {
+      const res  = await fetch('/brand/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        window.location.reload();
+      } else {
+        errEl.textContent = data.error || 'Kuch gadbad hui';
+        errEl.classList.add('show');
+        btn.disabled = false; btn.textContent = 'Submit for Approval';
+      }
+    } catch {
+      errEl.textContent = 'Server se connect nahi ho pa raha';
+      errEl.classList.add('show');
+      btn.disabled = false; btn.textContent = 'Submit for Approval';
+    }
+  }
+</script>
+</body>
+</html>

@@ -3,6 +3,10 @@ const ClickLog = require('../models/clickLogSchema');
 const { nanoid } = require('nanoid');
 const geoip = require('geoip-lite');
 const UAParser = require('ua-parser-js');
+const Earning = require('../models/earningSchema');
+const Wallet  = require('../models/walletSchema');
+const BrandCampaign = require('../models/brandCampaignSchema');
+
 
 // Link create karo
 exports.createLink = async (req, res) => {
@@ -34,46 +38,66 @@ exports.createLink = async (req, res) => {
 };
 
 // ✅ Redirect + click track — updated
+
 exports.trackAndRedirect = async (req, res) => {
     try {
-        const link = await AffiliateLink.findOne({ shortCode: req.params.code });
+        const link = await AffiliateLink.findOne({ shortCode: req.params.code })
+                                        .populate('campaign'); // campaign ref chahiye
 
         if (!link || !link.isActive) {
             return res.status(404).json({ message: 'Link nahi mila' });
         }
 
-        // IP detect karo
+        // Click log save karo (purana code)
         const ip = (req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
-        
-        // Country detect karo geoip se
-        const geo = geoip.lookup(ip);
-        const country = geo?.country || 'Unknown';
-        const city = geo?.city || 'Unknown';
-
-        // Device + Browser detect karo
         const parser = new UAParser(req.headers['user-agent']);
         const ua = parser.getResult();
-        const device = ua.device.type || 'desktop';
-        const browser = ua.browser.name || 'Unknown';
-        const os = ua.os.name || 'Unknown';
 
-        // Click log save karo
         await ClickLog.create({
-            link: link._id,
+            link:    link._id,
             ip,
-            country,
-            city,
-            device,
-            browser,
-            os,
+            device:  ua.device.type || 'desktop',
+            browser: ua.browser.name || 'Unknown',
             referer: req.headers['referer'] || 'Direct'
         });
 
-        // Total clicks update karo
         link.totalClicks += 1;
         await link.save();
 
-        // refParam ke saath redirect karo
+        // ✅ Earning calculate karo — agar campaign linked hai
+        if (link.campaign) {
+            const campaign = await BrandCampaign.findById(link.campaign);
+
+            if (campaign && campaign.status === 'approved') {
+                // Commission calculate karo
+                let amount = campaign.commissionValue;
+                // percentage type ke liye alag logic hoga jab conversion tracking ho
+
+                // Earning record banao
+                await Earning.create({
+                    affiliate:     link.createdBy,
+                    campaign:      campaign._id,
+                    affiliateLink: link._id,
+                    amount,
+                    commissionType: campaign.commissionType,
+                    status: 'pending'
+                });
+
+                // Wallet update karo
+                await Wallet.findOneAndUpdate(
+                    { user: link.createdBy },
+                    {
+                        $inc: {
+                            balance:     amount,
+                            totalEarned: amount
+                        }
+                    },
+                    { upsert: true, new: true } // wallet nahi hai toh banao
+                );
+            }
+        }
+
+        // Redirect karo
         let redirectTo = link.originalUrl;
         if (link.refParam) {
             const sep = redirectTo.includes('?') ? '&' : '?';

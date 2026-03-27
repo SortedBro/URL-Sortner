@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payouts — Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:         #08090f;
+      --bg2:        #0d0f1c;
+      --bg3:        #131625;
+      --bg4:        #1a1e30;
+      --border:     rgba(248,113,113,0.07);
+      --border2:    rgba(248,113,113,0.16);
+      --accent:     #ef4444;
+      --accent2:    #f87171;
+      --accent-glow:rgba(239,68,68,0.1);
+      --green:      #34d399;
+      --green-bg:   rgba(52,211,153,0.08);
+      --amber:      #fbbf24;
+      --amber-bg:   rgba(251,191,36,0.08);
+      --blue:       #60a5fa;
+      --blue-bg:    rgba(96,165,250,0.08);
+      --purple:     #a78bfa;
+      --purple-bg:  rgba(167,139,250,0.08);
+      --text:       #f0eeff;
+      --text2:      #9b96b8;
+      --text3:      #4d4870;
+      --mono:       'DM Mono', monospace;
+      --display:    'Syne', sans-serif;
+      --body:       'DM Sans', sans-serif;
+      --radius:     14px;
+      --radius-sm:  8px;
+    }
+    [data-theme="light"] {
+      --bg:         #fdf4f4;
+      --bg2:        #ffffff;
+      --bg3:        #fce8e8;
+      --bg4:        #f9d5d5;
+      --border:     rgba(239,68,68,0.1);
+      --border2:    rgba(239,68,68,0.22);
+      --text:       #1a0a0a;
+      --text2:      #6b3535;
+      --text3:      #b89090;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none; z-index: 0;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 58px;
+      background: rgba(8,9,15,0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    [data-theme="light"] nav { background: rgba(253,244,244,0.92); }
+    .nav-logo {
+      font-family: var(--display);
+      font-size: 1rem; font-weight: 800;
+      color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .logo-dot {
+      width: 20px; height: 20px;
+      background: var(--accent); border-radius: 5px;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    .nav-links { display: flex; gap: 4px; }
+    .nav-link {
+      padding: 5px 12px; border-radius: var(--radius-sm);
+      font-size: 0.78rem; font-weight: 600;
+      color: var(--text2); text-decoration: none;
+      transition: all 0.15s;
+    }
+    .nav-link:hover { color: var(--text); background: var(--bg3); }
+    .nav-link.active { color: var(--accent2); background: var(--accent-glow); }
+    .nav-right { display: flex; gap: 8px; }
+    .btn-nav {
+      padding: 5px 12px; border-radius: var(--radius-sm);
+      font-family: var(--body); font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; border: 1px solid var(--border2);
+      background: transparent; color: var(--text2);
+      text-decoration: none; transition: all 0.15s;
+    }
+    .btn-nav:hover { color: var(--text); border-color: var(--accent2); }
+
+    main {
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+      padding: 2rem 1.5rem 5rem;
+    }
+
+    .page-header { margin-bottom: 2rem; animation: fadeUp 0.4s ease both; }
+    .eyebrow {
+      font-family: var(--mono); font-size: 0.68rem;
+      color: var(--accent2); letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .page-header h1 {
+      font-family: var(--display);
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800; letter-spacing: -0.04em;
+    }
+    .page-header h1 em { font-style: normal; color: var(--accent2); }
+
+    /* STATS */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1rem; margin-bottom: 1.5rem;
+    }
+    @media(max-width:700px){ .stats-row { grid-template-columns: repeat(2,1fr); } }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem 1.4rem;
+      animation: fadeUp 0.4s ease both;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .stat-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .stat-card:nth-child(1){ animation-delay:.05s; }
+    .stat-card:nth-child(2){ animation-delay:.1s; }
+    .stat-card:nth-child(3){ animation-delay:.15s; }
+    .stat-card:nth-child(4){ animation-delay:.2s; }
+    .stat-label {
+      font-size: 0.66rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text3); margin-bottom: 6px;
+    }
+    .stat-val {
+      font-family: var(--mono); font-size: 1.7rem;
+      font-weight: 500; color: var(--text); line-height: 1;
+    }
+    .stat-val.amber  { color: var(--amber); }
+    .stat-val.green  { color: var(--green); }
+    .stat-val.red    { color: var(--accent2); }
+    .stat-val.purple { color: var(--purple); }
+
+    /* FILTER TABS */
+    .filter-bar {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      animation: fadeUp 0.4s 0.2s ease both;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .filter-tabs { display: flex; gap: 4px; }
+    .filter-tab {
+      padding: 6px 14px; border-radius: var(--radius-sm);
+      font-family: var(--body); font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; border: 1px solid var(--border);
+      background: transparent; color: var(--text3);
+      transition: all 0.15s;
+    }
+    .filter-tab.active { background: var(--bg3); color: var(--text); border-color: var(--border2); }
+    .filter-tab:hover:not(.active) { color: var(--text2); }
+
+    /* TABLE */
+    .table-wrap {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      animation: fadeUp 0.4s 0.25s ease both;
+    }
+    .table-head {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .table-title {
+      font-family: var(--display);
+      font-size: 0.9rem; font-weight: 700; color: var(--text);
+    }
+    .table-count {
+      font-family: var(--mono); font-size: 0.68rem;
+      color: var(--text3); background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 2px 8px; border-radius: 20px;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      padding: 10px 14px; text-align: left;
+      font-size: 0.66rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text3); background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--bg3); }
+    td { padding: 14px; font-size: 0.84rem; vertical-align: middle; }
+
+    .user-info { display: flex; flex-direction: column; gap: 2px; }
+    .user-name { font-weight: 600; color: var(--text); font-size: 0.84rem; }
+    .user-email { font-family: var(--mono); font-size: 0.72rem; color: var(--text3); }
+
+    .amount-cell {
+      font-family: var(--mono); font-size: 0.95rem;
+      font-weight: 500; color: var(--text);
+    }
+
+    .method-info { display: flex; flex-direction: column; gap: 2px; }
+    .method-type { font-size: 0.78rem; font-weight: 600; color: var(--text2); }
+    .method-detail { font-family: var(--mono); font-size: 0.7rem; color: var(--text3); }
+
+    .status-pill {
+      font-size: 0.65rem; font-weight: 700;
+      padding: 3px 9px; border-radius: 20px;
+      letter-spacing: 0.06em;
+    }
+    .status-pill.pending  { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+    .status-pill.approved { background: var(--blue-bg);  color: var(--blue);  border: 1px solid rgba(96,165,250,0.2); }
+    .status-pill.paid     { background: var(--green-bg); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+    .status-pill.rejected { background: var(--accent-glow); color: var(--accent2); border: 1px solid rgba(248,113,113,0.2); }
+
+    .date-cell {
+      font-family: var(--mono); font-size: 0.72rem; color: var(--text3);
+    }
+
+    /* ACTION BUTTONS */
+    .actions { display: flex; gap: 6px; align-items: center; }
+    .btn-action {
+      padding: 5px 11px; border-radius: 6px;
+      font-family: var(--body); font-size: 0.72rem; font-weight: 600;
+      cursor: pointer; border: 1px solid var(--border2);
+      background: transparent; color: var(--text2);
+      transition: all 0.15s;
+    }
+    .btn-action:hover { color: var(--text); }
+    .btn-action.approve:hover { color: var(--green); border-color: var(--green); background: var(--green-bg); }
+    .btn-action.paid:hover    { color: var(--blue);  border-color: var(--blue);  background: var(--blue-bg); }
+    .btn-action.reject:hover  { color: var(--accent2); border-color: var(--accent2); background: var(--accent-glow); }
+    .btn-action.done { color: var(--text3); cursor: default; }
+    .btn-action.done:hover { color: var(--text3); border-color: var(--border2); background: transparent; }
+
+    /* NOTE MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(8,9,15,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem; opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border2);
+      border-radius: var(--radius); padding: 1.8rem;
+      width: 100%; max-width: 420px;
+      transform: translateY(16px); transition: transform 0.2s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-title {
+      font-family: var(--display);
+      font-size: 1rem; font-weight: 700;
+      color: var(--text); margin-bottom: 1rem;
+    }
+    .modal-input {
+      width: 100%; padding: 10px 12px;
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text); font-family: var(--body);
+      font-size: 0.85rem; outline: none; resize: none;
+      margin-bottom: 1rem;
+    }
+    .modal-input:focus { border-color: var(--accent2); }
+    .modal-actions { display: flex; gap: 8px; }
+    .btn-modal {
+      flex: 1; padding: 10px;
+      border-radius: var(--radius-sm);
+      font-family: var(--body); font-size: 0.82rem; font-weight: 700;
+      cursor: pointer; border: 1px solid var(--border2);
+      background: transparent; color: var(--text2);
+      transition: all 0.15s;
+    }
+    .btn-modal.confirm.approve { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+    .btn-modal.confirm.paid    { background: var(--blue-bg);  color: var(--blue);  border-color: var(--blue); }
+    .btn-modal.confirm.reject  { background: var(--accent-glow); color: var(--accent2); border-color: var(--accent2); }
+    .btn-modal.cancel:hover    { color: var(--text); }
+
+    .empty-state {
+      text-align: center; padding: 3rem;
+      color: var(--text3); font-family: var(--mono); font-size: 0.82rem;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/admin/dashboard">
+    <div class="logo-dot"></div>Admin
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+    <a class="nav-link" href="/admin/users">Users</a>
+    <a class="nav-link" href="/admin/panel">Campaigns</a>
+    <a class="nav-link active" href="/admin/payouts">Payouts</a>
+  </div>
+  <div class="nav-right">
+    <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
+    <a class="btn-nav" href="/logout">Logout</a>
+  </div>
+</nav>
+
+<main>
+
+  <div class="page-header">
+    <div class="eyebrow">Admin Panel</div>
+    <h1>Payout <em>Requests</em></h1>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Pending</div>
+      <div class="stat-val amber"><%= stats.pending %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Approved</div>
+      <div class="stat-val purple"><%= stats.approved %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Paid</div>
+      <div class="stat-val green"><%= stats.paid %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pending Amount</div>
+      <div class="stat-val red">₹<%= stats.totalPendingAmount.toFixed(0) %></div>
+    </div>
+  </div>
+
+  <!-- Filter + Table -->
+  <div class="filter-bar">
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="filterPayouts('all', this)">All</button>
+      <button class="filter-tab" onclick="filterPayouts('pending', this)">Pending</button>
+      <button class="filter-tab" onclick="filterPayouts('approved', this)">Approved</button>
+      <button class="filter-tab" onclick="filterPayouts('paid', this)">Paid</button>
+      <button class="filter-tab" onclick="filterPayouts('rejected', this)">Rejected</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-head">
+      <span class="table-title">All Requests</span>
+      <span class="table-count"><%= payouts.length %> total</span>
+    </div>
+
+    <% if (payouts.length === 0) { %>
+      <div class="empty-state">Koi payout request nahi abhi</div>
+    <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Affiliate</th>
+          <th>Amount</th>
+          <th>Method</th>
+          <th>Status</th>
+          <th>Requested</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="payouts-tbody">
+        <% payouts.forEach(p => { %>
+        <tr data-status="<%= p.status %>">
+          <td>
+            <div class="user-info">
+              <span class="user-name"><%= p.affiliate?.firstName %> <%= p.affiliate?.lastName %></span>
+              <span class="user-email"><%= p.affiliate?.email %></span>
+            </div>
+          </td>
+          <td><span class="amount-cell">₹<%= p.amount.toFixed(2) %></span></td>
+          <td>
+            <div class="method-info">
+              <span class="method-type"><%= p.method === 'upi' ? '📱 UPI' : '🏦 Bank' %></span>
+              <span class="method-detail">
+                <% if (p.method === 'upi') { %>
+                  <%= p.upiId %>
+                <% } else { %>
+                  <%= p.bankDetails?.name %> · <%= p.bankDetails?.ifsc %>
+                <% } %>
+              </span>
+            </div>
+          </td>
+          <td><span class="status-pill <%= p.status %>"><%= p.status %></span></td>
+          <td>
+            <span class="date-cell">
+              <%= new Date(p.requestedAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'2-digit'}) %>
+            </span>
+          </td>
+          <td>
+            <div class="actions">
+              <% if (p.status === 'pending') { %>
+                <button class="btn-action approve" onclick="openModal('<%= p._id %>', 'approve')">Approve</button>
+                <button class="btn-action reject"  onclick="openModal('<%= p._id %>', 'reject')">Reject</button>
+              <% } else if (p.status === 'approved') { %>
+                <button class="btn-action paid" onclick="openModal('<%= p._id %>', 'paid')">Mark Paid</button>
+                <button class="btn-action reject" onclick="openModal('<%= p._id %>', 'reject')">Reject</button>
+              <% } else { %>
+                <span class="btn-action done"><%= p.status === 'paid' ? '✅ Paid' : '❌ Rejected' %></span>
+              <% } %>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <% } %>
+  </div>
+
+</main>
+
+<!-- Action Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Confirm Action</div>
+    <textarea class="modal-input" id="modal-note" rows="3"
+              placeholder="Note (optional) — reason ya message"></textarea>
+    <div class="modal-actions">
+      <button class="btn-modal cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-modal confirm" id="modal-confirm" onclick="submitAction()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Theme
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('theme-btn').textContent = isDark ? '☾ Dark' : '☀ Light';
+    localStorage.setItem('snaplink-theme', isDark ? 'light' : 'dark');
+  }
+  const saved = localStorage.getItem('snaplink-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀ Light' : '☾ Dark';
+
+  // Filter
+  function filterPayouts(status, btn) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#payouts-tbody tr').forEach(row => {
+      row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+    });
+  }
+
+  // Modal
+  let currentId = null;
+  let currentAction = null;
+
+  function openModal(id, action) {
+    currentId = id;
+    currentAction = action;
+    const titles = { approve: 'Approve Payout?', paid: 'Mark as Paid?', reject: 'Reject Payout?' };
+    document.getElementById('modal-title').textContent = titles[action];
+    document.getElementById('modal-note').value = '';
+    const btn = document.getElementById('modal-confirm');
+    btn.className = `btn-modal confirm ${action}`;
+    btn.textContent = action === 'approve' ? 'Approve' : action === 'paid' ? 'Mark Paid' : 'Reject';
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    currentId = null; currentAction = null;
+  }
+
+  async function submitAction() {
+    const note = document.getElementById('modal-note').value;
+    const urls = {
+      approve: `/admin/payouts/${currentId}/approve`,
+      paid:    `/admin/payouts/${currentId}/paid`,
+      reject:  `/admin/payouts/${currentId}/reject`,
+    };
+
+    try {
+      const res = await fetch(urls[currentAction], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note })
+      });
+      const data = await res.json();
+      if (data.success) { closeModal(); window.location.reload(); }
+      else alert(data.error || 'Kuch gadbad hui');
+    } catch (err) {
+      alert('Server error');
+    }
+  }
+
+  // ESC
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+
+</body>
+</html>
