@@ -157,7 +157,6 @@ const userSchema = new mongoose.Schema(
     }
 );
 
-userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ createdAt: -1 });
 userSchema.index({ plan: 1, createdAt: -1 });
 userSchema.index({ isBanned: 1, createdAt: -1 });

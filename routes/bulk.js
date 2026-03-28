@@ -5,6 +5,8 @@ const router = express.Router();
 const Url = require('../models/urlSchema');
 const User = require('../models/userSchema');
 const { auth } = require('../middleware/auth.middleware');
+const { cacheRedirectUrl } = require('../utils/urlCache');
+const { invalidateAdminDashboardCache, invalidateAllUserReadCaches } = require('../utils/readCache');
 
 const BULK_LIMIT = 500;
 
@@ -68,13 +70,15 @@ router.post('/bulk-shorten', auth, async (req, res) => {
                 }
 
                 const shortUrl = `${baseUrl}/${shortCode}`;
-                await Url.create({
+                const createdUrl = await Url.create({
                     orginalUrl: originalUrl,
                     shortUrl,
                     shortCode,
                     createdBy: req.user.user,
                     clicks: 0,
                 });
+
+                await cacheRedirectUrl(createdUrl);
 
                 bulkResults.push({
                     original: originalUrl,
@@ -89,6 +93,8 @@ router.post('/bulk-shorten', auth, async (req, res) => {
             }
         }
 
+        await invalidateAllUserReadCaches(req.user.user);
+        await invalidateAdminDashboardCache();
         req.session.bulkResults = bulkResults;
         req.session.bulkErrors = errors;
         return res.redirect('/dashboard?tab=bulk');

@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const redis = require('ioredis');
 const geoip = require('geoip-lite');
 const { nanoid } = require('nanoid');
 const UAParser = require('ua-parser-js');
@@ -10,16 +9,11 @@ const { incrementUrlCount } = require('../middleware/planLimit.middleware');
 const { RESERVED_TOP_LEVEL_PATHS } = require('../config/reservedPaths');
 const { appConfig } = require('../config/appConfig');
 const { dispatchUserWebhook } = require('../utils/webhooks');
+const { cacheRedirectUrl, getCachedRedirectUrl, invalidateRedirectUrlCache } = require('../utils/urlCache');
+const { enqueueUrlClick, flushClickQueueNow } = require('../utils/clickQueue');
+const { isRedisEnabled } = require('../utils/redisCache');
+const { invalidateAdminDashboardCache, invalidateUserUrlReadCaches } = require('../utils/readCache');
 
-const redisClient = appConfig.redisUrl
-    ? new redis(appConfig.redisUrl, {
-        maxRetriesPerRequest: 2,
-        connectTimeout: 5000,
-        lazyConnect: true,
-    })
-    : null;
-
-const COMPLEX_CACHE_SENTINEL = '__complex__';
 const UNLOCK_COOKIE_PREFIX = 'unlock_';
 const SHORT_CODE_LENGTH = 6;
 const MAX_SHORT_CODE_ATTEMPTS = 8;
@@ -30,12 +24,6 @@ const REDIRECT_URL_SELECT =
 const UNLOCK_URL_SELECT = '_id shortCode hasPassword isActive expiresAt accessPasswordHash';
 
 const RESERVED_CODES = new Set(RESERVED_TOP_LEVEL_PATHS);
-
-if (redisClient) {
-    redisClient.on('connect', () => console.log('Redis connected'));
-    redisClient.on('error', (err) => console.warn('Redis error (non-fatal):', err.message));
-}
-
 function unlockCookieName(code) {
     return `${UNLOCK_COOKIE_PREFIX}${code}`;
 }
@@ -56,10 +44,6 @@ function escapeRegex(value = '') {
 function isValidDomain(domain) {
     if (!domain) return false;
     return /^(?=.{3,253}$)(?!-)(?:[a-z0-9-]{1,63}\.)+[a-z]{2,63}$/.test(domain);
-}
-
-function requiresComplexHandling(url) {
-    return Boolean(url.adEnabled || url.hasPassword || url.expiresAt || url.refParam);
 }
 
 async function generateUniqueShortCode() {
@@ -130,13 +114,18 @@ function setCreateSuccess(req, shortUrl) {
     if (req.session) req.session.shortUrl = shortUrl;
 }
 
-async function setCacheValue(shortCode, value) {
-    if (!redisClient) return;
-    try {
-        await redisClient.setex(`link:${shortCode}`, 86400, value);
-    } catch (error) {
-        console.warn('Redis set failed (non-fatal):', error.message);
-    }
+function buildClickContext(req) {
+    const ip = (req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '').trim();
+    const geo = geoip.lookup(ip) || {};
+    const ua = new UAParser(req.headers['user-agent']);
+    const result = ua.getResult();
+
+    return {
+        ip,
+        geo,
+        result,
+        clickedAt: new Date(),
+    };
 }
 
 function buildClickUpdatePayload(req, clickedAt, geo, result, ip) {
@@ -174,6 +163,55 @@ function buildClickWebhookPayload(urlDoc, req, clickedAt, geo, result, clicks) {
         device: normalizeClickDevice(result?.device?.type),
         browser: result.browser.name || 'Unknown',
     };
+}
+
+async function persistClickImmediately(urlDoc, req, context) {
+    await Url.updateOne(
+        { _id: urlDoc._id },
+        buildClickUpdatePayload(req, context.clickedAt, context.geo, context.result, context.ip)
+    );
+}
+
+async function recordResolvedUrlClick(urlDoc, req) {
+    if (!urlDoc?._id) return;
+
+    const context = buildClickContext(req);
+    const buffered = await enqueueUrlClick({
+        urlId: urlDoc._id,
+        shortCode: urlDoc.shortCode,
+        shortUrl: urlDoc.shortUrl,
+        orginalUrl: urlDoc.orginalUrl,
+        createdBy: urlDoc.createdBy,
+        clickedAt: context.clickedAt,
+        country: context.geo.country || 'Unknown',
+        city: context.geo.city || 'Unknown',
+        device: normalizeClickDevice(context.result?.device?.type),
+        browser: context.result.browser.name || 'Unknown',
+        os: context.result.os.name || 'Unknown',
+        referrer: req.headers.referer || 'Direct',
+        ip: context.ip,
+    });
+
+    if (!buffered) {
+        await persistClickImmediately(urlDoc, req, context);
+    }
+
+    if (urlDoc.createdBy) {
+        setImmediate(() => {
+            dispatchUserWebhook(
+                urlDoc.createdBy,
+                'link.clicked',
+                buildClickWebhookPayload(
+                    urlDoc,
+                    req,
+                    context.clickedAt,
+                    context.geo,
+                    context.result,
+                    Number(urlDoc.clicks || 0) + 1
+                )
+            ).catch(console.error);
+        });
+    }
 }
 
 exports.createShortUrl = async (req, res) => {
@@ -342,10 +380,11 @@ exports.createShortUrl = async (req, res) => {
             refParam: refParam || null,
         });
 
-        await setCacheValue(
-            shortCode,
-            requiresComplexHandling(createdUrl) ? COMPLEX_CACHE_SENTINEL : originalUrlInput
-        );
+        await cacheRedirectUrl(createdUrl);
+        if (userId) {
+            await invalidateUserUrlReadCaches(userId, createdUrl.shortCode);
+        }
+        await invalidateAdminDashboardCache();
 
         if (userId) {
             await incrementUrlCount(userId);
@@ -420,16 +459,52 @@ exports.redirectUrl = async (req, res) => {
             return res.status(404).render('404');
         }
 
-        if (redisClient) {
-            try {
-                const cached = await redisClient.get(`link:${requestedCode}`);
-                if (cached && cached !== COMPLEX_CACHE_SENTINEL) {
-                    setImmediate(() => trackClickByCode(requestedCode, req).catch(console.error));
-                    return res.redirect(cached);
-                }
-            } catch (error) {
-                console.warn('Redis get failed, falling back to DB:', error.message);
+        const cachedUrl = await getCachedRedirectUrl(requestedCode);
+        if (cachedUrl?.isLegacySimpleCache) {
+            setImmediate(() => trackClickByCode(requestedCode, req).catch(console.error));
+            return res.redirect(cachedUrl.orginalUrl);
+        }
+
+        if (cachedUrl) {
+            if (!cachedUrl.isActive || isExpired(cachedUrl)) {
+                return res.status(410).render('link-expired', { url: cachedUrl });
             }
+
+            const cachedCode = String(cachedUrl.shortCode || requestedCode);
+
+            if (cachedUrl.hasPassword) {
+                const unlocked = req.cookies?.[unlockCookieName(cachedCode)] === '1';
+                if (!unlocked) {
+                    return res.status(401).render('protected-link', {
+                        url: cachedUrl,
+                        error: null,
+                    });
+                }
+            }
+
+            setImmediate(() => recordResolvedUrlClick(cachedUrl, req).catch(console.error));
+
+            if (cachedUrl.adEnabled) {
+                return res.render('ad-interstitial', {
+                    url: {
+                        orginalUrl: cachedUrl.orginalUrl,
+                        adTimer: cachedUrl.adTimer || 5,
+                        adTitle: cachedUrl.adTitle || 'Sponsored',
+                        adDescription: cachedUrl.adDescription || '',
+                        adBannerUrl: cachedUrl.adBannerUrl || '',
+                        adSkipable: cachedUrl.adSkipable,
+                        shortCode: cachedUrl.shortCode,
+                    },
+                });
+            }
+
+            let cachedRedirect = cachedUrl.orginalUrl;
+            if (cachedUrl.refParam) {
+                const separator = cachedRedirect.includes('?') ? '&' : '?';
+                cachedRedirect += `${separator}${cachedUrl.refParam}`;
+            }
+
+            return res.redirect(cachedRedirect);
         }
 
         const url = await findUrlByShortCode(requestedCode, {}, {
@@ -446,10 +521,7 @@ exports.redirectUrl = async (req, res) => {
             return res.status(410).render('link-expired', { url });
         }
 
-        await setCacheValue(
-            code,
-            requiresComplexHandling(url) ? COMPLEX_CACHE_SENTINEL : url.orginalUrl
-        );
+        await cacheRedirectUrl(url);
 
         if (url.hasPassword) {
             const unlocked = req.cookies?.[unlockCookieName(code)] === '1';
@@ -461,7 +533,7 @@ exports.redirectUrl = async (req, res) => {
             }
         }
 
-        setImmediate(() => trackClickForResolvedUrl(url, req).catch(console.error));
+        setImmediate(() => recordResolvedUrlClick(url, req).catch(console.error));
 
         if (url.adEnabled) {
             return res.render('ad-interstitial', {
@@ -490,49 +562,13 @@ exports.redirectUrl = async (req, res) => {
     }
 };
 
-async function trackClickForResolvedUrl(urlDoc, req) {
-    if (!urlDoc?._id) return;
-
-    const ip = (req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '').trim();
-    const geo = geoip.lookup(ip) || {};
-    const ua = new UAParser(req.headers['user-agent']);
-    const result = ua.getResult();
-    const clickedAt = new Date();
-
-    await Url.updateOne(
-        { _id: urlDoc._id },
-        buildClickUpdatePayload(req, clickedAt, geo, result, ip)
-    );
-
-    if (urlDoc.createdBy) {
-        setImmediate(() => {
-            dispatchUserWebhook(
-                urlDoc.createdBy,
-                'link.clicked',
-                buildClickWebhookPayload(
-                    urlDoc,
-                    req,
-                    clickedAt,
-                    geo,
-                    result,
-                    Number(urlDoc.clicks || 0) + 1
-                )
-            ).catch(console.error);
-        });
-    }
-}
-
 async function trackClickByCode(code, req) {
     const normalizedCode = String(code || '').trim().toLowerCase();
-    const ip = (req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '').trim();
-    const geo = geoip.lookup(ip) || {};
-    const ua = new UAParser(req.headers['user-agent']);
-    const result = ua.getResult();
-    const clickedAt = new Date();
+    const context = buildClickContext(req);
 
     const url = await Url.findOneAndUpdate(
         { shortCode: normalizedCode },
-        buildClickUpdatePayload(req, clickedAt, geo, result, ip),
+        buildClickUpdatePayload(req, context.clickedAt, context.geo, context.result, context.ip),
         {
             new: true,
             select: 'shortCode shortUrl orginalUrl createdBy clicks',
@@ -544,7 +580,14 @@ async function trackClickByCode(code, req) {
             dispatchUserWebhook(
                 url.createdBy,
                 'link.clicked',
-                buildClickWebhookPayload(url, req, clickedAt, geo, result, Number(url.clicks || 0))
+                buildClickWebhookPayload(
+                    url,
+                    req,
+                    context.clickedAt,
+                    context.geo,
+                    context.result,
+                    Number(url.clicks || 0)
+                )
             ).catch(console.error);
         });
     }
@@ -563,13 +606,9 @@ exports.deleteUrl = async (req, res) => {
             return res.status(404).render('404');
         }
 
-        if (redisClient) {
-            try {
-                await redisClient.del(`link:${url.shortCode}`);
-            } catch (error) {
-                console.warn('Redis del failed (non-fatal):', error.message);
-            }
-        }
+        await invalidateRedirectUrlCache(url.shortCode);
+        await invalidateUserUrlReadCaches(req.user.user, url.shortCode);
+        await invalidateAdminDashboardCache();
 
         const deletedPayload = {
             shortCode: url.shortCode,
@@ -670,6 +709,10 @@ function buildAnalyticsSummary(clickHistory) {
 
 exports.getAnalytics = async (req, res) => {
     try {
+        if (isRedisEnabled()) {
+            await flushClickQueueNow({ maxBatches: 20 });
+        }
+
         const urlDoc = await findUrlByShortCode(req.params.code, {
             createdBy: req.user.user,
         }, {

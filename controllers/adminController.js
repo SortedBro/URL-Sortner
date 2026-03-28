@@ -3,6 +3,16 @@ const os = require('os');
 const User = require('../models/userSchema');
 const Url = require('../models/urlSchema');
 const BrandCampaign = require('../models/brandCampaignSchema');
+const { invalidateRedirectUrlCache, invalidateRedirectUrlCaches } = require('../utils/urlCache');
+const { flushClickQueueNow } = require('../utils/clickQueue');
+const { isRedisEnabled } = require('../utils/redisCache');
+const {
+    getCachedAdminDashboard,
+    cacheAdminDashboard,
+    invalidateAdminDashboardCache,
+    invalidateAllUserReadCaches,
+    invalidateUserUrlReadCaches,
+} = require('../utils/readCache');
 
 const PAGE_SIZE = 20;
 
@@ -53,6 +63,17 @@ function withOriginalUrl(urlDoc) {
  */
 exports.getDashboard = async (req, res) => {
     try {
+        if (isRedisEnabled()) {
+            const cachedPayload = await getCachedAdminDashboard();
+            if (cachedPayload) {
+                return res.render('admin/dashboard', cachedPayload);
+            }
+        }
+
+        if (isRedisEnabled()) {
+            await flushClickQueueNow({ maxBatches: 20 });
+        }
+
         const now = new Date();
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -175,7 +196,7 @@ exports.getDashboard = async (req, res) => {
         const freeMem = os.freemem();
         const memPercent = Math.round(((totalMem - freeMem) / totalMem) * 100);
 
-        return res.render('admin/dashboard', {
+        const dashboardPayload = {
             user: req.user,
             stats: {
                 totalUsers: Number(userSummary.totalUsers || 0),
@@ -204,7 +225,13 @@ exports.getDashboard = async (req, res) => {
                 nodeVersion: process.version,
                 platform: os.platform(),
             },
-        });
+        };
+
+        if (isRedisEnabled()) {
+            await cacheAdminDashboard(dashboardPayload);
+        }
+
+        return res.render('admin/dashboard', dashboardPayload);
     } catch (error) {
         console.log('Admin dashboard error:', error);
         return res.status(500).json({ message: 'Server error' });
@@ -259,6 +286,7 @@ exports.toggleBan = async (req, res) => {
 
         user.isBanned = !user.isBanned;
         await user.save();
+        await invalidateAdminDashboardCache();
 
         return res.json({ success: true, isBanned: user.isBanned });
     } catch (error) {
@@ -270,6 +298,10 @@ exports.toggleBan = async (req, res) => {
 exports.deleteUser = async (req, res) => {
     try {
         const userId = req.params.id;
+        const ownedUrls = await Url.find({ createdBy: userId }).select('shortCode').lean();
+        await invalidateRedirectUrlCaches(ownedUrls.map((item) => item.shortCode));
+        await invalidateAllUserReadCaches(userId);
+        await invalidateAdminDashboardCache();
         await Promise.all([
             User.findByIdAndDelete(userId),
             Url.deleteMany({ createdBy: userId }),
@@ -321,7 +353,12 @@ exports.getUrls = async (req, res) => {
 
 exports.deleteUrl = async (req, res) => {
     try {
-        await Url.findByIdAndDelete(req.params.id);
+        const deletedUrl = await Url.findByIdAndDelete(req.params.id).select('shortCode createdBy');
+        if (deletedUrl?.shortCode) {
+            await invalidateRedirectUrlCache(deletedUrl.shortCode);
+            await invalidateUserUrlReadCaches(deletedUrl.createdBy, deletedUrl.shortCode);
+        }
+        await invalidateAdminDashboardCache();
         return res.json({ success: true });
     } catch (error) {
         return res.status(500).json({ message: 'Server error' });

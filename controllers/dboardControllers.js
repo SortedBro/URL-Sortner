@@ -1,5 +1,8 @@
 const Url = require('../models/urlSchema');
 const User = require('../models/userSchema');
+const { flushClickQueueNow } = require('../utils/clickQueue');
+const { isRedisEnabled } = require('../utils/redisCache');
+const { getCachedUserDashboard, cacheUserDashboard } = require('../utils/readCache');
 
 const DEFAULT_WHITE_LABEL = {
     enabled: false,
@@ -84,6 +87,30 @@ exports.getDashboard = async (req, res) => {
             return res.redirect('/login');
         }
 
+        let cachedDashboard = null;
+        if (isRedisEnabled()) {
+            cachedDashboard = await getCachedUserDashboard(userId);
+        }
+
+        if (cachedDashboard) {
+            const bulkResults = consumeSessionField(req.session, 'bulkResults', []);
+            const bulkErrors = consumeSessionField(req.session, 'bulkErrors', []);
+            const error = consumeSessionField(req.session, 'error', null);
+            const shortUrl = consumeSessionField(req.session, 'shortUrl', null);
+
+            return res.render('dashboard', {
+                ...cachedDashboard,
+                bulkResults,
+                bulkErrors,
+                error,
+                shortUrl,
+            });
+        }
+
+        if (isRedisEnabled()) {
+            await flushClickQueueNow({ maxBatches: 20 });
+        }
+
         const [urlDocs, userDoc] = await Promise.all([
             Url.find({ createdBy: userId })
                 .sort({ createdAt: -1 })
@@ -98,16 +125,23 @@ exports.getDashboard = async (req, res) => {
 
         const urls = urlDocs.map(mapUrlForView);
         const summary = buildDashboardSummary(urls);
+        const dashboardPayload = {
+            urls,
+            user: buildUserContext(req, userDoc),
+            summary,
+        };
 
         const bulkResults = consumeSessionField(req.session, 'bulkResults', []);
         const bulkErrors = consumeSessionField(req.session, 'bulkErrors', []);
         const error = consumeSessionField(req.session, 'error', null);
         const shortUrl = consumeSessionField(req.session, 'shortUrl', null);
 
+        if (isRedisEnabled()) {
+            await cacheUserDashboard(userId, dashboardPayload);
+        }
+
         return res.render('dashboard', {
-            urls,
-            user: buildUserContext(req, userDoc),
-            summary,
+            ...dashboardPayload,
             bulkResults,
             bulkErrors,
             error,

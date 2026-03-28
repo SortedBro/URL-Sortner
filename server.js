@@ -28,6 +28,7 @@ const payoutRoutes = require('./routes/payoutRoutes');
 const apiRoutes = require('./routes/apiRoutes');
 const internalRoutes = require('./routes/internalRoutes');
 const { clearAuthCookie } = require('./utils/authToken');
+const { startClickFlushWorker, flushClickQueueNow } = require('./utils/clickQueue');
 
 const app = express();
 
@@ -202,6 +203,19 @@ async function startServer() {
     registerCoreRoutes(app);
     registerApplicationRoutes(app);
     registerFallbackHandlers(app);
+    startClickFlushWorker();
+
+    ['SIGINT', 'SIGTERM'].forEach((signal) => {
+        process.once(signal, async () => {
+            try {
+                await flushClickQueueNow({ maxBatches: 50 });
+            } catch (error) {
+                console.error('Buffered click flush during shutdown failed:', error);
+            } finally {
+                process.exit(0);
+            }
+        });
+    });
 
     app.listen(appConfig.port, () => {
         console.log(`Server is running at ${appConfig.port}`);

@@ -8,6 +8,17 @@ const { RESERVED_TOP_LEVEL_PATHS } = require('../config/reservedPaths');
 const { isBusinessPlan } = require('../utils/planFeatures');
 const { dispatchUserWebhook } = require('../utils/webhooks');
 const { buildAnalyticsSummary } = require('./urlControllers');
+const { cacheRedirectUrl, invalidateRedirectUrlCache } = require('../utils/urlCache');
+const { flushClickQueueNow } = require('../utils/clickQueue');
+const { isRedisEnabled } = require('../utils/redisCache');
+const {
+    getCachedApiUrlList,
+    cacheApiUrlList,
+    getCachedApiUrlItem,
+    cacheApiUrlItem,
+    invalidateAdminDashboardCache,
+    invalidateUserUrlReadCaches,
+} = require('../utils/readCache');
 
 const RESERVED_CODES = new Set(RESERVED_TOP_LEVEL_PATHS);
 const SHORT_CODE_LENGTH = 6;
@@ -90,18 +101,26 @@ exports.listApiUrls = async (req, res) => {
         const page = Math.max(Number(req.query.page) || 1, 1);
         const limit = Math.min(Math.max(Number(req.query.limit) || 25, 1), API_LIST_LIMIT);
         const skip = (page - 1) * limit;
+        const userId = req.apiUser.user;
+
+        if (isRedisEnabled()) {
+            const cachedPayload = await getCachedApiUrlList(userId, page, limit);
+            if (cachedPayload) {
+                return res.json(cachedPayload);
+            }
+        }
 
         const [items, total] = await Promise.all([
-            Url.find({ createdBy: req.apiUser.user })
+            Url.find({ createdBy: userId })
                 .select('shortCode shortUrl orginalUrl clicks customAlias hasPassword expiresAt whiteLabelDomain refParam createdAt updatedAt')
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
                 .lean(),
-            Url.countDocuments({ createdBy: req.apiUser.user }),
+            Url.countDocuments({ createdBy: userId }),
         ]);
 
-        return res.json({
+        const responsePayload = {
             ok: true,
             pagination: {
                 page,
@@ -110,7 +129,13 @@ exports.listApiUrls = async (req, res) => {
                 totalPages: Math.max(Math.ceil(total / limit), 1),
             },
             items: items.map(buildUrlResponse),
-        });
+        };
+
+        if (isRedisEnabled()) {
+            await cacheApiUrlList(userId, page, limit, responsePayload);
+        }
+
+        return res.json(responsePayload);
     } catch (error) {
         console.error(error);
         return jsonError(res, 500, 'Unable to load API URLs');
@@ -224,6 +249,10 @@ exports.createApiUrl = async (req, res) => {
             refParam: refParam || null,
         });
 
+        await cacheRedirectUrl(createdUrl);
+        await invalidateUserUrlReadCaches(req.apiUser.user, createdUrl.shortCode);
+        await invalidateAdminDashboardCache();
+
         setImmediate(() => {
             dispatchUserWebhook(req.apiUser.user, 'link.created', {
                 shortCode: createdUrl.shortCode,
@@ -244,9 +273,19 @@ exports.createApiUrl = async (req, res) => {
 
 exports.getApiUrl = async (req, res) => {
     try {
+        const userId = req.apiUser.user;
+        const shortCode = String(req.params.code || '').trim().toLowerCase();
+
+        if (isRedisEnabled()) {
+            const cachedPayload = await getCachedApiUrlItem(userId, shortCode);
+            if (cachedPayload) {
+                return res.json(cachedPayload);
+            }
+        }
+
         const urlDoc = await Url.findOne({
-            createdBy: req.apiUser.user,
-            shortCode: String(req.params.code || '').trim().toLowerCase(),
+            createdBy: userId,
+            shortCode,
         })
             .select('shortCode shortUrl orginalUrl clicks customAlias hasPassword expiresAt whiteLabelDomain refParam createdAt updatedAt lastClickedAt')
             .lean();
@@ -255,13 +294,19 @@ exports.getApiUrl = async (req, res) => {
             return jsonError(res, 404, 'URL not found');
         }
 
-        return res.json({
+        const responsePayload = {
             ok: true,
             item: {
                 ...buildUrlResponse(urlDoc),
                 lastClickedAt: urlDoc.lastClickedAt || null,
             },
-        });
+        };
+
+        if (isRedisEnabled()) {
+            await cacheApiUrlItem(userId, shortCode, responsePayload);
+        }
+
+        return res.json(responsePayload);
     } catch (error) {
         console.error(error);
         return jsonError(res, 500, 'Unable to load URL');
@@ -270,6 +315,10 @@ exports.getApiUrl = async (req, res) => {
 
 exports.getApiUrlAnalytics = async (req, res) => {
     try {
+        if (isRedisEnabled()) {
+            await flushClickQueueNow({ maxBatches: 20 });
+        }
+
         const urlDoc = await Url.findOne({
             createdBy: req.apiUser.user,
             shortCode: String(req.params.code || '').trim().toLowerCase(),
@@ -318,6 +367,9 @@ exports.deleteApiUrl = async (req, res) => {
         };
 
         await urlDoc.deleteOne();
+        await invalidateRedirectUrlCache(urlDoc.shortCode);
+        await invalidateUserUrlReadCaches(req.apiUser.user, urlDoc.shortCode);
+        await invalidateAdminDashboardCache();
 
         setImmediate(() => {
             dispatchUserWebhook(req.apiUser.user, 'link.deleted', payload).catch(console.error);

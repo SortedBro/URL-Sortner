@@ -7,6 +7,7 @@ const { generateApiKey, hashApiKey, buildApiKeyPreview } = require('../utils/api
 const { isProPlan, isBusinessPlan, getTeamSeatLimit } = require('../utils/planFeatures');
 const { ALLOWED_WEBHOOK_EVENTS } = require('../utils/webhooks');
 const { REPORT_WEEKDAYS, sendWeeklyReportForUser } = require('../utils/weeklyReports');
+const { invalidateUserDashboardCache } = require('../utils/readCache');
 
 function buildDisplayName(user) {
     return `${user.firstName || ''}${user.lastName ? ` ${user.lastName}` : ''}`.trim();
@@ -166,6 +167,7 @@ exports.updateProfile = async (req, res) => {
         }
 
         issueAuthCookie(res, user);
+        await invalidateUserDashboardCache(req.user.user);
         setFlash(req, 'success', 'Profile update ho gaya');
         return res.redirect('/settings');
     } catch (error) {
@@ -260,6 +262,7 @@ exports.updateWhiteLabel = async (req, res) => {
         };
 
         await user.save();
+        await invalidateUserDashboardCache(req.user.user);
         setFlash(req, 'success', enabled
             ? 'White-label settings save ho gayi'
             : 'White-label disable ho gaya');
