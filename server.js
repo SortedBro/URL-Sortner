@@ -111,7 +111,6 @@ function configureGlobalMiddleware(expressApp) {
             },
         })
     );
-    configureBodyParsers(expressApp);
     expressApp.use(cookieParser());
     expressApp.use(securityHeaders);
 
@@ -122,6 +121,13 @@ function configureGlobalMiddleware(expressApp) {
         }
         return next();
     });
+
+    // Fast-path short-link redirects before sessions/body parsing/soft-auth.
+    expressApp.use('/', urlRoutes);
+}
+
+function configureRequestParsers(expressApp) {
+    configureBodyParsers(expressApp);
 }
 
 function configureRouteContext(expressApp) {
@@ -210,9 +216,6 @@ function registerApplicationRoutes(expressApp) {
     expressApp.use('/brand', brandRoutes);
 
     expressApp.post('/shorten', shortenRateLimit, checkPlanLimit, createShortUrl);
-
-    // Keep short-code redirect catch-all at the very end.
-    expressApp.use('/', urlRoutes);
 }
 
 function registerFallbackHandlers(expressApp) {
@@ -241,6 +244,7 @@ async function startServer() {
     await connectDB();
 
     configureGlobalMiddleware(app);
+    configureRequestParsers(app);
     await configureSession(app);
     configureRouteContext(app);
     registerCoreRoutes(app);
