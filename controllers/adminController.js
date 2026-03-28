@@ -1,290 +1,334 @@
+const os = require('os');
+
 const User = require('../models/userSchema');
-const Url  = require('../models/urlSchema');
-const os   = require('os');
+const Url = require('../models/urlSchema');
 const BrandCampaign = require('../models/brandCampaignSchema');
 
+const PAGE_SIZE = 20;
 
-// ══════════════════════════════════
-//  Admin Dashboard — Main Stats
-// ══════════════════════════════════
+function parsePage(value) {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+}
+
+function escapeRegex(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function buildDailyWindows(days = 7) {
+    const windows = [];
+    for (let offset = days - 1; offset >= 0; offset -= 1) {
+        const date = new Date();
+        date.setDate(date.getDate() - offset);
+        const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const end = new Date(start);
+        end.setDate(end.getDate() + 1);
+        windows.push({ start, end });
+    }
+    return windows;
+}
+
+function withOriginalUrl(urlDoc) {
+    const originalUrl = String(urlDoc?.orginalUrl || '');
+    return {
+        ...urlDoc,
+        originalUrl,
+        orginalUrl: originalUrl,
+    };
+}
+
+/**
+ * Admin dashboard summary.
+ * Performance notes:
+ * - Uses Promise.all for independent counters and recent lists.
+ * - Builds 7-day growth counts in parallel instead of serial queries.
+ */
 exports.getDashboard = async (req, res) => {
     try {
-        const now   = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const now = new Date();
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        // ── User stats ──
-        const totalUsers    = await User.countDocuments();
-        const newToday      = await User.countDocuments({ createdAt: { $gte: today } });
-        const newThisMonth  = await User.countDocuments({ createdAt: { $gte: thisMonthStart } });
-        const proUsers      = await User.countDocuments({ plan: 'pro' });
-        const businessUsers = await User.countDocuments({ plan: 'business' });
-        const bannedUsers   = await User.countDocuments({ isBanned: true });
+        const dayWindows = buildDailyWindows(7);
 
-        // ── URL stats ──
-        const totalUrls     = await Url.countDocuments();
-        const urlsToday     = await Url.countDocuments({ createdAt: { $gte: today } });
-        const urlsThisMonth = await Url.countDocuments({ createdAt: { $gte: thisMonthStart } });
-
-        // ── Total clicks ──
-        const clicksAgg = await Url.aggregate([
-            { $group: { _id: null, total: { $sum: '$clicks' } } }
-        ]);
-        const totalClicks = clicksAgg[0]?.total || 0;
-
-        // ── Revenue estimate ──
-        const proRevenue      = proUsers * 99;
-        const businessRevenue = businessUsers * 299;
-        const totalRevenue    = proRevenue + businessRevenue;
-
-        // ── Recent users (last 5) ──
-        const recentUsers = await User.find()
-            .sort({ createdAt: -1 })
-            .limit(5)
-            .select('firstName lastName email plan createdAt isBanned');
-
-        // ── Recent URLs (last 5) ──
-        const recentUrls = await Url.find()
-            .sort({ createdAt: -1 })
-            .limit(5)
-            .populate('createdBy', 'firstName email');
-
-        // ── Users growth — last 7 days ──
-        const userGrowth = [];
-        for (let i = 6; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-            const end   = new Date(start); end.setDate(end.getDate() + 1);
-            const count = await User.countDocuments({ createdAt: { $gte: start, $lt: end } });
-            userGrowth.push({
-                date:  start.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
-                count,
-            });
-        }
-
-        // ── System health ──
-        const uptime      = process.uptime();
-        const memUsage    = process.memoryUsage();
-        const totalMem    = os.totalmem();
-        const freeMem     = os.freemem();
-        const memPercent  = Math.round(((totalMem - freeMem) / totalMem) * 100);
-        const cpuCount    = os.cpus().length;
-
-        res.render('admin/dashboard', {
-            user: req.user,
-            stats: {
-                totalUsers, newToday, newThisMonth,
-                proUsers, businessUsers, bannedUsers,
-                totalUrls, urlsToday, urlsThisMonth,
-                totalClicks, totalRevenue, proRevenue, businessRevenue,
-            },
+        const [
+            totalUsers,
+            newToday,
+            newThisMonth,
+            proUsers,
+            businessUsers,
+            bannedUsers,
+            totalUrls,
+            urlsToday,
+            urlsThisMonth,
+            clicksAgg,
             recentUsers,
             recentUrls,
+            growthCounts,
+        ] = await Promise.all([
+            User.countDocuments(),
+            User.countDocuments({ createdAt: { $gte: todayStart } }),
+            User.countDocuments({ createdAt: { $gte: monthStart } }),
+            User.countDocuments({ plan: 'pro' }),
+            User.countDocuments({ plan: 'business' }),
+            User.countDocuments({ isBanned: true }),
+            Url.countDocuments(),
+            Url.countDocuments({ createdAt: { $gte: todayStart } }),
+            Url.countDocuments({ createdAt: { $gte: monthStart } }),
+            Url.aggregate([{ $group: { _id: null, total: { $sum: '$clicks' } } }]),
+            User.find()
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .select('firstName lastName email plan createdAt isBanned')
+                .lean(),
+            Url.find()
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .populate('createdBy', 'firstName email')
+                .lean(),
+            Promise.all(
+                dayWindows.map((window) =>
+                    User.countDocuments({
+                        createdAt: { $gte: window.start, $lt: window.end },
+                    })
+                )
+            ),
+        ]);
+
+        const sanitizedRecentUrls = recentUrls.map(withOriginalUrl);
+        const totalClicks = Number(clicksAgg?.[0]?.total || 0);
+        const proRevenue = proUsers * 99;
+        const businessRevenue = businessUsers * 299;
+        const totalRevenue = proRevenue + businessRevenue;
+
+        const userGrowth = dayWindows.map((window, index) => ({
+            date: window.start.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+            count: Number(growthCounts[index] || 0),
+        }));
+
+        const uptimeSeconds = process.uptime();
+        const totalMem = os.totalmem();
+        const freeMem = os.freemem();
+        const memPercent = Math.round(((totalMem - freeMem) / totalMem) * 100);
+
+        return res.render('admin/dashboard', {
+            user: req.user,
+            stats: {
+                totalUsers,
+                newToday,
+                newThisMonth,
+                proUsers,
+                businessUsers,
+                bannedUsers,
+                totalUrls,
+                urlsToday,
+                urlsThisMonth,
+                totalClicks,
+                totalRevenue,
+                proRevenue,
+                businessRevenue,
+            },
+            recentUsers,
+            recentUrls: sanitizedRecentUrls,
             userGrowth,
             system: {
-                uptime:     Math.floor(uptime / 3600) + 'h ' + Math.floor((uptime % 3600) / 60) + 'm',
+                uptime: `${Math.floor(uptimeSeconds / 3600)}h ${Math.floor((uptimeSeconds % 3600) / 60)}m`,
                 memPercent,
-                memUsed:    Math.round((totalMem - freeMem) / 1024 / 1024) + ' MB',
-                memTotal:   Math.round(totalMem / 1024 / 1024) + ' MB',
-                cpuCount,
+                memUsed: `${Math.round((totalMem - freeMem) / 1024 / 1024)} MB`,
+                memTotal: `${Math.round(totalMem / 1024 / 1024)} MB`,
+                cpuCount: os.cpus().length,
                 nodeVersion: process.version,
-                platform:   os.platform(),
+                platform: os.platform(),
             },
         });
-
     } catch (error) {
         console.log('Admin dashboard error:', error);
-        res.status(500).json({ message: 'Server error' });
+        return res.status(500).json({ message: 'Server error' });
     }
 };
 
-// ══════════════════════════════════
-//  Users List
-// ══════════════════════════════════
 exports.getUsers = async (req, res) => {
     try {
-        const page     = parseInt(req.query.page) || 1;
-        const limit    = 20;
-        const search   = req.query.search || '';
-        const filter   = req.query.filter || 'all'; // all, pro, free, banned
+        const page = parsePage(req.query.page);
+        const search = String(req.query.search || '').trim();
+        const filter = String(req.query.filter || 'all').trim();
 
         const query = {};
         if (search) {
-            query.$or = [
-                { firstName: { $regex: search, $options: 'i' } },
-                { email:     { $regex: search, $options: 'i' } },
-            ];
+            const safeRegex = new RegExp(escapeRegex(search), 'i');
+            query.$or = [{ firstName: safeRegex }, { email: safeRegex }];
         }
-        if (filter === 'pro')      query.plan     = 'pro';
-        if (filter === 'business') query.plan     = 'business';
-        if (filter === 'free')     query.plan     = 'free';
-        if (filter === 'banned')   query.isBanned = true;
+        if (filter === 'pro') query.plan = 'pro';
+        if (filter === 'business') query.plan = 'business';
+        if (filter === 'free') query.plan = 'free';
+        if (filter === 'banned') query.isBanned = true;
 
-        const total = await User.countDocuments(query);
-        const users = await User.find(query)
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(limit)
-            .select('firstName lastName email plan createdAt isBanned urlsThisMonth');
+        const [total, users] = await Promise.all([
+            User.countDocuments(query),
+            User.find(query)
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * PAGE_SIZE)
+                .limit(PAGE_SIZE)
+                .select('firstName lastName email plan createdAt isBanned urlsThisMonth')
+                .lean(),
+        ]);
 
-        res.render('admin/users', {
-            user:  req.user,
+        return res.render('admin/users', {
+            user: req.user,
             users,
             total,
             page,
-            totalPages: Math.ceil(total / limit),
+            totalPages: Math.ceil(total / PAGE_SIZE),
             search,
             filter,
         });
-
     } catch (error) {
         console.log('Admin users error:', error);
-        res.status(500).json({ message: 'Server error' });
+        return res.status(500).json({ message: 'Server error' });
     }
 };
 
-// ══════════════════════════════════
-//  Ban / Unban User
-// ══════════════════════════════════
 exports.toggleBan = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.id).select('isBanned');
         if (!user) return res.status(404).json({ message: 'User nahi mila' });
 
         user.isBanned = !user.isBanned;
         await user.save();
 
-        res.json({ success: true, isBanned: user.isBanned });
-
+        return res.json({ success: true, isBanned: user.isBanned });
     } catch (error) {
         console.log('Toggle ban error:', error);
-        res.status(500).json({ message: 'Server error' });
+        return res.status(500).json({ message: 'Server error' });
     }
 };
 
-// ══════════════════════════════════
-//  Delete User
-// ══════════════════════════════════
 exports.deleteUser = async (req, res) => {
     try {
         const userId = req.params.id;
-        await User.findByIdAndDelete(userId);
-        await Url.deleteMany({ createdBy: userId });
+        await Promise.all([
+            User.findByIdAndDelete(userId),
+            Url.deleteMany({ createdBy: userId }),
+        ]);
 
-        res.json({ success: true });
-
+        return res.json({ success: true });
     } catch (error) {
         console.log('Delete user error:', error);
-        res.status(500).json({ message: 'Server error' });
+        return res.status(500).json({ message: 'Server error' });
     }
 };
 
-// ══════════════════════════════════
-//  All URLs
-// ══════════════════════════════════
 exports.getUrls = async (req, res) => {
     try {
-        const page   = parseInt(req.query.page) || 1;
-        const limit  = 20;
-        const search = req.query.search || '';
+        const page = parsePage(req.query.page);
+        const search = String(req.query.search || '').trim();
 
         const query = {};
         if (search) {
-            query.$or = [
-                { shortCode:  { $regex: search, $options: 'i' } },
-                { orginalUrl: { $regex: search, $options: 'i' } },
-            ];
+            const safeRegex = new RegExp(escapeRegex(search), 'i');
+            query.$or = [{ shortCode: safeRegex }, { orginalUrl: safeRegex }];
         }
 
-        const total = await Url.countDocuments(query);
-        const urls  = await Url.find(query)
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(limit)
-            .populate('createdBy', 'firstName email');
+        const [total, rawUrls] = await Promise.all([
+            Url.countDocuments(query),
+            Url.find(query)
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * PAGE_SIZE)
+                .limit(PAGE_SIZE)
+                .populate('createdBy', 'firstName email')
+                .lean(),
+        ]);
+        const urls = rawUrls.map(withOriginalUrl);
 
-        res.render('admin/urls', {
+        return res.render('admin/urls', {
             user: req.user,
             urls,
             total,
             page,
-            totalPages: Math.ceil(total / limit),
+            totalPages: Math.ceil(total / PAGE_SIZE),
             search,
         });
-
     } catch (error) {
         console.log('Admin URLs error:', error);
-        res.status(500).json({ message: 'Server error' });
+        return res.status(500).json({ message: 'Server error' });
     }
 };
 
-// ══════════════════════════════════
-//  Delete URL (admin)
-// ══════════════════════════════════
 exports.deleteUrl = async (req, res) => {
     try {
         await Url.findByIdAndDelete(req.params.id);
-        res.json({ success: true });
+        return res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        return res.status(500).json({ message: 'Server error' });
     }
 };
 
-
-
-// ✅ Admin Panel — saare campaigns (pending pehle)
 exports.getAdminPanel = async (req, res) => {
     try {
-        const campaigns = await BrandCampaign.find()
-                                              .populate('createdBy', 'name email')
-                                              .sort({ status: 1, createdAt: -1 });
-        // status: 1 → pending pehle aayega (alphabetical: a-p-r)
+        const rawCampaigns = await BrandCampaign.find()
+            .populate('createdBy', 'firstName lastName email')
+            .sort({ status: 1, createdAt: -1 })
+            .lean();
 
-        const stats = {
-            total:    campaigns.length,
-            pending:  campaigns.filter(c => c.status === 'pending').length,
-            approved: campaigns.filter(c => c.status === 'approved').length,
-            rejected: campaigns.filter(c => c.status === 'rejected').length,
-        };
+        const campaigns = rawCampaigns.map((campaign) => {
+            if (!campaign.createdBy) return campaign;
 
-        res.render('admin-panel', { campaigns, stats });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Server error' });
+            const name = `${campaign.createdBy.firstName || ''} ${campaign.createdBy.lastName || ''}`.trim();
+            return {
+                ...campaign,
+                createdBy: {
+                    ...campaign.createdBy,
+                    name,
+                },
+            };
+        });
+
+        const stats = campaigns.reduce(
+            (acc, campaign) => {
+                acc.total += 1;
+                if (campaign.status === 'pending') acc.pending += 1;
+                else if (campaign.status === 'approved') acc.approved += 1;
+                else if (campaign.status === 'rejected') acc.rejected += 1;
+                return acc;
+            },
+            { total: 0, pending: 0, approved: 0, rejected: 0 }
+        );
+
+        return res.render('admin-panel', { campaigns, stats });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Server error' });
     }
 };
 
-// ✅ Campaign approve karo
 exports.approveCampaign = async (req, res) => {
     try {
         const campaign = await BrandCampaign.findById(req.params.id);
         if (!campaign) return res.status(404).json({ error: 'Campaign nahi mila' });
 
         campaign.status = 'approved';
-        campaign.adminNote = req.body.note || '';
+        campaign.adminNote = String(req.body.note || '').trim();
         await campaign.save();
 
-        res.redirect('/admin/campaigns');
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Server error' });
+        return res.redirect('/admin/campaigns');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Server error' });
     }
 };
 
-// ✅ Campaign reject karo
 exports.rejectCampaign = async (req, res) => {
     try {
         const campaign = await BrandCampaign.findById(req.params.id);
         if (!campaign) return res.status(404).json({ error: 'Campaign nahi mila' });
 
         campaign.status = 'rejected';
-        campaign.adminNote = req.body.note || 'Admin ne reject kiya';
+        campaign.adminNote = String(req.body.note || 'Admin ne reject kiya').trim();
         await campaign.save();
 
-        res.redirect('/admin/campaigns');
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Server error' });
+        return res.redirect('/admin/campaigns');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Server error' });
     }
 };

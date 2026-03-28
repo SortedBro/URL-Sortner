@@ -202,7 +202,7 @@
         <div class="page-title">Analytics — <span>/<%= url.shortCode %></span></div>
         <div class="url-info">
           <span class="url-pill"><%= url.shortUrl %></span>
-          <span class="url-original-pill" title="<%= url.orginalUrl %>">→ <%= url.orginalUrl %></span>
+          <span class="url-original-pill" title="<%= url.originalUrl %>">→ <%= url.originalUrl %></span>
         </div>
       </div>
       <!-- Download buttons -->
@@ -377,10 +377,10 @@
       <div class="table-wrap">
         <div class="table-header-row">
           <span class="table-title">📋 Har click ki detail</span>
-          <span class="table-count-badge" id="clickCountBadge"><%= url.clickHistory.length %> clicks</span>
+          <span class="table-count-badge" id="clickCountBadge"><%= clickHistory.length %> clicks</span>
         </div>
 
-        <% if (url.clickHistory.length === 0) { %>
+        <% if (clickHistory.length === 0) { %>
           <div class="empty-row">Abhi koi click nahi hua</div>
         <% } else { %>
           <div style="overflow-x:auto">
@@ -399,8 +399,7 @@
               </thead>
               <tbody id="clickTableBody">
                 <%
-                  const reversed = [...url.clickHistory].reverse();
-                  reversed.forEach((click, i) => {
+                  clickHistory.forEach((click, i) => {
                     const dt = new Date(click.clickedAt);
                     const dateStr = dt.toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'2-digit'});
                     const timeStr = dt.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
@@ -468,13 +467,23 @@
     document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀ Light' : '☾ Dark';
 
     // ── Click history data from server ──
-    const clickHistory = <%- JSON.stringify(url.clickHistory) %>;
+    const clickHistory = <%- JSON.stringify(clickHistory) %>;
     const shortUrl     = '<%= url.shortUrl %>';
     const shortCode    = '<%= url.shortCode %>';
-    const orginalUrl   = '<%= url.orginalUrl %>';
+    const originalUrl  = '<%= url.originalUrl %>';
+    const clickCountsByDay = clickHistory.reduce((acc, item) => {
+      const dt = new Date(item.clickedAt);
+      const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
 
     // ── Chart.js ──
     let clicksChart;
+
+    function getDateKey(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
 
     function getClicksData(days) {
       const result = [];
@@ -482,10 +491,7 @@
         const date = new Date();
         date.setDate(date.getDate() - i);
         const label = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-        const count = clickHistory.filter(c => {
-          const d = new Date(c.clickedAt);
-          return d.toDateString() === date.toDateString();
-        }).length;
+        const count = clickCountsByDay[getDateKey(date)] || 0;
         result.push({ label, count });
       }
       return result;
@@ -613,7 +619,7 @@
       const overview = [
         ['SnapLink Analytics Report'],
         ['Short URL', shortUrl],
-        ['Original URL', orginalUrl],
+        ['Original URL', originalUrl],
         ['Total Clicks', <%= totalClicks %>],
         ['Unique Visitors', <%= uniqueVisitors %>],
         ['Generated', new Date().toLocaleString('en-IN')],
@@ -651,7 +657,7 @@
       doc.setFontSize(10);
       doc.setTextColor(150, 150, 150);
       doc.text(`Short URL: ${shortUrl}`, 14, 30);
-      doc.text(`Original:  ${orginalUrl}`, 14, 36);
+      doc.text(`Original:  ${originalUrl}`, 14, 36);
       doc.text(`Total Clicks: <%= totalClicks %>  |  Unique Visitors: <%= uniqueVisitors %>`, 14, 42);
       doc.text(`Generated: ${new Date().toLocaleString('en-IN')}`, 14, 48);
 

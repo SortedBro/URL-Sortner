@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
@@ -24,8 +26,6 @@ const affiliateRoutes = require('./routes/affiliateRoutes');
 const brandRoutes = require('./routes/brandRoutes');
 const payoutRoutes = require('./routes/payoutRoutes');
 const { clearAuthCookie } = require('./utils/authToken');
-
-require('dotenv').config();
 
 const app = express();
 

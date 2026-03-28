@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { nanoid } = require('nanoid');
 const geoip = require('geoip-lite');
 const UAParser = require('ua-parser-js');
@@ -34,6 +35,34 @@ function normalizeDevice(deviceType) {
     const value = String(deviceType || '').toLowerCase();
     if (value === 'mobile' || value === 'tablet') return value;
     return 'desktop';
+}
+
+function toObjectIdOrNull(value) {
+    if (!value || !mongoose.Types.ObjectId.isValid(value)) return null;
+    return new mongoose.Types.ObjectId(String(value));
+}
+
+function toCountMap(rows) {
+    return rows.reduce((acc, row) => {
+        const key = String(row?._id || 'Unknown');
+        acc[key] = Number(row?.count || 0);
+        return acc;
+    }, {});
+}
+
+function toIndiaDateKey(dateInput) {
+    const date = new Date(dateInput);
+    const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }).formatToParts(date);
+
+    const year = parts.find((part) => part.type === 'year')?.value;
+    const month = parts.find((part) => part.type === 'month')?.value;
+    const day = parts.find((part) => part.type === 'day')?.value;
+    return `${year}-${month}-${day}`;
 }
 
 async function createUniqueShortCode() {
@@ -226,30 +255,47 @@ exports.trackAndRedirect = async (req, res) => {
 
 exports.getDashboard = async (req, res) => {
     try {
-        const [links, campaigns, earnings] = await Promise.all([
+        const userId = String(req.user.user);
+        const affiliateObjectId = toObjectIdOrNull(userId);
+
+        const [links, campaigns, earningRows] = await Promise.all([
             AffiliateLink.find({ createdBy: req.user.user })
                 .sort({ createdAt: -1 })
-                .populate('campaign', 'title brandName'),
+                .populate('campaign', 'title brandName')
+                .select('title originalUrl shortCode shortUrl refParam campaign totalClicks uniqueClicks isActive createdAt')
+                .lean(),
             BrandCampaign.find({ status: 'approved' })
                 .select('title brandName targetUrl refParam commissionType commissionValue')
-                .sort({ createdAt: -1 }),
-            Earning.find({ affiliate: req.user.user }).select('amount status'),
+                .sort({ createdAt: -1 })
+                .lean(),
+            affiliateObjectId
+                ? Earning.aggregate([
+                    { $match: { affiliate: affiliateObjectId } },
+                    {
+                        $group: {
+                            _id: '$status',
+                            amount: { $sum: '$amount' },
+                        },
+                    },
+                ])
+                : [],
         ]);
 
         const totalClicks = links.reduce((sum, item) => sum + Number(item.totalClicks || 0), 0);
         const totalUniqueClicks = links.reduce((sum, item) => sum + Number(item.uniqueClicks || 0), 0);
         const activeLinks = links.filter((item) => item.isActive).length;
 
-        const earningStats = earnings.reduce(
-            (acc, item) => {
-                const amount = Number(item.amount || 0);
-                acc.total += amount;
-                if (item.status === 'paid') acc.paid += amount;
-                else acc.pending += amount;
-                return acc;
-            },
-            { total: 0, paid: 0, pending: 0 }
-        );
+        let paidEarnings = 0;
+        let pendingEarnings = 0;
+        earningRows.forEach((row) => {
+            const amount = Number(row?.amount || 0);
+            if (String(row?._id) === 'paid') {
+                paidEarnings += amount;
+            } else {
+                pendingEarnings += amount;
+            }
+        });
+        const totalEarnings = paidEarnings + pendingEarnings;
 
         return res.render('affiliate-dashboard', {
             links,
@@ -259,9 +305,9 @@ exports.getDashboard = async (req, res) => {
                 totalClicks,
                 totalUniqueClicks,
                 activeLinks,
-                totalEarnings: earningStats.total,
-                paidEarnings: earningStats.paid,
-                pendingEarnings: earningStats.pending,
+                totalEarnings,
+                paidEarnings,
+                pendingEarnings,
             },
         });
     } catch (error) {
@@ -275,54 +321,122 @@ exports.getLinkAnalytics = async (req, res) => {
         const link = await AffiliateLink.findOne({
             shortCode: req.params.code,
             createdBy: req.user.user,
-        });
+        })
+            .select('title shortCode shortUrl originalUrl refParam isActive totalClicks createdAt')
+            .lean();
 
         if (!link) {
             return res.status(404).render('404');
         }
 
+        const linkObjectId = toObjectIdOrNull(link._id);
+        if (!linkObjectId) {
+            return res.status(400).json({ error: 'Invalid link identifier' });
+        }
+
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-        const clickLogs = await ClickLog.find({
-            link: link._id,
-            clickedAt: { $gte: sevenDaysAgo },
-        });
+        const [dailyRows, countryRows, deviceRows, browserRows, totalLogs] = await Promise.all([
+            ClickLog.aggregate([
+                {
+                    $match: {
+                        link: linkObjectId,
+                        clickedAt: { $gte: sevenDaysAgo },
+                    },
+                },
+                {
+                    $group: {
+                        _id: {
+                            $dateToString: {
+                                format: '%Y-%m-%d',
+                                date: '$clickedAt',
+                                timezone: 'Asia/Kolkata',
+                            },
+                        },
+                        count: { $sum: 1 },
+                    },
+                },
+            ]),
+            ClickLog.aggregate([
+                {
+                    $match: {
+                        link: linkObjectId,
+                        clickedAt: { $gte: sevenDaysAgo },
+                    },
+                },
+                {
+                    $group: {
+                        _id: { $ifNull: ['$country', 'Unknown'] },
+                        count: { $sum: 1 },
+                    },
+                },
+                { $sort: { count: -1 } },
+                { $limit: 20 },
+            ]),
+            ClickLog.aggregate([
+                {
+                    $match: {
+                        link: linkObjectId,
+                        clickedAt: { $gte: sevenDaysAgo },
+                    },
+                },
+                {
+                    $group: {
+                        _id: { $ifNull: ['$device', 'desktop'] },
+                        count: { $sum: 1 },
+                    },
+                },
+                { $sort: { count: -1 } },
+                { $limit: 10 },
+            ]),
+            ClickLog.aggregate([
+                {
+                    $match: {
+                        link: linkObjectId,
+                        clickedAt: { $gte: sevenDaysAgo },
+                    },
+                },
+                {
+                    $group: {
+                        _id: { $ifNull: ['$browser', 'Unknown'] },
+                        count: { $sum: 1 },
+                    },
+                },
+                { $sort: { count: -1 } },
+                { $limit: 20 },
+            ]),
+            ClickLog.countDocuments({
+                link: linkObjectId,
+                clickedAt: { $gte: sevenDaysAgo },
+            }),
+        ]);
 
         const dailyClicks = {};
         for (let i = 6; i >= 0; i -= 1) {
             const date = new Date();
             date.setDate(date.getDate() - i);
-            dailyClicks[date.toISOString().split('T')[0]] = 0;
+            const key = toIndiaDateKey(date);
+            dailyClicks[key] = 0;
         }
-
-        clickLogs.forEach((log) => {
-            const key = new Date(log.clickedAt).toISOString().split('T')[0];
-            if (dailyClicks[key] !== undefined) dailyClicks[key] += 1;
+        dailyRows.forEach((row) => {
+            if (dailyClicks[row._id] !== undefined) {
+                dailyClicks[row._id] = Number(row.count || 0);
+            }
         });
 
-        const countryMap = {};
-        const deviceMap = {};
-        const browserMap = {};
-
-        clickLogs.forEach((log) => {
-            const country = log.country || 'Unknown';
-            const device = log.device || 'desktop';
-            const browser = log.browser || 'Unknown';
-
-            countryMap[country] = (countryMap[country] || 0) + 1;
-            deviceMap[device] = (deviceMap[device] || 0) + 1;
-            browserMap[browser] = (browserMap[browser] || 0) + 1;
-        });
+        const deviceMap = toCountMap(deviceRows);
+        const topDevice = Object.entries(deviceMap).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
 
         return res.render('affiliate-analytics', {
             link,
             analytics: {
                 dailyClicks,
-                countries: countryMap,
+                countries: toCountMap(countryRows),
                 devices: deviceMap,
-                browsers: browserMap,
-                totalLogs: clickLogs.length,
+                browsers: toCountMap(browserRows),
+                totalLogs,
+                topDevice,
             },
         });
     } catch (error) {

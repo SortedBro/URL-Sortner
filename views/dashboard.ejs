@@ -156,13 +156,13 @@
       <div class="stat-card s2">
         <div class="stat-label">Total Clicks</div>
         <div class="stat-value">
-          <%= urls.reduce((s,u)=>s+(u.clicks||0),0) %>
+          <%= summary.totalClicks %>
         </div>
         <div class="stat-sub">across all links</div>
       </div>
       <div class="stat-card s3">
         <div class="stat-label">Top Link</div>
-        <% const top=urls.length ? urls.reduce((a,b)=>(a.clicks||0)>(b.clicks||0)?a:b, urls[0]) : null; %>
+        <% const top = summary.topLink; %>
           <div class="stat-value mono">
             <%= top ? '/' +top.shortCode : '—' %>
           </div>
@@ -172,10 +172,8 @@
       </div>
       <div class="stat-card s4">
         <div class="stat-label">This Month</div>
-        <% const n=new Date(); const mo=urls.filter(u=>{const d=new Date(u.createdAt);return
-          d.getMonth()===n.getMonth()&&d.getFullYear()===n.getFullYear();}).length; %>
           <div class="stat-value">
-            <%= mo %>
+            <%= summary.linksThisMonth %>
           </div>
           <div class="stat-sub">links created</div>
       </div>
@@ -243,10 +241,10 @@
                 <tbody>
                   <% urls.forEach(url=> {
                     const isExpired = url.expiresAt && new Date(url.expiresAt) < new Date(); %>
-                      <tr class="link-row" data-search="<%= url.orginalUrl %> <%= url.shortUrl %> <%= url.shortCode %>">
+                      <tr class="link-row" data-search="<%= url.originalUrl %> <%= url.shortUrl %> <%= url.shortCode %>">
                         <td class="td-url">
-                          <span class="url-original" title="<%= url.orginalUrl %>">
-                            <%= url.orginalUrl %>
+                          <span class="url-original" title="<%= url.originalUrl %>">
+                            <%= url.originalUrl %>
                           </span>
                           <div class="url-tags">
                             <% if (url.customAlias) { %><span class="tag-badge alias">alias</span>

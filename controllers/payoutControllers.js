@@ -126,23 +126,31 @@ exports.getWallet = async (req, res) => {
         const selectedMonth = getMonthRange(req.query.month);
         const monthOptions = buildMonthOptions(12);
 
-        const [wallet, earnings, payouts, statementTx, previousTx, earningAgg, payoutAgg] = await Promise.all([
+        const now = new Date();
+        const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+        const [wallet, earnings, payouts, statementTx, previousTx, earningAgg, payoutAgg, earningCountThisMonth, pendingPayoutCount, paidPayoutCountThisMonth] = await Promise.all([
             ensureWallet(userId),
             Earning.find({ affiliate: userId })
                 .populate('campaign', 'title')
                 .sort({ earnedAt: -1 })
-                .limit(20),
-            Payout.find({ affiliate: userId }).sort({ requestedAt: -1 }).limit(20),
+                .limit(20)
+                .lean(),
+            Payout.find({ affiliate: userId }).sort({ requestedAt: -1 }).limit(20).lean(),
             WalletTransaction.find({
                 user: userId,
                 transactionAt: { $gte: selectedMonth.start, $lt: selectedMonth.end },
             })
                 .sort({ transactionAt: -1 })
-                .limit(400),
+                .limit(400)
+                .lean(),
             WalletTransaction.findOne({
                 user: userId,
                 transactionAt: { $lt: selectedMonth.start },
-            }).sort({ transactionAt: -1 }),
+            })
+                .sort({ transactionAt: -1 })
+                .lean(),
             Earning.aggregate([
                 {
                     $match: {
@@ -182,6 +190,19 @@ exports.getWallet = async (req, res) => {
                     },
                 },
             ]),
+            Earning.countDocuments({
+                affiliate: userId,
+                earnedAt: { $gte: thisMonthStart, $lt: thisMonthEnd },
+            }),
+            Payout.countDocuments({
+                affiliate: userId,
+                status: 'pending',
+            }),
+            Payout.countDocuments({
+                affiliate: userId,
+                status: 'paid',
+                paidAt: { $gte: thisMonthStart, $lt: thisMonthEnd },
+            }),
         ]);
 
         const monthlyMap = new Map();
@@ -261,21 +282,6 @@ exports.getWallet = async (req, res) => {
         );
         statementSummary.net = Number((statementSummary.credit - statementSummary.debit).toFixed(2));
 
-        const now = new Date();
-        const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-        const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-
-        const thisMonthEarnCount = earnings.filter((e) => {
-            const d = new Date(e.earnedAt);
-            return d >= thisMonthStart && d < thisMonthEnd;
-        }).length;
-
-        const thisMonthPaidCount = payouts.filter((p) => {
-            if (!p.paidAt || p.status !== 'paid') return false;
-            const d = new Date(p.paidAt);
-            return d >= thisMonthStart && d < thisMonthEnd;
-        }).length;
-
         return res.render('wallet', {
             wallet,
             earnings,
@@ -287,9 +293,9 @@ exports.getWallet = async (req, res) => {
             statementMonthLabel: monthLabelFromKey(selectedMonth.key),
             monthOptions,
             counters: {
-                earningsThisMonth: thisMonthEarnCount,
-                pendingPayouts: payouts.filter((p) => p.status === 'pending').length,
-                paidThisMonth: thisMonthPaidCount,
+                earningsThisMonth: Number(earningCountThisMonth || 0),
+                pendingPayouts: Number(pendingPayoutCount || 0),
+                paidThisMonth: Number(paidPayoutCountThisMonth || 0),
             },
         });
     } catch (error) {
@@ -306,7 +312,9 @@ exports.downloadWalletStatement = async (req, res) => {
         const transactions = await WalletTransaction.find({
             user: userId,
             transactionAt: { $gte: selectedMonth.start, $lt: selectedMonth.end },
-        }).sort({ transactionAt: 1 });
+        })
+            .sort({ transactionAt: 1 })
+            .lean();
 
         const rows = [
             [
@@ -457,16 +465,21 @@ exports.adminGetPayouts = async (req, res) => {
     try {
         const payouts = await Payout.find()
             .populate('affiliate', 'firstName lastName email')
-            .sort({ status: 1, createdAt: -1 });
+            .sort({ status: 1, createdAt: -1 })
+            .lean();
 
-        const stats = {
-            pending: payouts.filter((item) => item.status === 'pending').length,
-            approved: payouts.filter((item) => item.status === 'approved').length,
-            paid: payouts.filter((item) => item.status === 'paid').length,
-            totalPendingAmount: payouts
-                .filter((item) => item.status === 'pending')
-                .reduce((sum, item) => sum + Number(item.amount || 0), 0),
-        };
+        const stats = payouts.reduce(
+            (acc, item) => {
+                if (item.status === 'pending') {
+                    acc.pending += 1;
+                    acc.totalPendingAmount += Number(item.amount || 0);
+                }
+                if (item.status === 'approved') acc.approved += 1;
+                if (item.status === 'paid') acc.paid += 1;
+                return acc;
+            },
+            { pending: 0, approved: 0, paid: 0, totalPendingAmount: 0 }
+        );
 
         return res.render('admin/payouts', { payouts, stats });
     } catch (error) {

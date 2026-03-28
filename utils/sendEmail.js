@@ -1,16 +1,27 @@
 const { Resend } = require('resend');
 const { appConfig } = require('../config/appConfig');
-const resend = new Resend(appConfig.resendApiKey);
+let resend = null;
+
+if (appConfig.resendApiKey) {
+    resend = new Resend(appConfig.resendApiKey);
+}
 
 if (!appConfig.resendApiKey) {
     console.warn('RESEND_API_KEY is missing. OTP/Welcome emails will fail until it is configured.');
+}
+
+function getResendClient() {
+    if (!resend) {
+        throw new Error('RESEND_API_KEY is not configured');
+    }
+    return resend;
 }
 
 // ─────────────────────────────────────────
 //  OTP Email
 // ─────────────────────────────────────────
 exports.sendOtpEmail = async (email, otp) => {
-    await resend.emails.send({
+    await getResendClient().emails.send({
         from: 'SnapLink <noreply@snaplink.fun>',
         to: email,
         subject: `${otp} is your SnapLink verification code`,
@@ -126,7 +137,7 @@ exports.sendOtpEmail = async (email, otp) => {
 exports.sendWelcomeEmail = async (email, name) => {
     const firstName = name ? name.split(' ')[0] : 'there';
 
-    await resend.emails.send({
+    await getResendClient().emails.send({
         from: 'SnapLink <noreply@snaplink.fun>',
         to: email,
         subject: `Welcome to SnapLink, ${firstName}! Your links await ⚡`,

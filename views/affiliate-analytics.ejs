@@ -445,7 +445,9 @@
     <div>
       <h1><%= link.title %></h1>
       <div class="campaign-meta">
-        <span class="meta-pill green">● Active</span>
+        <span class="meta-pill <%= link.isActive ? 'green' : '' %>">
+          <%= link.isActive ? '● Active' : '○ Inactive' %>
+        </span>
         <span class="meta-pill blue">/<%= link.shortCode %></span>
         <span class="meta-pill">Created <%= new Date(link.createdAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}) %></span>
       </div>
@@ -476,7 +478,7 @@
       <div class="stat-icon purple">📱</div>
       <div class="stat-label">Top Device</div>
       <div class="stat-value" style="font-size:1.1rem; padding-top:4px;">
-        <%= Object.entries(analytics.devices).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'N/A' %>
+        <%= analytics.topDevice || 'N/A' %>
       </div>
     </div>
   </div>

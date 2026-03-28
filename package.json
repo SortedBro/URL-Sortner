@@ -1,6 +1,6 @@
 {
   "name": "url-sortner",
-  "version": "1.0.0",
+  "version": "7.8.5",
   "description": "Making url sortner",
   "main": "server.js",
   "scripts": {
