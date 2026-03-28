@@ -1,53 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>404 — Link Not Found | SnapLink</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/css/pages/generated/404.inline.css" />
+  <%
+    const seo = {
+      title: '404 | Page Not Found | SnapLink',
+      description: 'The page or short link you requested could not be found on SnapLink.',
+      path: '',
+      robots: 'noindex, nofollow',
+      stylesheets: ['/css/pages/site-shell.css', '/css/pages/auth-shell.css']
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
-<body>
+<body class="site-page error-page">
+  <%- include('partials/site-navbar', { currentPage: '' }) %>
 
-  <div class="bg-grid"></div>
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
+  <main class="auth-main">
+    <section class="error-shell">
+      <div class="auth-aside">
+        <div class="eyebrow">Page not found</div>
+        <div class="error-code">404</div>
+        <p class="section-copy">The page or short link you opened does not exist, may have expired, or may have been removed.</p>
+      </div>
 
-  <div class="container">
+      <div class="auth-card">
+        <div class="auth-kicker">Recovery options</div>
+        <h1 class="error-title">This route is no longer available.</h1>
+        <p class="section-copy">Use the links below to get back to the main experience, browse features, or open your dashboard if you already have an account.</p>
+        <div class="error-links">
+          <a href="/" class="btn-primary">Back to homepage</a>
+          <a href="/features" class="btn-secondary">Explore features</a>
+          <a href="/dashboard" class="btn-secondary">Open dashboard</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
-    <div class="icon-wrap">
-      <span class="chain chain-left">🔗</span>
-      <div class="chain-break"></div>
-      <span class="chain chain-right">🔗</span>
-    </div>
-
-    <div class="error-code">404</div>
-
-    <div class="title">Yeh link toot gaya!</div>
-    <div class="subtitle">
-      Jo short URL tune open kiya woh exist nahi karta,<br>
-      ya delete ho chuka hai. Double check karo!
-    </div>
-
-    <div class="url-pill">
-      <div class="url-dot"></div>
-      Link not found
-    </div>
-
-    <div class="btn-group">
-      <a href="/" class="btn btn-primary">
-        ← Wapas jao
-      </a>
-      <a href="/dashboard" class="btn btn-ghost">
-        Dashboard
-      </a>
-    </div>
-
-  </div>
-
-  <div class="bottom-tag">snaplink.fun — <span>URL- Shortener</span></div>
-
+  <%- include('partials/footer', { footerCopy: 'If a short link looks broken, return to the homepage or dashboard and create a fresh one.' }) %>
+  <script src="/js/shared/theme.js"></script>
 </body>
 </html>
-
-

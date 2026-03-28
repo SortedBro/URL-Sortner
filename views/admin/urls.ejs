@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>URLs — Admin | SnapLink</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/css/pages/generated/admin/urls.inline.css" />
+  <%
+    const seo = {
+      title: 'URLs | SnapLink Admin',
+      description: 'Inspect and manage every short link from the SnapLink admin workspace.',
+      path: '/admin/urls',
+      robots: 'noindex, nofollow',
+      stylesheets: ["/css/pages/site-shell.css","/css/pages/generated/admin/urls.inline.css","/css/pages/app-shell.css"]
+    };
+  %>
+  <%- include('../partials/seo-head', { seo }) %>
 </head>
-<body>
+<body class="app-shell-page">
 
   <!-- ═══ SIDEBAR ═══ -->
   <aside class="sidebar">
     <a href="/" class="sidebar-logo">Snap<em>Link</em><span class="admin-badge">ADMIN</span></a>
     <nav class="sidebar-nav">
       <div class="nav-section">Overview</div>
-      <a href="/admin/dashboard" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+      <a href="/admin/dashboard" class="nav-item"><span class="nav-icon" aria-hidden="true"></span> Dashboard</a>
       <div class="nav-section">Manage</div>
-      <a href="/admin/users" class="nav-item"><span class="nav-icon">👥</span> Users</a>
-      <a href="/admin/urls"  class="nav-item active"><span class="nav-icon">🔗</span> URLs</a>
+      <a href="/admin/users" class="nav-item"><span class="nav-icon" aria-hidden="true"></span> Users</a>
+      <a href="/admin/urls"  class="nav-item active"><span class="nav-icon" aria-hidden="true"></span> URLs</a>
       <div class="nav-section">Site</div>
-      <a href="/"         class="nav-item"><span class="nav-icon">🏠</span> View Site</a>
-      <a href="/dashboard" class="nav-item"><span class="nav-icon">⚡</span> My Dashboard</a>
-      <a href="/logout"   class="nav-item"><span class="nav-icon">🚪</span> Logout</a>
+      <a href="/"         class="nav-item"><span class="nav-icon" aria-hidden="true"></span> View Site</a>
+      <a href="/dashboard" class="nav-item"><span class="nav-icon" aria-hidden="true"></span> My Dashboard</a>
+      <a href="/logout"   class="nav-item"><span class="nav-icon" aria-hidden="true"></span> Logout</a>
     </nav>
     <div class="sidebar-bottom">
       <div class="sidebar-user">
@@ -39,12 +44,12 @@
     <div class="topbar">
       <div class="topbar-title">URLs Management</div>
       <div class="topbar-right">
-        <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
+        <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">Theme</button>
       </div>
     </div>
 
     <div class="page">
-      <div class="page-title">🔗 All URLs</div>
+      <div class="page-title">All URLsAll URLs</div>
 
       <!-- Search -->
       <form method="GET" action="/admin/urls">

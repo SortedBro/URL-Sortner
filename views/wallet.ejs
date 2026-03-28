@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wallet - SnapLink</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/css/pages/generated/wallet.inline.css" />
+  <%
+    const seo = {
+      title: 'Affiliate Wallet | SnapLink',
+      description: 'Track earnings, payouts, and affiliate balance from your SnapLink wallet workspace.',
+      path: '/affiliate/wallet',
+      robots: 'noindex, nofollow',
+      stylesheets: ["/css/pages/site-shell.css","/css/pages/generated/wallet.inline.css","/css/pages/app-shell.css"]
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
-<body>
-  <nav>
+<body class="workspace-page">
+  <nav class="workspace-nav">
     <a class="brand" href="/">
       <span class="brand-dot"></span>
       SnapLink
     </a>
     <div class="nav-actions">
-      <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">Light</button>
+      <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">Theme</button>
       <a class="btn-nav" href="/affiliate/dashboard">Affiliate</a>
       <a class="btn-nav" href="/logout">Logout</a>
     </div>

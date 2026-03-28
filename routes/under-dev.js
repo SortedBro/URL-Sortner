@@ -54,6 +54,10 @@ router.get('/features', softAuth, cacheAnonymousPage({ ttlSeconds: 120 }), (req,
     res.render('features', { user: req.user || null });
 });
 
+router.get('/faq', softAuth, cacheAnonymousPage({ ttlSeconds: 300 }), (req, res) => {
+    res.render('faq', { user: req.user || null });
+});
+
 router.get('/privacy', softAuth, cacheAnonymousPage({ ttlSeconds: 300 }), renderLegalPage('privacy'));
 router.get('/terms', softAuth, cacheAnonymousPage({ ttlSeconds: 300 }), renderLegalPage('terms'));
 

@@ -1,127 +1,100 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Log In — SnapLink</title>
-  <link rel="stylesheet" href="/css/pages/login.css">
-  <link rel="icon" type="image/png" href="/favicon.png">
+  <%
+    const seo = {
+      title: 'Log In | SnapLink Account Access',
+      description: 'Access your SnapLink dashboard, link analytics, API settings, and white-label controls.',
+      path: '/login',
+      robots: 'noindex, nofollow',
+      stylesheets: ['/css/pages/site-shell.css', '/css/pages/marketing-pages.css', '/css/pages/auth-shell.css']
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
-<body>
+<body class="site-page auth-page">
+  <%- include('partials/auth-navbar', { helperLinkHref: '/signup', helperLinkLabel: 'Sign up', helperCopyText: 'New here?' }) %>
 
-  <nav class="navbar">
-    <a href="/" class="logo">
-      <span class="logo-dot"></span>
-      Snap<span>Link</span>
-    </a>
-    <div class="nav-right">
-      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
-      <a href="/signup" class="nav-link">Account nahi hai? <strong>Sign up</strong></a>
-    </div>
-  </nav>
-
-  <main class="page-center">
-
-    <!-- Left deco — only on wide screens -->
-    <div class="auth-deco">
-      <div class="deco-stat">
-        <span class="deco-num">₹99</span>
-        <span class="deco-label">Pro plan / month</span>
-      </div>
-      <div class="deco-stat">
-        <span class="deco-num">10K+</span>
-        <span class="deco-label">Links shortened</span>
-      </div>
-      <div class="deco-stat">
-        <span class="deco-num">99.9%</span>
-        <span class="deco-label">Uptime</span>
-      </div>
-    </div>
-
-    <div class="card">
-
-      <div class="card-top">
-        <div class="brand-icon">⚡</div>
-        <h2>Wapas aao! 👋</h2>
-        <p>Apne SnapLink account mein login karo</p>
-      </div>
-
-      <% if (typeof error !== 'undefined' && error) { %>
-        <div class="alert alert-error">⚠ <%= error %></div>
-      <% } %>
-      <% if (typeof success !== 'undefined' && success) { %>
-        <div class="alert alert-success">✓ <%= success %></div>
-      <% } %>
-
-      <form action="/login" method="POST" class="form" novalidate>
-
-        <div class="form-group">
-          <label for="email">Email address</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="tum@example.com"
-            required
-            autocomplete="email"
-            value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>"
-          >
+  <main class="auth-main">
+    <section class="auth-shell">
+      <aside class="auth-aside">
+        <div class="auth-kicker">SnapLink access</div>
+        <h1 class="auth-title">Pick up where your links left off.</h1>
+        <p class="auth-copy">Sign in to manage links, review analytics, rotate API keys, and keep campaigns moving.</p>
+        <div class="auth-points">
+          <div class="auth-point"><strong>Dashboard</strong><p class="section-copy">See active links, clicks, and top performers in one place.</p></div>
+          <div class="auth-point"><strong>Settings</strong><p class="section-copy">Manage API, webhooks, white label, reports, and team controls from the same account.</p></div>
+          <div class="auth-point"><strong>Support</strong><p class="section-copy">Need help signing in? Use the About page contact form or public email links.</p></div>
         </div>
-
-        <div class="form-group">
-          <div class="label-row">
-            <label for="password">Password</label>
-            <a href="/forgot-password" class="forgot-link">Password bhool gaye?</a>
+        <div class="auth-mini-grid">
+          <div class="auth-mini-card">
+            <span>Realtime</span>
+            <strong>Analytics ready</strong>
           </div>
-          <div class="input-wrap">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="••••••••"
-              required
-              autocomplete="current-password"
-            >
-            <button type="button" class="eye-btn" id="togglePass" title="Show password">
-              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </button>
+          <div class="auth-mini-card">
+            <span>Business</span>
+            <strong>API and white label</strong>
           </div>
         </div>
+      </aside>
 
-        <div class="checkbox-group">
-          <input type="checkbox" id="remember" name="remember">
-          <label for="remember">Remember me</label>
-        </div>
+      <div class="auth-card">
+        <div class="auth-kicker">Welcome back</div>
+        <h2 class="auth-title">Log in to SnapLink.</h2>
+        <p class="auth-copy">Use the same email and password you created during signup.</p>
 
-        <button type="submit" class="btn-submit">Login karo →</button>
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="inline-alert error"><%= error %></div>
+        <% } %>
+        <% if (typeof success !== 'undefined' && success) { %>
+          <div class="inline-alert success"><%= success %></div>
+        <% } %>
 
-      </form>
+        <form action="/login" method="POST" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input class="auth-input" type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required value="<%= typeof formData !== 'undefined' ? formData.email || '' : '' %>">
+          </div>
 
-      <div class="divider">ya</div>
+          <div class="form-group">
+            <div class="auth-inline">
+              <label for="password">Password</label>
+              <a href="/about" class="inline-help-link">Need help?</a>
+            </div>
+            <div class="input-wrap">
+              <input class="auth-input" type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+              <button type="button" class="eye-btn" id="togglePass" aria-label="Toggle password visibility">
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
 
-      <p class="signup-hint">Naya account chahiye? <a href="/signup">Free mein banao</a></p>
+          <label class="checkbox-row" for="remember">
+            <input type="checkbox" id="remember" name="remember">
+            <span>Keep this browser signed in for quicker access.</span>
+          </label>
 
-    </div>
+          <button type="submit" class="btn-submit">Log in</button>
+        </form>
 
+        <p class="auth-hint">Need an account? <a href="/signup">Create one for free.</a></p>
+      </div>
+    </section>
   </main>
 
   <script src="/js/shared/theme.js"></script>
   <script>
-    // Eye toggle
     const togglePass = document.getElementById('togglePass');
-    const passInput  = document.getElementById('password');
-    togglePass.addEventListener('click', () => {
-      const isPass = passInput.type === 'password';
-      passInput.type = isPass ? 'text' : 'password';
-      togglePass.querySelector('svg').style.opacity = isPass ? '1' : '0.5';
-    });
-  </script>
+    const passInput = document.getElementById('password');
 
+    if (togglePass && passInput) {
+      togglePass.addEventListener('click', () => {
+        passInput.type = passInput.type === 'password' ? 'text' : 'password';
+      });
+    }
+  </script>
 </body>
 </html>
-
-
-

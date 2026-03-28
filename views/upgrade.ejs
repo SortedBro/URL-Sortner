@@ -1,194 +1,162 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Upgrade — SnapLink</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/css/pages/home.css"/>
-  <link rel="stylesheet" href="/css/pages/generated/upgrade.inline.css" />
+  <%
+    const seo = {
+      title: `Upgrade to ${plan === 'business' ? 'Business' : 'Pro'} | SnapLink`,
+      description: 'Choose the plan that matches your SnapLink workflow and complete secure checkout for advanced features.',
+      path: '/upgrade',
+      robots: 'noindex, nofollow',
+      stylesheets: ['/css/pages/site-shell.css', '/css/pages/marketing-pages.css', '/css/pages/auth-shell.css']
+    };
+    const planName = plan === 'business' ? 'Business' : 'Pro';
+    const priceMap = {
+      pro: { monthly: 99, yearly: 990 },
+      business: { monthly: 299, yearly: 2990 }
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
-<body>
+<body class="site-page upgrade-page">
+  <%- include('partials/site-navbar', { currentPage: 'pricing' }) %>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <a href="/" class="nav-logo"><span class="logo-dot"></span>Snap<em>Link</em></a>
-    <div class="nav-right">
-      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
-      <% if (user) { %>
-        <div class="nav-user">
-          <div class="nav-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
-          <span class="nav-username"><%= user.name %></span>
-        </div>
-        <a href="/logout" class="nav-btn-outline">Logout</a>
-      <% } %>
-    </div>
-  </nav>
-
-  <div class="upgrade-wrap">
-    <a href="/pricing" class="back-link">← Pricing pe wapas</a>
-
-    <div class="upgrade-card <%= plan === 'pro' ? 'pro-card' : 'biz-card' %>">
-
-      <!-- Success box (hidden by default) -->
-      <div class="success-box" id="successBox">
-        <div class="success-icon">🎉</div>
-        <h2>Welcome to <span style="color:var(--accent)"><%= plan.charAt(0).toUpperCase() + plan.slice(1) %></span>!</h2>
-        <p>Tera plan upgrade ho gaya. Ab sab features unlock hain!</p>
-        <a href="/dashboard">Dashboard pe jao →</a>
-      </div>
-
-      <!-- Payment form -->
-      <div id="paymentForm">
-        <div class="upgrade-plan-name"><%= plan.toUpperCase() %> PLAN</div>
-        <h1 class="upgrade-title">Upgrade karo 🚀</h1>
-
-        <!-- Billing options -->
-        <div class="billing-row">
-          <div class="billing-opt active" id="opt-monthly" onclick="selectBilling('monthly')">
-            Monthly
-            <span class="save">&nbsp;</span>
-          </div>
-          <div class="billing-opt" id="opt-yearly" onclick="selectBilling('yearly')">
-            Yearly
-            <span class="save">2 months free!</span>
-          </div>
-        </div>
-
-        <!-- Price -->
-        <div class="price-display">
-          <div class="price-big" id="priceDisplay">
-            ₹<span id="priceNum"><%= plan === 'pro' ? '99' : '299' %></span>
-          </div>
-          <div class="price-sub" id="priceSub">per month</div>
-        </div>
-
-        <!-- Features -->
-        <ul class="upgrade-features">
+  <main class="auth-main">
+    <section class="upgrade-shell">
+      <aside class="upgrade-summary">
+        <div class="auth-kicker"><%= planName %> plan</div>
+        <h1 class="upgrade-title">Move into <span><%= planName %></span>.</h1>
+        <p class="upgrade-copy">Secure checkout for the features that unlock higher link volume, stronger analytics, and better branding control.</p>
+        <div class="upgrade-points">
           <% if (plan === 'pro') { %>
-            <li><span>✓</span> Unlimited URLs</li>
-            <li><span>✓</span> Full analytics</li>
-            <li><span>✓</span> Custom alias</li>
-            <li><span>✓</span> Password protected links</li>
-            <li><span>✓</span> Link expiry date</li>
-            <li><span>✓</span> Bulk shortener</li>
-            <li><span>✓</span> API access + CSV export</li>
+            <div class="upgrade-point"><strong>Unlimited links</strong><p class="section-copy">Publish without the free monthly cap.</p></div>
+            <div class="upgrade-point"><strong>API and exports</strong><p class="section-copy">Programmatic creation and CSV access for growth workflows.</p></div>
+            <div class="upgrade-point"><strong>Advanced controls</strong><p class="section-copy">Custom aliases, password locks, expiry dates, and bulk shortening.</p></div>
           <% } else { %>
-            <li><span>✓</span> Sab Pro features</li>
-            <li><span>✓</span> 5 team members</li>
-            <li><span>✓</span> Custom domain</li>
-            <li><span>✓</span> White label</li>
-            <li><span>✓</span> Priority support + SLA</li>
+            <div class="upgrade-point"><strong>White-label delivery</strong><p class="section-copy">Use your own domain, logo, and branded identity.</p></div>
+            <div class="upgrade-point"><strong>Team operations</strong><p class="section-copy">Add seats, automate with webhooks, and manage shared reporting.</p></div>
+            <div class="upgrade-point"><strong>Business workflows</strong><p class="section-copy">Weekly reports, priority response paths, and business support features.</p></div>
           <% } %>
-        </ul>
+        </div>
+      </aside>
 
-        <button class="pay-btn" id="payBtn" onclick="startPayment()">
-          🔒 Secure Payment karo
-        </button>
-        <p class="secure-note">Razorpay se secure payment • UPI, Card, Net Banking</p>
+      <div class="upgrade-card">
+        <div id="paymentForm" class="upgrade-form">
+          <div class="auth-kicker">Secure checkout</div>
+          <h2 class="upgrade-title">Choose your billing cycle.</h2>
+          <p class="upgrade-copy">Switch between monthly and yearly before continuing to Razorpay checkout.</p>
+
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="inline-alert error"><%= error %></div>
+          <% } %>
+
+          <div class="upgrade-switch-row">
+            <button type="button" class="upgrade-switch is-active" id="opt-monthly" onclick="selectBilling('monthly')">Monthly</button>
+            <button type="button" class="upgrade-switch" id="opt-yearly" onclick="selectBilling('yearly')">Yearly</button>
+          </div>
+
+          <div class="upgrade-price">
+            <strong id="priceNum">Rs <%= priceMap[plan].monthly %></strong>
+            <span id="priceSub">per month</span>
+          </div>
+
+          <div class="upgrade-points">
+            <% if (plan === 'pro') { %>
+              <div class="upgrade-point"><strong>Includes</strong><p class="section-copy">Unlimited URLs, full analytics, bulk shortener, exports, password protection, expiry, and API access.</p></div>
+            <% } else { %>
+              <div class="upgrade-point"><strong>Includes</strong><p class="section-copy">Everything in Pro plus white label, custom domain, team seats, webhook support, and weekly reports.</p></div>
+            <% } %>
+          </div>
+
+          <button class="upgrade-pay-btn" id="payBtn" type="button" onclick="startPayment()">Continue to secure payment</button>
+          <p class="secure-note">Checkout is processed through Razorpay and supports UPI, cards, net banking, and wallets.</p>
+        </div>
+
+        <div class="success-box" id="successBox">
+          <div class="auth-kicker">Payment complete</div>
+          <h3>Welcome to <%= planName %>.</h3>
+          <p>Your account upgrade is complete. Open the dashboard to start using your new features.</p>
+          <div class="btn-row">
+            <a href="/dashboard" class="btn-primary">Open dashboard</a>
+            <a href="/pricing" class="btn-secondary">Back to pricing</a>
+          </div>
+        </div>
       </div>
+    </section>
+  </main>
 
-    </div>
-  </div>
-
-  <%- include('partials/footer') %>
-
-  <!-- Razorpay SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
   <script src="/js/shared/theme.js"></script>
   <script>
-    // Theme
-
-    // Plan data
     const plan = '<%= plan %>';
     const prices = {
-      pro:      { monthly: 99,  yearly: 990  },
-      business: { monthly: 299, yearly: 2990 },
+      pro: { monthly: 99, yearly: 990 },
+      business: { monthly: 299, yearly: 2990 }
     };
     let billing = 'monthly';
 
     function selectBilling(type) {
       billing = type;
-      document.getElementById('opt-monthly').classList.toggle('active', type === 'monthly');
-      document.getElementById('opt-yearly').classList.toggle('active',  type === 'yearly');
-      document.getElementById('priceNum').textContent = prices[plan][type];
-      document.getElementById('priceSub').textContent = type === 'yearly' ? 'per year (2 months free!)' : 'per month';
+      document.getElementById('opt-monthly').classList.toggle('is-active', type === 'monthly');
+      document.getElementById('opt-yearly').classList.toggle('is-active', type === 'yearly');
+      document.getElementById('priceNum').textContent = `Rs ${prices[plan][type]}`;
+      document.getElementById('priceSub').textContent = type === 'yearly' ? 'per year' : 'per month';
     }
 
     async function startPayment() {
       const btn = document.getElementById('payBtn');
       btn.disabled = true;
-      btn.textContent = 'Order create ho raha hai...';
+      btn.textContent = 'Creating order...';
 
       try {
-        // ✅ Step 1 — Order create karo
         const orderRes = await fetch('/payment/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan, billing }),
+          body: JSON.stringify({ plan, billing })
         });
         const order = await orderRes.json();
+        if (!order.orderId) throw new Error('Order creation failed');
 
-        if (!order.orderId) throw new Error('Order nahi bana');
-
-        // ✅ Step 2 — Razorpay checkout open karo
         const options = {
-          key:         '<%= razorpayKeyId %>',
-          amount:      order.amount,
-          currency:    order.currency,
-          order_id:    order.orderId,
-          name:        'SnapLink',
-          description: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan — ${billing}`,
-          handler: async function(response) {
-            // ✅ Step 3 — Payment verify karo
+          key: '<%= razorpayKeyId || '' %>',
+          amount: order.amount,
+          currency: order.currency,
+          order_id: order.orderId,
+          name: 'SnapLink',
+          description: `${plan} ${billing}`,
+          handler: async function (response) {
             const verifyRes = await fetch('/payment/verify', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                razorpay_order_id:   response.razorpay_order_id,
+                razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature:  response.razorpay_signature,
+                razorpay_signature: response.razorpay_signature,
                 plan,
-                billing,
-              }),
+                billing
+              })
             });
             const result = await verifyRes.json();
             if (result.success) {
               document.getElementById('paymentForm').style.display = 'none';
-              document.getElementById('successBox').style.display  = 'block';
+              document.getElementById('successBox').classList.add('is-visible');
             }
           },
-          prefill: {
-            name:  '<%= user ? user.name : "" %>',
-            email: '',
-          },
-          theme: { color: '#FAC775' },
+          theme: { color: '#f4c96c' },
           modal: {
-            ondismiss: function() {
+            ondismiss: function () {
               btn.disabled = false;
-              btn.innerHTML = '🔒 Secure Payment karo';
+              btn.textContent = 'Continue to secure payment';
             }
           }
         };
 
         const rzp = new Razorpay(options);
         rzp.open();
-
       } catch (error) {
-        console.error(error);
         btn.disabled = false;
-        btn.textContent = '❌ Error — Try Again';
-        setTimeout(() => {
-          btn.innerHTML = '🔒 Secure Payment karo';
-        }, 2000);
+        btn.textContent = 'Try again';
       }
     }
   </script>
-
 </body>
 </html>
-
-
-
-

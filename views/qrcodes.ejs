@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QR Codes — SnapLink</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="icon" type="image/png" href="/favicon.png"/>
+  <%
+    const seo = {
+      title: 'QR Codes | SnapLink',
+      description: 'Download and manage QR codes for every short link inside your SnapLink workspace.',
+      path: '/qr-codes',
+      robots: 'noindex, nofollow',
+      stylesheets: ["/css/pages/site-shell.css","/css/pages/generated/qrcodes.inline.css","/css/pages/app-shell.css"]
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <link rel="stylesheet" href="/css/pages/generated/qrcodes.inline.css" />
 </head>
-<body>
+<body class="app-shell-page">
 
 <aside class="sidebar">
   <a class="sidebar-logo" href="/">
@@ -38,18 +41,18 @@
   <div class="sidebar-bottom">
     <div class="theme-row">
       <span>Theme</span>
-      <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+      <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">Theme</button>
     </div>
     <div class="plan-card">
       <div class="plan-card-top">
         <div class="plan-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
         <div>
           <div class="plan-username"><%= user.name.split(' ')[0] %></div>
-          <div class="plan-label"><%= user.plan === 'free' ? 'FREE PLAN' : user.plan === 'pro' ? '⭐ PRO' : '💎 BUSINESS' %></div>
+          <div class="plan-label"><%= user.plan === 'free' ? 'FREE PLAN' : user.plan === 'pro' ? 'PRO' : 'BUSINESS' %></div>
         </div>
       </div>
       <% if (user.plan === 'free') { %>
-        <a href="/pricing" class="upgrade-btn">⚡ Upgrade — ₹99/mo</a>
+        <a href="/pricing" class="upgrade-btn">Upgrade - Rs 99/mo</a>
       <% } %>
     </div>
     <a href="/logout" class="logout-link">Logout</a>
@@ -63,7 +66,7 @@
       <p>Saare links ke QR codes ek jagah</p>
     </div>
     <% if (urls.length > 0) { %>
-      <button class="btn-dl-all" onclick="downloadAll()">⬇ Download All</button>
+      <button class="btn-dl-all" onclick="downloadAll()">Download All</button>
     <% } %>
   </header>
 
@@ -101,7 +104,7 @@
 <!-- Full-size QR Modal -->
 <div class="qr-modal-bg" id="qrModalBg" onclick="if(event.target===this)closeModal()">
   <div class="qr-modal">
-    <button class="qr-modal-close" onclick="closeModal()">✕</button>
+    <button class="qr-modal-close" onclick="closeModal()">Close</button>
     <div class="qr-modal-title">QR Code</div>
     <div class="qr-modal-url" id="modalUrl"></div>
     <div id="modal-canvas-wrap"></div>

@@ -1,0 +1,467 @@
+﻿.page-stack {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.feature-points,
+.plan-features,
+.contact-methods,
+.timeline-list,
+.legal-directory,
+.faq-list,
+.tool-tags,
+.check-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.check-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.check-list li,
+.plan-features li,
+.faq-answer ul li,
+.timeline-list li,
+.contact-methods li,
+.legal-directory a,
+.tool-tags span {
+  position: relative;
+}
+
+.check-list li,
+.plan-features li,
+.timeline-list li,
+.contact-methods li {
+  list-style: none;
+  padding-left: 1.3rem;
+}
+
+.check-list li::before,
+.plan-features li::before,
+.timeline-list li::before,
+.contact-methods li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.66rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--site-accent), var(--site-accent-strong));
+}
+
+.hero-panel,
+.plan-card,
+.person-card,
+.faq-card,
+.legal-sidebar,
+.legal-content,
+.tool-summary-card,
+.tool-panel-card,
+.auth-card,
+.auth-aside,
+.upgrade-summary,
+.upgrade-card {
+  padding: 1.6rem;
+  border-radius: 28px;
+  border: 1px solid var(--site-border);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.hero-panel,
+.plan-card,
+.person-card,
+.faq-card,
+.tool-panel-card,
+.auth-card,
+.auth-aside,
+.upgrade-summary,
+.upgrade-card {
+  box-shadow: var(--site-shadow);
+}
+
+.hero-panel h3,
+.person-card h3,
+.plan-card h3,
+.tool-summary-card h3,
+.upgrade-card h3,
+.auth-card h3 {
+  margin: 0 0 0.8rem;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem;
+}
+
+.hero-panel .mini-metrics {
+  margin-top: 1rem;
+}
+
+.person-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.person-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--site-accent), var(--site-accent-strong));
+  color: #16120a;
+}
+
+.person-role,
+.plan-subtitle,
+.tool-summary-copy,
+.auth-copy,
+.upgrade-copy,
+.faq-answer,
+.legal-note,
+.tool-kicker {
+  color: var(--site-text-soft);
+  line-height: 1.75;
+}
+
+.contact-grid {
+  grid-template-columns: 0.9fr 1.1fr;
+}
+
+.contact-methods {
+  padding: 0;
+  margin: 0;
+}
+
+.contact-method-card,
+.info-band,
+.stat-strip,
+.tool-highlight {
+  padding: 1.2rem;
+  border-radius: 22px;
+  border: 1px solid var(--site-border);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.contact-form,
+.auth-form,
+.upgrade-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.form-group {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.form-group label,
+.otp-label,
+.upgrade-switch-label {
+  font-size: 0.82rem;
+  color: var(--site-text-soft);
+  font-family: 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.form-input,
+.form-textarea,
+.auth-input,
+.upgrade-switch,
+.otp-box {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--site-border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--site-text);
+}
+
+.form-textarea {
+  min-height: 150px;
+  padding: 1rem;
+  resize: vertical;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.auth-input:focus,
+.otp-box:focus,
+.upgrade-switch:focus {
+  outline: none;
+  border-color: var(--site-border-strong);
+}
+
+.inline-help,
+.form-help,
+.auth-hint,
+.upgrade-note {
+  color: var(--site-text-soft);
+  font-size: 0.95rem;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.plan-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.plan-card.is-featured {
+  border-color: var(--site-border-strong);
+  transform: translateY(-8px);
+}
+
+.plan-label-row,
+.price-row,
+.price-meta,
+.compare-row,
+.upgrade-price-row,
+.auth-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.plan-chip.popular {
+  background: rgba(244, 201, 108, 0.15);
+}
+
+.plan-price strong,
+.upgrade-price strong {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.4rem, 4vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.plan-price span,
+.price-meta span,
+.compare-row span,
+.upgrade-price span {
+  color: var(--site-text-soft);
+}
+
+.plan-cta,
+.plan-current {
+  width: 100%;
+}
+
+.plan-current {
+  min-height: 50px;
+  border-radius: 16px;
+  border: 1px solid rgba(127, 224, 180, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(127, 224, 180, 0.08);
+  color: var(--site-success);
+  font-weight: 700;
+}
+
+.compare-grid,
+.compare-table {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.compare-row {
+  padding: 1rem 1.15rem;
+  border-radius: 18px;
+  border: 1px solid var(--site-border);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.faq-list {
+  margin-top: 0.5rem;
+}
+
+.faq-item {
+  border: 1px solid var(--site-border);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.faq-question {
+  width: 100%;
+  padding: 1rem 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 0;
+  background: transparent;
+  color: var(--site-text);
+  text-align: left;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.faq-icon {
+  color: var(--site-accent);
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+}
+
+.faq-item.is-open .faq-icon {
+  transform: rotate(45deg);
+}
+
+.faq-answer {
+  display: none;
+  padding: 0 1.15rem 1.1rem;
+}
+
+.faq-item.is-open .faq-answer {
+  display: block;
+}
+
+.tool-overview {
+  padding: 1.5rem;
+}
+
+.tool-directory {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.tool-tags {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tool-tags span {
+  padding: 0.9rem 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--site-border);
+  background: rgba(255, 255, 255, 0.04);
+  text-align: center;
+  color: var(--site-text-soft);
+  cursor: pointer;
+}
+
+.tools-page .tool-tabs-bar {
+  top: 92px;
+  z-index: 20;
+  background: transparent;
+  border: 0;
+}
+
+.tools-page .tool-tabs-scroll {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 0.75rem 0;
+}
+
+.tools-page .tools-panels-wrap {
+  max-width: none;
+  padding-top: 1rem;
+}
+
+.legal-shell {
+  grid-template-columns: 320px minmax(0, 1fr);
+}
+
+.legal-sidebar,
+.legal-content {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.legal-directory a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--site-border);
+  text-decoration: none;
+  color: var(--site-text-soft);
+}
+
+.legal-directory a.active,
+.legal-directory a:hover {
+  color: var(--site-text);
+  border-color: var(--site-border-strong);
+}
+
+.legal-section {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 1rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--site-border);
+}
+
+.legal-section:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.legal-section-index {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 201, 108, 0.12);
+  color: var(--site-accent);
+  font-family: 'DM Mono', monospace;
+}
+
+.legal-section-body ul {
+  margin: 0.8rem 0 0;
+  padding-left: 1.15rem;
+  color: var(--site-text-soft);
+  line-height: 1.75;
+}
+
+@media (max-width: 1080px) {
+  .pricing-grid,
+  .tool-directory,
+  .contact-grid,
+  .legal-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-tags {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .form-row,
+  .tool-tags,
+  .legal-section {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-card.is-featured {
+    transform: none;
+  }
+
+  .tools-page .tool-tabs-bar {
+    top: 82px;
+  }
+}

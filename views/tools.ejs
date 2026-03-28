@@ -1,15 +1,27 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free Tools — SnapLink</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/favicon.png">
-  <link rel="stylesheet" href="/css/pages/home.css">
-  <link rel="stylesheet" href="/css/pages/tools.css">
-  <!-- Early stub: tools.js load hone se pehle buttons work karein -->
+  <%
+    const seo = {
+      title: 'Free Tools | QR, UTM, JSON, Password, and Utility Generators | SnapLink',
+      description: 'Use SnapLink free tools for QR generation, UTM building, JSON formatting, password generation, image compression, and more browser-based utilities.',
+      keywords: 'free tools, qr code generator, utm builder, json formatter, password generator, free online utilities',
+      path: '/tools',
+      stylesheets: ['/css/pages/site-shell.css', '/css/pages/marketing-pages.css', '/css/pages/tools.css'],
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'QR Code Generator' },
+          { '@type': 'ListItem', position: 2, name: 'Image Compressor' },
+          { '@type': 'ListItem', position: 3, name: 'UTM Builder' },
+          { '@type': 'ListItem', position: 4, name: 'JSON Formatter' },
+          { '@type': 'ListItem', position: 5, name: 'Password Generator' }
+        ]
+      }
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
   <script>
     window.openTool = function(id, btn) {
       document.addEventListener('DOMContentLoaded', function() {
@@ -19,149 +31,110 @@
     };
   </script>
 </head>
-<body>
+<body class="site-page tools-page">
+<%- include('partials/site-navbar', { currentPage: 'tools' }) %>
 
-<!-- ═══ NAVBAR (same as home) ═══ -->
-<nav class="navbar">
-  <a href="/" class="nav-logo">
-    <span class="logo-dot"></span>
-    Snap<em>Link</em>
-  </a>
-  <div class="nav-center">
-    <a href="/features" class="nav-link">Features</a>
-    <a href="/tools" class="nav-link" style="color:var(--accent)">🛠️ Tools</a>
-    <a href="/pricing" class="nav-link">Pricing</a>
-    <a href="/about" class="nav-link">About</a>
-  </div>
-  <div class="nav-right">
-    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
-    <% if (typeof user !== 'undefined' && user) { %>
-      <div class="nav-user">
-        <div class="nav-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
-        <span class="nav-username"><%= user.name %></span>
+<main class="page-shell page-stack tools-main">
+
+  <section class="tool-overview">
+    <div class="tool-directory">
+      <div>
+        <div class="eyebrow">Free tools</div>
+        <h1 class="hero-title">Utility tools that stay <span>fast, simple, and browser-first</span>.</h1>
+        <p class="hero-text">Use these tools without logging in. Generate QR codes, compress images, build UTM links, format JSON, and handle day-to-day utility work in one place.</p>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>Free</strong><span>No account required</span></div>
+          <div class="hero-stat"><strong>Browser</strong><span>Instant utility workflows</span></div>
+          <div class="hero-stat"><strong>Wide set</strong><span>Marketing, dev, and productivity helpers</span></div>
+        </div>
       </div>
-      <a href="/dashboard" class="nav-link">Dashboard</a>
-      <a href="/logout" class="nav-btn-outline">Logout</a>
-    <% } else { %>
-      <a href="/login" class="nav-link">Login</a>
-      <a href="/signup" class="nav-btn-solid">Get Started</a>
-    <% } %>
-  </div>
-</nav>
 
-<main class="tools-main">
-
-  <!-- ═══ HERO ═══ -->
-  <section class="tools-hero">
-    <div class="tools-badge">🛠️ Free Tools</div>
-    <h1 class="tools-title">Sab tools, <span class="accent">bilkul free</span></h1>
-    <p class="tools-subtitle">Koi login nahi • Koi limit nahi • Browser mein kaam karta hai</p>
-
-    <!-- Tool grid cards for quick navigation -->
-    <div class="tools-nav-grid">
-      <button class="tnav-card" onclick="openTool('qr')">
-        <span class="tnav-icon">📱</span>
-        <span class="tnav-label">QR Generator</span>
-      </button>
-      <button class="tnav-card" onclick="openTool('img')">
-        <span class="tnav-icon">🗜️</span>
-        <span class="tnav-label">Image Compressor</span>
-      </button>
-      <button class="tnav-card" onclick="openTool('yt')">
-        <span class="tnav-icon">▶️</span>
-        <span class="tnav-label">YT Downloader</span>
-      </button>
-      <button class="tnav-card" onclick="openTool('utm')">
-        <span class="tnav-icon">📊</span>
-        <span class="tnav-label">UTM Builder</span>
-      </button>
-      <button class="tnav-card" onclick="openTool('json')">
-        <span class="tnav-icon">{ }</span>
-        <span class="tnav-label">JSON Formatter</span>
-      </button>
-      <button class="tnav-card" onclick="openTool('hash')">
-        <span class="tnav-icon">#</span>
-        <span class="tnav-label">Hash Generator</span>
-      </button>
-      <button class="tnav-card" onclick="openTool('b64')">
-        <span class="tnav-icon">🔄</span>
-        <span class="tnav-label">Base64</span>
-      </button>
-      <button class="tnav-card" onclick="openTool('color')">
-        <span class="tnav-icon">🎨</span>
-        <span class="tnav-label">Color Picker</span>
-      </button>
-      <button class="tnav-card" onclick="openTool('word')">
-        <span class="tnav-icon">📝</span>
-        <span class="tnav-label">Word Counter</span>
-      </button>
-
-      <button class="tnav-card" onclick="openTool('pass')"><span class="tnav-icon">🔑</span><span class="tnav-label">Password Generator</span></button>
-      <button class="tnav-card" onclick="openTool('fake')"><span class="tnav-icon">👤</span><span class="tnav-label">Fake Data</span></button>
-      <button class="tnav-card" onclick="openTool('md')"><span class="tnav-icon">📄</span><span class="tnav-label">Markdown Editor</span></button>
-      <button class="tnav-card" onclick="openTool('meta')"><span class="tnav-icon">🔍</span><span class="tnav-label">Meta Tag Generator</span></button>
-      <button class="tnav-card" onclick="openTool('emoji')"><span class="tnav-icon">😀</span><span class="tnav-label">Emoji Picker</span></button>
-      <button class="tnav-card" onclick="openTool('inv')"><span class="tnav-icon">🧾</span><span class="tnav-label">Invoice Generator</span></button>
-      <button class="tnav-card" onclick="openTool('age')"><span class="tnav-icon">📅</span><span class="tnav-label">Age Calculator</span></button>
-      <button class="tnav-card" onclick="openTool('unit')"><span class="tnav-icon">📐</span><span class="tnav-label">Unit Converter</span></button>
-      <button class="tnav-card" onclick="openTool('grad')"><span class="tnav-icon">🎨</span><span class="tnav-label">Gradient Generator</span></button>
-      <button class="tnav-card" onclick="openTool('pomo')"><span class="tnav-icon">⏱️</span><span class="tnav-label">Pomodoro Timer</span></button>
-      <button class="tnav-card" onclick="openTool('num')"><span class="tnav-icon">🔢</span><span class="tnav-label">Number to Words</span></button>
-      <button class="tnav-card" onclick="openTool('aspect')"><span class="tnav-icon">📐</span><span class="tnav-label">Aspect Ratio</span></button>
-      <button class="tnav-card" onclick="openTool('gst')"><span class="tnav-icon">💰</span><span class="tnav-label">GST Calculator</span></button>
-      <button class="tnav-card" onclick="openTool('profit')"><span class="tnav-icon">📊</span><span class="tnav-label">Profit Margin</span></button>
-      <button class="tnav-card" onclick="openTool('pomo2')"><span class="tnav-icon">⏱️</span><span class="tnav-label">Pomodoro Timer</span></button>
-      <button class="tnav-card" onclick="openTool('unit2')"><span class="tnav-icon">📐</span><span class="tnav-label">Unit Converter</span></button>
-      <button class="tnav-card" onclick="openTool('grad2')"><span class="tnav-icon">🎨</span><span class="tnav-label">CSS Gradient</span></button>
-      <button class="tnav-card" onclick="openTool('age2')"><span class="tnav-icon">📅</span><span class="tnav-label">Age Calculator</span></button>
+      <aside class="tool-summary-card">
+        <div class="section-kicker">Popular picks</div>
+        <h3>Jump into the tools most users open first.</h3>
+        <p class="tool-summary-copy">The full panel set below stays intact. This quick directory just helps you land faster.</p>
+        <div class="tool-tags">
+          <span onclick="openTool('qr')">QR Generator</span>
+          <span onclick="openTool('img')">Image Compressor</span>
+          <span onclick="openTool('utm')">UTM Builder</span>
+          <span onclick="openTool('json')">JSON Formatter</span>
+          <span onclick="openTool('pass')">Password Generator</span>
+          <span onclick="openTool('meta')">Meta Tag Generator</span>
+        </div>
+      </aside>
     </div>
+
+    <div class="tools-hero">
+      <div class="tools-badge">Free tools collection</div>
+      <h2 class="tools-title">Open any tool from the directory below.</h2>
+      <p class="tools-subtitle">No install. No workflow friction. Just open, generate, copy, and move on.</p>
+
+      <div class="tools-nav-grid">
+        <button class="tnav-card" onclick="openTool('qr')"><span class="tnav-icon">QR</span><span class="tnav-label">QR Generator</span></button>
+        <button class="tnav-card" onclick="openTool('img')"><span class="tnav-icon">IMG</span><span class="tnav-label">Image Compressor</span></button>
+        <button class="tnav-card" onclick="openTool('yt')"><span class="tnav-icon">VID</span><span class="tnav-label">Video Downloader</span></button>
+        <button class="tnav-card" onclick="openTool('utm')"><span class="tnav-icon">UTM</span><span class="tnav-label">UTM Builder</span></button>
+        <button class="tnav-card" onclick="openTool('json')"><span class="tnav-icon">{ }</span><span class="tnav-label">JSON Formatter</span></button>
+        <button class="tnav-card" onclick="openTool('hash')"><span class="tnav-icon">#</span><span class="tnav-label">Hash Generator</span></button>
+        <button class="tnav-card" onclick="openTool('b64')"><span class="tnav-icon">B64</span><span class="tnav-label">Base64</span></button>
+        <button class="tnav-card" onclick="openTool('color')"><span class="tnav-icon">CLR</span><span class="tnav-label">Color Picker</span></button>
+        <button class="tnav-card" onclick="openTool('word')"><span class="tnav-icon">TXT</span><span class="tnav-label">Word Counter</span></button>
+        <button class="tnav-card" onclick="openTool('pass')"><span class="tnav-icon">KEY</span><span class="tnav-label">Password Generator</span></button>
+        <button class="tnav-card" onclick="openTool('fake')"><span class="tnav-icon">ID</span><span class="tnav-label">Fake Data</span></button>
+        <button class="tnav-card" onclick="openTool('md')"><span class="tnav-icon">MD</span><span class="tnav-label">Markdown Editor</span></button>
+        <button class="tnav-card" onclick="openTool('meta')"><span class="tnav-icon">SEO</span><span class="tnav-label">Meta Tag Generator</span></button>
+        <button class="tnav-card" onclick="openTool('emoji')"><span class="tnav-icon">EMJ</span><span class="tnav-label">Emoji Picker</span></button>
+        <button class="tnav-card" onclick="openTool('inv')"><span class="tnav-icon">INV</span><span class="tnav-label">Invoice Generator</span></button>
+        <button class="tnav-card" onclick="openTool('num')"><span class="tnav-icon">123</span><span class="tnav-label">Number to Words</span></button>
+        <button class="tnav-card" onclick="openTool('aspect')"><span class="tnav-icon">RTO</span><span class="tnav-label">Aspect Ratio</span></button>
+        <button class="tnav-card" onclick="openTool('gst')"><span class="tnav-icon">GST</span><span class="tnav-label">GST Calculator</span></button>
+        <button class="tnav-card" onclick="openTool('profit')"><span class="tnav-icon">ROI</span><span class="tnav-label">Profit Margin</span></button>
+        <button class="tnav-card" onclick="openTool('pomo')"><span class="tnav-icon">TMR</span><span class="tnav-label">Pomodoro Timer</span></button>
+        <button class="tnav-card" onclick="openTool('unit')"><span class="tnav-icon">UNIT</span><span class="tnav-label">Unit Converter</span></button>
+        <button class="tnav-card" onclick="openTool('grad')"><span class="tnav-icon">CSS</span><span class="tnav-label">CSS Gradient</span></button>
+        <button class="tnav-card" onclick="openTool('age')"><span class="tnav-icon">AGE</span><span class="tnav-label">Age Calculator</span></button>
+      </div>
   </section>
 
-  <!-- ═══ TOOL TABS BAR ═══ -->
+  <!-- Tool tabs -->
   <div class="tool-tabs-bar">
     <div class="tool-tabs-scroll">
-      <button class="ttab active" id="ttab-qr"    onclick="openTool('qr',this)">📱 QR Code</button>
-      <button class="ttab" id="ttab-img"   onclick="openTool('img',this)">🗜️ Image Compressor</button>
-      <button class="ttab" id="ttab-yt"    onclick="openTool('yt',this)">▶️ YT Downloader</button>
-      <button class="ttab" id="ttab-utm"   onclick="openTool('utm',this)">📊 UTM Builder</button>
-      <button class="ttab" id="ttab-pass"  onclick="openTool('pass',this)">🔑 Password</button>
-      <button class="ttab" id="ttab-fake"  onclick="openTool('fake',this)">👤 Fake Data</button>
-      <button class="ttab" id="ttab-md"    onclick="openTool('md',this)">📄 Markdown</button>
-      <button class="ttab" id="ttab-meta"  onclick="openTool('meta',this)">🔍 Meta Tags</button>
-      <button class="ttab" id="ttab-emoji" onclick="openTool('emoji',this)">😀 Emoji</button>
-      <button class="ttab" id="ttab-inv"   onclick="openTool('inv',this)">🧾 Invoice</button>
+      <button class="ttab active" id="ttab-qr"    onclick="openTool('qr',this)">QR Code</button>
+      <button class="ttab" id="ttab-img"   onclick="openTool('img',this)">Image Compressor</button>
+      <button class="ttab" id="ttab-yt"    onclick="openTool('yt',this)">Video Downloader</button>
+      <button class="ttab" id="ttab-utm"   onclick="openTool('utm',this)">UTM Builder</button>
+      <button class="ttab" id="ttab-pass"  onclick="openTool('pass',this)">Password</button>
+      <button class="ttab" id="ttab-fake"  onclick="openTool('fake',this)">Fake Data</button>
+      <button class="ttab" id="ttab-md"    onclick="openTool('md',this)">Markdown</button>
+      <button class="ttab" id="ttab-meta"  onclick="openTool('meta',this)">Meta Tags</button>
+      <button class="ttab" id="ttab-emoji" onclick="openTool('emoji',this)">Emoji</button>
+      <button class="ttab" id="ttab-inv"   onclick="openTool('inv',this)">Invoice</button>
       <button class="ttab" id="ttab-json"  onclick="openTool('json',this)">{ } JSON</button>
       <button class="ttab" id="ttab-hash"  onclick="openTool('hash',this)"># Hash</button>
-      <button class="ttab" id="ttab-b64"   onclick="openTool('b64',this)">🔄 Base64</button>
-      <button class="ttab" id="ttab-color" onclick="openTool('color',this)">🎨 Color</button>
-      <button class="ttab" id="ttab-word"  onclick="openTool('word',this)">📝 Word Count</button>
+      <button class="ttab" id="ttab-b64"   onclick="openTool('b64',this)">Base64</button>
+      <button class="ttab" id="ttab-color" onclick="openTool('color',this)">Color</button>
+      <button class="ttab" id="ttab-word"  onclick="openTool('word',this)">Word Count</button>
 
-      <button class="ttab" id="ttab-age"    onclick="openTool('age',this)">📅 Age Calc</button>
-      <button class="ttab" id="ttab-unit"   onclick="openTool('unit',this)">📐 Unit Conv</button>
-      <button class="ttab" id="ttab-grad"   onclick="openTool('grad',this)">🎨 Gradient</button>
-      <button class="ttab" id="ttab-pomo"   onclick="openTool('pomo',this)">⏱️ Pomodoro</button>
-      <button class="ttab" id="ttab-num"    onclick="openTool('num',this)">🔢 Num→Words</button>
-      <button class="ttab" id="ttab-aspect" onclick="openTool('aspect',this)">📏 Aspect</button>
-      <button class="ttab" id="ttab-gst"    onclick="openTool('gst',this)">💰 GST Calc</button>
-      <button class="ttab" id="ttab-profit" onclick="openTool('profit',this)">📊 Profit</button>
-      <button class="ttab" id="ttab-pomo2"  onclick="openTool('pomo2',this)">⏱️ Pomodoro</button>
-      <button class="ttab" id="ttab-unit2"  onclick="openTool('unit2',this)">📐 Units</button>
-      <button class="ttab" id="ttab-grad2"  onclick="openTool('grad2',this)">🎨 Gradient</button>
-      <button class="ttab" id="ttab-age2"   onclick="openTool('age2',this)">📅 Age Calc</button>
+      <button class="ttab" id="ttab-num"    onclick="openTool('num',this)">Num to Words</button>
+      <button class="ttab" id="ttab-aspect" onclick="openTool('aspect',this)">Aspect</button>
+      <button class="ttab" id="ttab-gst"    onclick="openTool('gst',this)">GST Calc</button>
+      <button class="ttab" id="ttab-profit" onclick="openTool('profit',this)">Profit</button>
+      <button class="ttab" id="ttab-pomo"   onclick="openTool('pomo',this)">Pomodoro</button>
+      <button class="ttab" id="ttab-unit"   onclick="openTool('unit',this)">Units</button>
+      <button class="ttab" id="ttab-grad"   onclick="openTool('grad',this)">Gradient</button>
+      <button class="ttab" id="ttab-age"    onclick="openTool('age',this)">Age Calc</button>
     </div>
   </div>
 
-  <!-- ═══ TOOL PANELS ═══ -->
+  <!-- Tool panels -->
   <div class="tools-panels-wrap">
 
-    <!-- ────────────────────────────
-         1. QR CODE GENERATOR
-    ──────────────────────────── -->
+    <!-- 1. QR code generator -->
     <div class="tpanel active" id="tp-qr">
       <div class="tpanel-header">
         <div>
-          <h2>📱 QR Code Generator</h2>
-          <p>Kisi bhi URL, text ya number ka QR banao — customize karo, download karo</p>
+          <h2>QR Code Generator</h2>
+          <p>Create a QR code for any URL, text, or number, then customize and download it.</p>
         </div>
       </div>
       <div class="tpanel-body">
@@ -174,19 +147,19 @@
             <div class="tfield">
               <label>Size</label>
               <select id="qrSize" class="tinput" onchange="genQR()">
-                <option value="200">200×200 (Small)</option>
-                <option value="300" selected>300×300 (Medium)</option>
-                <option value="500">500×500 (Large)</option>
-                <option value="1000">1000×1000 (HD)</option>
+                <option value="200">200x200 (Small)</option>
+                <option value="300" selected>300x300 (Medium)</option>
+                <option value="500">500x500 (Large)</option>
+                <option value="1000">1000x1000 (HD)</option>
               </select>
             </div>
             <div class="tfield">
               <label>Error Correction</label>
               <select id="qrEC" class="tinput" onchange="genQR()">
-                <option value="L">L — Low (7%)</option>
-                <option value="M" selected>M — Medium (15%)</option>
-                <option value="Q">Q — Quartile (25%)</option>
-                <option value="H">H — High (30%)</option>
+                <option value="L">L - Low (7%)</option>
+                <option value="M" selected>M - Medium (15%)</option>
+                <option value="Q">Q - Quartile (25%)</option>
+                <option value="H">H - High (30%)</option>
               </select>
             </div>
           </div>
@@ -204,7 +177,7 @@
             </div>
           </div>
           <div class="tactions">
-            <button class="tbtn primary" onclick="dlQR()">⬇ Download PNG</button>
+            <button class="tbtn primary" onclick="dlQR()">Download PNG</button>
             <button class="tbtn secondary" onclick="copyQRDataURL()">Copy as Image</button>
           </div>
         </div>
@@ -212,22 +185,22 @@
           <div class="qr-box" id="qrBox">
             <canvas id="qrCanvas"></canvas>
             <div class="tplaceholder" id="qrPlaceholder">
-              <span>📱</span>
-              <p>URL daalo, QR yahan dikhega</p>
+              <span>QR</span>
+              <p>Enter a URL or text and the QR preview will appear here.</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ────────────────────────────
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
          2. IMAGE COMPRESSOR
-    ──────────────────────────── -->
+    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div class="tpanel" id="tp-img">
       <div class="tpanel-header">
         <div>
-          <h2>🗜️ Image Compressor</h2>
-          <p>JPG, PNG, WebP compress karo — quality rakho, size kam karo</p>
+          <h2>Image Compressor</h2>
+          <p>JPG, PNG, WebP compress karo - quality rakho, size kam karo</p>
         </div>
       </div>
       <div class="tpanel-body">
@@ -236,7 +209,7 @@
             <label>Image Upload Karo</label>
             <div class="drop-zone" id="imgDZ" onclick="document.getElementById('imgFile').click()" ondragover="event.preventDefault()" ondrop="imgDrop(event)">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span id="imgDZText">Click karo ya drag &amp; drop — JPG, PNG, WebP</span>
+              <span id="imgDZText">Click karo ya drag &amp; drop - JPG, PNG, WebP</span>
             </div>
             <input type="file" id="imgFile" accept="image/*" style="display:none" onchange="loadImg(this)">
           </div>
@@ -254,30 +227,30 @@
             </select>
           </div>
           <div id="imgStatsRow" class="stats-row" style="display:none">
-            <div class="stat-pill"><span>Original</span><b id="iOrig">—</b></div>
-            <div class="stat-pill green"><span>Compressed</span><b id="iComp">—</b></div>
-            <div class="stat-pill accent"><span>Saved</span><b id="iSave">—</b></div>
+            <div class="stat-pill"><span>Original</span><b id="iOrig">-</b></div>
+            <div class="stat-pill green"><span>Compressed</span><b id="iComp">-</b></div>
+            <div class="stat-pill accent"><span>Saved</span><b id="iSave">-</b></div>
           </div>
-          <button class="tbtn primary" id="imgDlBtn" onclick="dlImg()" style="display:none">⬇ Download Compressed</button>
+          <button class="tbtn primary" id="imgDlBtn" onclick="dlImg()" style="display:none">Download Compressed</button>
         </div>
         <div class="tpreview-col">
           <canvas id="imgCanvas" style="max-width:100%;border-radius:12px;display:none"></canvas>
           <div class="tplaceholder" id="imgPlaceholder">
-            <span>🖼️</span>
-            <p>Image yahan dikhegi</p>
+            <span>IMG</span>
+            <p>Image preview yahan dikhegi</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ────────────────────────────
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
          3. YT VIDEO DOWNLOADER
-    ──────────────────────────── -->
+    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div class="tpanel" id="tp-yt">
       <div class="tpanel-header">
         <div>
-          <h2>▶️ YouTube Video Downloader</h2>
-          <p>YouTube video ya audio download karo — MP4, MP3, free mein</p>
+          <h2>YouTube Video Downloader</h2>
+          <p>YouTube video ya audio download karo - MP4, MP3, free mein</p>
         </div>
         <div class="yt-powered-badge">
           Powered by <strong>cobalt.tools</strong>
@@ -299,9 +272,9 @@
             <div class="tfield">
               <label>Type</label>
               <select id="ytType" class="tinput" onchange="ytTypeChange()">
-                <option value="video">🎬 Video (MP4)</option>
-                <option value="audio">🎵 Audio Only (MP3)</option>
-                <option value="mute">🔇 Video Only (No Audio)</option>
+                <option value="video">Video (MP4)</option>
+                <option value="audio">Audio Only (MP3)</option>
+                <option value="mute">Video Only (No Audio)</option>
               </select>
             </div>
             <div class="tfield">
@@ -339,7 +312,7 @@
           <div id="ytStatus" style="display:none" class="yt-status-box">
             <div id="ytStatusMsg"></div>
             <a id="ytDlLink" href="#" target="_blank" class="tbtn primary" style="display:none;margin-top:10px;text-decoration:none">
-              ⬇ File Download Karo
+              Download File
             </a>
           </div>
 
@@ -365,7 +338,7 @@
         <!-- Right preview -->
         <div class="tpreview-col">
           <div class="tplaceholder" id="ytVidPlaceholder">
-            <span>▶️</span>
+            <span>PLAY</span>
             <p>YouTube URL daalo<br>aur download karo</p>
           </div>
 
@@ -374,13 +347,13 @@
             <div class="yt-video-preview">
               <img id="ytPreviewThumb" src="" alt="thumbnail" style="width:100%;border-radius:10px">
               <div class="yt-play-overlay" onclick="ytOpenVideo()">
-                <div class="yt-play-btn">▶</div>
+                <div class="yt-play-btn">PLAY</div>
               </div>
             </div>
             <div class="yt-video-meta">
               <div class="yt-meta-row">
                 <span class="yt-meta-label">Video ID</span>
-                <code id="ytMetaVidId">—</code>
+                <code id="ytMetaVidId">-</code>
               </div>
               <div class="yt-meta-row">
                 <span class="yt-meta-label">Platform</span>
@@ -388,22 +361,22 @@
               </div>
             </div>
             <div class="yt-formats-info">
-              <div class="yt-fmt-pill">🎬 MP4 Video</div>
-              <div class="yt-fmt-pill">🎵 MP3 Audio</div>
-              <div class="yt-fmt-pill">🖼️ Thumbnail</div>
+              <div class="yt-fmt-pill">MP4 Video</div>
+              <div class="yt-fmt-pill">MP3 Audio</div>
+              <div class="yt-fmt-pill">Thumbnail</div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ────────────────────────────
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
          4. UTM BUILDER
-    ──────────────────────────── -->
+    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div class="tpanel" id="tp-utm">
       <div class="tpanel-header">
         <div>
-          <h2>📊 UTM Link Builder</h2>
+          <h2>UTM Link Builder</h2>
           <p>Google Analytics ke liye campaign tracking links banao</p>
         </div>
       </div>
@@ -449,20 +422,20 @@
             <div class="utm-params" id="utmParams"></div>
           </div>
           <div class="utm-guide">
-            <h4>📖 Quick Guide</h4>
-            <div class="ug-row"><b>Source</b><span>Traffic kahan se aaya — google, newsletter, instagram</span></div>
-            <div class="ug-row"><b>Medium</b><span>Channel type — cpc, email, social, organic</span></div>
-            <div class="ug-row"><b>Campaign</b><span>Campaign naam — diwali_2024, product_launch</span></div>
-            <div class="ug-row"><b>Content</b><span>Ad variant — banner_a, cta_button_red</span></div>
-            <div class="ug-row"><b>Term</b><span>Paid keyword — url shortener india</span></div>
+            <h4>Quick Guide</h4>
+            <div class="ug-row"><b>Source</b><span>Traffic kahan se aaya - google, newsletter, instagram</span></div>
+            <div class="ug-row"><b>Medium</b><span>Channel type - cpc, email, social, organic</span></div>
+            <div class="ug-row"><b>Campaign</b><span>Campaign naam - diwali_2024, product_launch</span></div>
+            <div class="ug-row"><b>Content</b><span>Ad variant - banner_a, cta_button_red</span></div>
+            <div class="ug-row"><b>Term</b><span>Paid keyword - url shortener india</span></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ────────────────────────────
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
          5. JSON FORMATTER
-    ──────────────────────────── -->
+    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div class="tpanel" id="tp-json">
       <div class="tpanel-header">
         <div>
@@ -497,14 +470,14 @@
       </div>
     </div>
 
-    <!-- ────────────────────────────
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
          6. HASH GENERATOR
-    ──────────────────────────── -->
+    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div class="tpanel" id="tp-hash">
       <div class="tpanel-header">
         <div>
           <h2># Hash Generator</h2>
-          <p>Text ka MD5, SHA-1, SHA-256, SHA-512 hash banao — browser mein hi</p>
+          <p>Text ka MD5, SHA-1, SHA-256, SHA-512 hash banao - browser mein hi</p>
         </div>
       </div>
       <div class="tpanel-body">
@@ -514,10 +487,10 @@
             <textarea id="hashIn" class="tinput" rows="5" placeholder="Yahan text daalo..." oninput="genHash()"></textarea>
           </div>
           <div class="hash-results-list">
-            <div class="hrow"><span>MD5</span><code id="hMD5">—</code><button onclick="copyText(document.getElementById('hMD5').textContent,this)">Copy</button></div>
-            <div class="hrow"><span>SHA-1</span><code id="hSHA1">—</code><button onclick="copyText(document.getElementById('hSHA1').textContent,this)">Copy</button></div>
-            <div class="hrow"><span>SHA-256</span><code id="hSHA256">—</code><button onclick="copyText(document.getElementById('hSHA256').textContent,this)">Copy</button></div>
-            <div class="hrow"><span>SHA-512</span><code id="hSHA512">—</code><button onclick="copyText(document.getElementById('hSHA512').textContent,this)">Copy</button></div>
+            <div class="hrow"><span>MD5</span><code id="hMD5">-</code><button onclick="copyText(document.getElementById('hMD5').textContent,this)">Copy</button></div>
+            <div class="hrow"><span>SHA-1</span><code id="hSHA1">-</code><button onclick="copyText(document.getElementById('hSHA1').textContent,this)">Copy</button></div>
+            <div class="hrow"><span>SHA-256</span><code id="hSHA256">-</code><button onclick="copyText(document.getElementById('hSHA256').textContent,this)">Copy</button></div>
+            <div class="hrow"><span>SHA-512</span><code id="hSHA512">-</code><button onclick="copyText(document.getElementById('hSHA512').textContent,this)">Copy</button></div>
           </div>
         </div>
         <div class="tpreview-col">
@@ -527,19 +500,19 @@
             <div class="hi-row"><b>SHA-1</b><p>Git commits, legacy systems</p></div>
             <div class="hi-row"><b>SHA-256</b><p>Passwords, digital signatures, blockchain</p></div>
             <div class="hi-row"><b>SHA-512</b><p>High security applications</p></div>
-            <div class="hi-note">⚠ Passwords ke liye bcrypt ya Argon2 use karo — SHA alone kaafi nahi hai</div>
+            <div class="hi-note">Passwords ke liye bcrypt ya Argon2 use karo. SHA alone kaafi nahi hai.</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ────────────────────────────
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
          7. BASE64
-    ──────────────────────────── -->
+    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div class="tpanel" id="tp-b64">
       <div class="tpanel-header">
         <div>
-          <h2>🔄 Base64 Encoder / Decoder</h2>
+          <h2>Base64 Encoder / Decoder</h2>
           <p>Text ya image ko Base64 mein encode/decode karo</p>
         </div>
       </div>
@@ -547,7 +520,7 @@
         <div style="margin-bottom:1rem">
           <div class="mode-tabs">
             <button class="mtab active" onclick="b64Mode('text',this)">Text</button>
-            <button class="mtab" onclick="b64Mode('image',this)">Image → Base64</button>
+            <button class="mtab" onclick="b64Mode('image',this)">Image to Base64</button>
           </div>
         </div>
         <!-- Text mode -->
@@ -558,8 +531,8 @@
               <textarea id="b64In" class="tcode" placeholder="Encode ya decode karna hai..." style="min-height:240px"></textarea>
             </div>
             <div class="tactions">
-              <button class="tbtn primary" onclick="doB64Enc()">Encode →</button>
-              <button class="tbtn secondary" onclick="doB64Dec()">← Decode</button>
+              <button class="tbtn primary" onclick="doB64Enc()">Encode</button>
+              <button class="tbtn secondary" onclick="doB64Dec()">Decode</button>
               <button class="tbtn secondary" onclick="document.getElementById('b64In').value='';document.getElementById('b64Out').value=''">Clear</button>
             </div>
           </div>
@@ -588,14 +561,14 @@
       </div>
     </div>
 
-    <!-- ────────────────────────────
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
          8. COLOR PICKER
-    ──────────────────────────── -->
+    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div class="tpanel" id="tp-color">
       <div class="tpanel-header">
         <div>
-          <h2>🎨 Color Picker &amp; Converter</h2>
-          <p>HEX, RGB, HSL convert karo — shades generate karo</p>
+          <h2>Color Picker &amp; Converter</h2>
+          <p>HEX, RGB, HSL convert karo - shades generate karo</p>
         </div>
       </div>
       <div class="tpanel-body">
@@ -633,14 +606,14 @@
       </div>
     </div>
 
-    <!-- ────────────────────────────
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
          9. WORD COUNTER
-    ──────────────────────────── -->
+    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
     <div class="tpanel" id="tp-word">
       <div class="tpanel-header">
         <div>
-          <h2>📝 Word &amp; Character Counter</h2>
-          <p>Text ka word count, character count, reading time — sab ek jagah</p>
+          <h2>Word &amp; Character Counter</h2>
+          <p>Text ka word count, character count, reading time - sab ek jagah</p>
         </div>
       </div>
       <div class="tpanel-body">
@@ -666,25 +639,25 @@
       </div>
     </div>
 
-    <!-- ────────────────────────────
+    <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
          10. URL SHORTENER (redirect to home)
-    ──────────────────────────── -->
+    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
    
     <!-- <div class="tpanel" id="tp-url">
       <div class="tpanel-header">
         <div>
-          <h2>✂️ URL Shortener</h2>
-          <p>Long URL ko short karo — trackable links banao</p>
+          <h2>âœ‚ï¸ URL Shortener</h2>
+          <p>Long URL ko short karo â€” trackable links banao</p>
         </div>
       </div>
       <div class="tpanel-body">
         <div class="tform-col">
           <% if (typeof error !== 'undefined' && error) { %>
-            <div class="talert error">⚠ <%= error %></div>
+            <div class="talert error">âš  <%= error %></div>
           <% } %>
           <% if (typeof shortUrl !== 'undefined' && shortUrl) { %>
             <div class="talert success">
-              <div>✓ Short URL Ready!</div>
+              <div>âœ“ Short URL Ready!</div>
               <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
                 <a href="<%= shortUrl %>" target="_blank" style="color:var(--accent);font-family:'DM Mono',monospace;font-size:14px;flex:1"><%= shortUrl %></a>
                 <button class="tbtn-xs" onclick="copyText('<%= shortUrl %>',this)">Copy</button>
@@ -704,37 +677,37 @@
               </div>
             </div>
             <button type="submit" class="tbtn primary">
-              Snap URL →
+              Snap URL â†’
             </button>
           </form>
           <div class="url-features-list">
-            <div class="ufl-item"><span>📊</span><div><b>Click Analytics</b><p>Har click track hota hai — country, device, browser</p></div></div>
-            <div class="ufl-item"><span>🎯</span><div><b>Custom Alias</b><p>snap.link/tumhara-naam — Pro feature</p></div></div>
-            <div class="ufl-item"><span>📱</span><div><b>QR Code</b><p>Har link ke liye QR generator included</p></div></div>
+            <div class="ufl-item"><span>ðŸ“Š</span><div><b>Click Analytics</b><p>Har click track hota hai â€” country, device, browser</p></div></div>
+            <div class="ufl-item"><span>ðŸŽ¯</span><div><b>Custom Alias</b><p>snap.link/tumhara-naam â€” Pro feature</p></div></div>
+            <div class="ufl-item"><span>ðŸ“±</span><div><b>QR Code</b><p>Har link ke liye QR generator included</p></div></div>
           </div>
         </div>
         <div class="tpreview-col">
           <div class="url-tool-info">
             <h4>Free Plan mein milta hai</h4>
-            <div class="utl-feat"><span class="utl-ck">✓</span> 10 links per month</div>
-            <div class="utl-feat"><span class="utl-ck">✓</span> Basic click analytics</div>
-            <div class="utl-feat"><span class="utl-ck">✓</span> 30 day link history</div>
-            <div class="utl-feat"><span class="utl-ck">✓</span> QR Code generator</div>
-            <div class="utl-divider">Pro (₹99/mo) mein milta hai</div>
-            <div class="utl-feat pro"><span class="utl-ck pro">⭐</span> Unlimited links</div>
-            <div class="utl-feat pro"><span class="utl-ck pro">⭐</span> Custom alias</div>
-            <div class="utl-feat pro"><span class="utl-ck pro">⭐</span> Password protection</div>
-            <div class="utl-feat pro"><span class="utl-ck pro">⭐</span> Link expiry date</div>
-            <a href="/pricing" class="tbtn primary" style="margin-top:1rem;display:flex;text-decoration:none">Pricing dekho →</a>
+            <div class="utl-feat"><span class="utl-ck">âœ“</span> 10 links per month</div>
+            <div class="utl-feat"><span class="utl-ck">âœ“</span> Basic click analytics</div>
+            <div class="utl-feat"><span class="utl-ck">âœ“</span> 30 day link history</div>
+            <div class="utl-feat"><span class="utl-ck">âœ“</span> QR Code generator</div>
+            <div class="utl-divider">Pro (â‚¹99/mo) mein milta hai</div>
+            <div class="utl-feat pro"><span class="utl-ck pro">â­</span> Unlimited links</div>
+            <div class="utl-feat pro"><span class="utl-ck pro">â­</span> Custom alias</div>
+            <div class="utl-feat pro"><span class="utl-ck pro">â­</span> Password protection</div>
+            <div class="utl-feat pro"><span class="utl-ck pro">â­</span> Link expiry date</div>
+            <a href="/pricing" class="tbtn primary" style="margin-top:1rem;display:flex;text-decoration:none">Pricing dekho â†’</a>
           </div>
         </div>
       </div>
     </div> -->
 
 
-    <!-- ─── PASSWORD GENERATOR ─── -->
+    <!-- â”€â”€â”€ PASSWORD GENERATOR â”€â”€â”€ -->
     <div class="tpanel" id="tp-pass">
-      <div class="tpanel-header"><div><h2>🔑 Password Generator</h2><p>Strong, secure password banao — customize karo</p></div></div>
+      <div class="tpanel-header"><div><h2>Password Generator</h2><p>Strong, secure password banao - customize karo</p></div></div>
       <div class="tpanel-body">
         <div class="tform-col">
           <div class="tfield"><label>Length: <span id="passLenVal">16</span></label><input type="range" id="passLen" min="6" max="64" value="16" class="trange" oninput="document.getElementById('passLenVal').textContent=this.value;genPass()"></div>
@@ -754,7 +727,7 @@
           <div class="tfield"><label>Generated Password</label><div class="pass-output-wrap"><input type="text" id="passOutput" class="tinput" readonly><button class="tbtn-xs" onclick="copyText(document.getElementById('passOutput').value,this)">Copy</button></div></div>
           <div class="pass-strength-wrap"><div class="pass-strength-bar" id="passStrBar"></div><span id="passStrLabel"></span></div>
           <div class="tactions">
-            <button class="tbtn primary" onclick="genPass()">🔄 New Password</button>
+            <button class="tbtn primary" onclick="genPass()">New Password</button>
             <button class="tbtn secondary" onclick="genMultiPass()">Generate 5</button>
           </div>
           <div id="multiPassList" style="display:none" class="multi-pass-list"></div>
@@ -762,24 +735,24 @@
         <div class="tpreview-col">
           <div class="pass-tips-box">
             <h4>Strong Password Tips</h4>
-            <div class="ptip"><span>✓</span><p>Minimum 12 characters use karo</p></div>
-            <div class="ptip"><span>✓</span><p>Uppercase + lowercase + numbers + symbols</p></div>
-            <div class="ptip"><span>✓</span><p>Har account ke liye alag password</p></div>
-            <div class="ptip"><span>✓</span><p>Password manager use karo (Bitwarden, 1Password)</p></div>
-            <div class="ptip"><span>✗</span><p>Name, birthday, "password123" mat use karo</p></div>
+            <div class="ptip"><span>OK</span><p>Minimum 12 characters use karo</p></div>
+            <div class="ptip"><span>OK</span><p>Uppercase + lowercase + numbers + symbols</p></div>
+            <div class="ptip"><span>OK</span><p>Har account ke liye alag password</p></div>
+            <div class="ptip"><span>OK</span><p>Password manager use karo (Bitwarden, 1Password)</p></div>
+            <div class="ptip"><span>NO</span><p>Name, birthday, "password123" mat use karo</p></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ─── FAKE DATA GENERATOR ─── -->
+    <!-- â”€â”€â”€ FAKE DATA GENERATOR â”€â”€â”€ -->
     <div class="tpanel" id="tp-fake">
-      <div class="tpanel-header"><div><h2>👤 Fake Data Generator</h2><p>Testing ke liye fake names, emails, phone numbers banao</p></div></div>
+      <div class="tpanel-header"><div><h2>Fake Data Generator</h2><p>Testing ke liye fake names, emails, phone numbers banao</p></div></div>
       <div class="tpanel-body">
         <div class="tform-col">
           <div class="tfield-row">
             <div class="tfield"><label>Count</label><select id="fakeCount" class="tinput"><option value="1">1</option><option value="5" selected>5</option><option value="10">10</option><option value="25">25</option><option value="50">50</option></select></div>
-            <div class="tfield"><label>Country</label><select id="fakeCountry" class="tinput"><option value="in" selected>🇮🇳 India</option><option value="us">🇺🇸 USA</option><option value="uk">🇬🇧 UK</option></select></div>
+            <div class="tfield"><label>Country</label><select id="fakeCountry" class="tinput"><option value="in" selected>India</option><option value="us">USA</option><option value="uk">UK</option></select></div>
           </div>
           <div class="tfield">
             <label>Fields</label>
@@ -806,10 +779,10 @@
       </div>
     </div>
 
-    <!-- ─── MARKDOWN EDITOR ─── -->
+    <!-- â”€â”€â”€ MARKDOWN EDITOR â”€â”€â”€ -->
     <div class="tpanel" id="tp-md">
       <div class="tpanel-header">
-        <div><h2>📄 Markdown Editor &amp; Preview</h2><p>Markdown likho, live preview dekho — copy ya download karo</p></div>
+        <div><h2>Markdown Editor &amp; Preview</h2><p>Markdown likho, live preview dekho - copy ya download karo</p></div>
         <div style="display:flex;gap:6px">
           <button class="tbtn-xs" onclick="copyText(document.getElementById('mdInput').value,this)">Copy MD</button>
           <button class="tbtn-xs secondary" onclick="dlMarkdown()">Download .md</button>
@@ -837,13 +810,13 @@
       </div>
     </div>
 
-    <!-- ─── META TAG GENERATOR ─── -->
+    <!-- â”€â”€â”€ META TAG GENERATOR â”€â”€â”€ -->
     <div class="tpanel" id="tp-meta">
-      <div class="tpanel-header"><div><h2>🔍 Meta Tag Generator</h2><p>SEO aur Social Media ke liye perfect meta tags banao</p></div></div>
+      <div class="tpanel-header"><div><h2>Meta Tag Generator</h2><p>SEO aur Social Media ke liye perfect meta tags banao</p></div></div>
       <div class="tpanel-body">
         <div class="tform-col">
-          <div class="tfield"><label>Page Title <span class="req">*</span></label><input type="text" id="metaTitle" class="tinput" placeholder="SnapLink — Best URL Shortener India" oninput="genMeta()" maxlength="60"><div class="char-count" id="metaTitleCount">0/60</div></div>
-          <div class="tfield"><label>Description <span class="req">*</span></label><textarea id="metaDesc" class="tinput" rows="3" placeholder="SnapLink se apne links shorten karo, QR banao aur analytics dekho — bilkul free." oninput="genMeta()" maxlength="160"></textarea><div class="char-count" id="metaDescCount">0/160</div></div>
+          <div class="tfield"><label>Page Title <span class="req">*</span></label><input type="text" id="metaTitle" class="tinput" placeholder="SnapLink - Best URL Shortener India" oninput="genMeta()" maxlength="60"><div class="char-count" id="metaTitleCount">0/60</div></div>
+          <div class="tfield"><label>Description <span class="req">*</span></label><textarea id="metaDesc" class="tinput" rows="3" placeholder="SnapLink se apne links shorten karo, QR banao aur analytics dekho - bilkul free." oninput="genMeta()" maxlength="160"></textarea><div class="char-count" id="metaDescCount">0/160</div></div>
           <div class="tfield"><label>Page URL</label><input type="url" id="metaUrl" class="tinput" placeholder="https://snaplink.fun/tools" oninput="genMeta()"></div>
           <div class="tfield"><label>OG Image URL</label><input type="url" id="metaImg" class="tinput" placeholder="https://snaplink.fun/og-image.png" oninput="genMeta()"></div>
           <div class="tfield-row">
@@ -873,9 +846,9 @@
       </div>
     </div>
 
-    <!-- ─── EMOJI PICKER ─── -->
+    <!-- â”€â”€â”€ EMOJI PICKER â”€â”€â”€ -->
     <div class="tpanel" id="tp-emoji">
-      <div class="tpanel-header"><div><h2>😀 Emoji Picker</h2><p>Koi bhi emoji dhundho aur copy karo — 1500+ emojis</p></div></div>
+      <div class="tpanel-header"><div><h2>Emoji Picker</h2><p>Koi bhi emoji dhundho aur copy karo - 1500+ emojis</p></div></div>
       <div class="tpanel-body" style="display:block">
         <div class="emoji-toolbar">
           <input type="text" id="emojiSearch" class="tinput" placeholder="Search emoji... (e.g. heart, fire, laugh)" oninput="searchEmoji(this.value)" style="max-width:300px">
@@ -890,10 +863,10 @@
       </div>
     </div>
 
-    <!-- ─── INVOICE GENERATOR ─── -->
+    <!-- â”€â”€â”€ INVOICE GENERATOR â”€â”€â”€ -->
     <div class="tpanel" id="tp-inv">
       <div class="tpanel-header">
-        <div><h2>🧾 Invoice Generator</h2><p>Professional invoice banao aur PDF download karo — free</p></div>
+        <div><h2>Invoice Generator</h2><p>Professional invoice banao aur PDF download karo - free</p></div>
         <button class="tbtn primary" onclick="printInvoice()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
           Print / Save PDF
@@ -923,7 +896,7 @@
 
           <div class="tfield-row" style="margin-top:1rem">
             <div class="tfield"><label>GST %</label><input type="number" id="invGST" class="tinput" value="18" min="0" max="100" oninput="updateInv()"></div>
-            <div class="tfield"><label>Currency</label><select id="invCurrency" class="tinput" onchange="updateInv()"><option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option></select></div>
+            <div class="tfield"><label>Currency</label><select id="invCurrency" class="tinput" onchange="updateInv()"><option value="Rs">Rs INR</option><option value="$">$ USD</option><option value="EUR">EUR EUR</option></select></div>
           </div>
           <div class="tfield"><label>Notes</label><textarea id="invNotes" class="tinput" rows="2" placeholder="Thank you for your business!" oninput="updateInv()"></textarea></div>
         </div>
@@ -936,8 +909,8 @@
             </div>
             <div class="inv-prev-meta">
               <div><b>Invoice #</b><span id="prevNum">INV-001</span></div>
-              <div><b>Date</b><span id="prevDate">—</span></div>
-              <div><b>Due</b><span id="prevDue">—</span></div>
+              <div><b>Date</b><span id="prevDate">-</span></div>
+              <div><b>Due</b><span id="prevDue">-</span></div>
             </div>
             <div class="inv-prev-to"><b>Bill To:</b><div id="prevTo">Client Name</div><div id="prevToEmail" style="font-size:11px;color:#888"></div></div>
             <table class="inv-prev-table" id="prevItemsTable">
@@ -945,9 +918,9 @@
               <tbody id="prevItems"></tbody>
             </table>
             <div class="inv-prev-totals">
-              <div class="inv-total-row"><span>Subtotal</span><span id="prevSubtotal">₹0</span></div>
-              <div class="inv-total-row"><span>GST (<span id="prevGSTRate">18</span>%)</span><span id="prevGST">₹0</span></div>
-              <div class="inv-total-row total"><span>Total</span><span id="prevTotal">₹0</span></div>
+              <div class="inv-total-row"><span>Subtotal</span><span id="prevSubtotal">Rs0</span></div>
+              <div class="inv-total-row"><span>GST (<span id="prevGSTRate">18</span>%)</span><span id="prevGST">Rs0</span></div>
+              <div class="inv-total-row total"><span>Total</span><span id="prevTotal">Rs0</span></div>
             </div>
             <div class="inv-prev-notes" id="prevNotes"></div>
           </div>
@@ -955,138 +928,27 @@
       </div>
     </div>
 
-
-    <!-- ─── AGE CALCULATOR ─── -->
-    <div class="tpanel" id="tp-age">
-      <div class="tpanel-header"><div><h2>📅 Age Calculator</h2><p>Date of birth se exact age calculate karo — years, months, days</p></div></div>
-      <div class="tpanel-body">
-        <div class="tform-col">
-          <div class="tfield"><label>Date of Birth</label><input type="date" id="ageDob" class="tinput" onchange="calcAge()"></div>
-          <div class="tfield"><label>Calculate Age On</label><input type="date" id="ageOn" class="tinput" onchange="calcAge()"></div>
-          <button class="tbtn primary" onclick="calcAge()">Calculate Karo</button>
-        </div>
-        <div class="tpreview-col">
-          <div class="age-result" id="ageResult">
-            <div class="tplaceholder"><span>📅</span><p>Date of birth daalo</p></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── UNIT CONVERTER ─── -->
-    <div class="tpanel" id="tp-unit">
-      <div class="tpanel-header"><div><h2>📐 Unit Converter</h2><p>Length, Weight, Temperature, Area — sab convert karo</p></div></div>
-      <div class="tpanel-body">
-        <div class="tform-col">
-          <div class="tfield"><label>Category</label>
-            <select id="unitCat" class="tinput" onchange="unitCatChange()">
-              <option value="length">📏 Length</option>
-              <option value="weight">⚖️ Weight</option>
-              <option value="temp">🌡️ Temperature</option>
-              <option value="area">📐 Area</option>
-              <option value="speed">🚀 Speed</option>
-              <option value="data">💾 Data</option>
-            </select>
-          </div>
-          <div class="tfield-row">
-            <div class="tfield"><label>From</label><select id="unitFrom" class="tinput" onchange="convertUnit()"></select></div>
-            <div class="tfield"><label>To</label><select id="unitTo" class="tinput" onchange="convertUnit()"></select></div>
-          </div>
-          <div class="tfield"><label>Value</label><input type="number" id="unitVal" class="tinput" placeholder="100" oninput="convertUnit()"></div>
-        </div>
-        <div class="tpreview-col">
-          <div class="unit-result-box">
-            <div class="unit-result-num" id="unitResult">—</div>
-            <div class="unit-result-label" id="unitResultLabel">Result yahan dikhega</div>
-            <div class="unit-formula" id="unitFormula"></div>
-          </div>
-          <div class="unit-quick-ref" id="unitQuickRef"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── GRADIENT GENERATOR ─── -->
-    <div class="tpanel" id="tp-grad">
-      <div class="tpanel-header">
-        <div><h2>🎨 CSS Gradient Generator</h2><p>Beautiful gradients banao — CSS copy karo</p></div>
-        <button class="tbtn-xs" onclick="copyText(document.getElementById('gradCSS').value,this)">Copy CSS</button>
-      </div>
-      <div class="tpanel-body">
-        <div class="tform-col">
-          <div class="tfield"><label>Type</label>
-            <select id="gradType" class="tinput" onchange="buildGrad()">
-              <option value="linear">Linear</option>
-              <option value="radial">Radial</option>
-              <option value="conic">Conic</option>
-            </select>
-          </div>
-          <div class="tfield" id="gradAngleField"><label>Angle: <span id="gradAngleVal">135</span>°</label><input type="range" id="gradAngle" min="0" max="360" value="135" class="trange" oninput="document.getElementById('gradAngleVal').textContent=this.value;buildGrad()"></div>
-          <div class="tfield"><label>Color Stops</label><div id="gradStops"></div></div>
-          <button class="tbtn secondary" onclick="addGradStop()">+ Color Add Karo</button>
-          <div class="tfield" style="margin-top:1rem"><label>Generated CSS</label><textarea id="gradCSS" class="tcode" readonly style="min-height:80px"></textarea></div>
-          <div class="grad-presets"><label style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.07em;text-transform:uppercase">Presets</label><div class="grad-preset-grid" id="gradPresets"></div></div>
-        </div>
-        <div class="tpreview-col">
-          <div class="grad-preview-box" id="gradPreviewBox"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── POMODORO TIMER ─── -->
-    <div class="tpanel" id="tp-pomo">
-      <div class="tpanel-header"><div><h2>⏱️ Pomodoro Timer</h2><p>Focus karo — 25 min kaam, 5 min break</p></div></div>
-      <div class="tpanel-body" style="display:block">
-        <div class="pomo-wrap">
-          <div class="pomo-mode-btns">
-            <button class="pomo-mode active" id="pm-work"  onclick="setPomoMode('work',this)">Focus</button>
-            <button class="pomo-mode"        id="pm-short" onclick="setPomoMode('short',this)">Short Break</button>
-            <button class="pomo-mode"        id="pm-long"  onclick="setPomoMode('long',this)">Long Break</button>
-          </div>
-          <div class="pomo-timer-circle">
-            <svg viewBox="0 0 200 200" class="pomo-svg">
-              <circle cx="100" cy="100" r="90" fill="none" stroke="var(--border)" stroke-width="8"/>
-              <circle cx="100" cy="100" r="90" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round"
-                stroke-dasharray="565.48" id="pomoCircle" stroke-dashoffset="0"
-                transform="rotate(-90 100 100)"/>
-            </svg>
-            <div class="pomo-time-display" id="pomoDisplay">25:00</div>
-            <div class="pomo-mode-label" id="pomoModeLabel">Focus Time</div>
-          </div>
-          <div class="pomo-controls">
-            <button class="tbtn primary" id="pomoStartBtn" onclick="togglePomo()">▶ Start</button>
-            <button class="tbtn secondary" onclick="resetPomo()">↺ Reset</button>
-          </div>
-          <div class="pomo-sessions"><span id="pomoSessions">0</span> sessions completed today</div>
-          <div class="pomo-settings">
-            <div class="pomo-set-row"><label>Focus (min)</label><input type="number" id="pomoWork"  value="25" min="1" max="60" class="tinput" style="width:70px" onchange="resetPomo()"></div>
-            <div class="pomo-set-row"><label>Short Break</label><input type="number" id="pomoShort" value="5"  min="1" max="30" class="tinput" style="width:70px" onchange="resetPomo()"></div>
-            <div class="pomo-set-row"><label>Long Break</label><input type="number" id="pomoLong"  value="15" min="1" max="60" class="tinput" style="width:70px" onchange="resetPomo()"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── NUMBER TO WORDS ─── -->
+    <!-- â”€â”€â”€ NUMBER TO WORDS â”€â”€â”€ -->
     <div class="tpanel" id="tp-num">
-      <div class="tpanel-header"><div><h2>🔢 Number to Words</h2><p>Number ko words mein likho — Hindi aur English</p></div></div>
+      <div class="tpanel-header"><div><h2>Number to Words</h2><p>Number ko words mein likho - Hindi aur English</p></div></div>
       <div class="tpanel-body">
         <div class="tform-col">
           <div class="tfield"><label>Number Daalo</label><input type="number" id="numInput" class="tinput" placeholder="123456" oninput="num2words()"></div>
           <div class="tfield"><label>Currency Mode</label>
             <select id="numCurrency" class="tinput" onchange="num2words()">
               <option value="none">Sirf Number</option>
-              <option value="inr">₹ Indian Rupees</option>
+              <option value="inr">Rs Indian Rupees</option>
               <option value="usd">$ US Dollars</option>
             </select>
           </div>
           <div class="num-result-box">
             <div class="num-result-label">English</div>
-            <div class="num-result-val" id="numEnglish">—</div>
+            <div class="num-result-val" id="numEnglish">-</div>
             <button class="tbtn-xs" onclick="copyText(document.getElementById('numEnglish').textContent,this)" style="margin-top:6px">Copy</button>
           </div>
           <div class="num-result-box" style="margin-top:10px">
             <div class="num-result-label">Hindi</div>
-            <div class="num-result-val" id="numHindi">—</div>
+            <div class="num-result-val" id="numHindi">-</div>
             <button class="tbtn-xs" onclick="copyText(document.getElementById('numHindi').textContent,this)" style="margin-top:6px">Copy</button>
           </div>
         </div>
@@ -1102,9 +964,9 @@
       </div>
     </div>
 
-    <!-- ─── ASPECT RATIO CALCULATOR ─── -->
+    <!-- â”€â”€â”€ ASPECT RATIO CALCULATOR â”€â”€â”€ -->
     <div class="tpanel" id="tp-aspect">
-      <div class="tpanel-header"><div><h2>📏 Aspect Ratio Calculator</h2><p>Image ya video ka aspect ratio calculate karo — resize karo proportionally</p></div></div>
+      <div class="tpanel-header"><div><h2>Aspect Ratio Calculator</h2><p>Image ya video ka aspect ratio calculate karo - resize karo proportionally</p></div></div>
       <div class="tpanel-body">
         <div class="tform-col">
           <div class="tfield-row">
@@ -1112,7 +974,7 @@
             <div class="tfield"><label>Height (px)</label><input type="number" id="arH" class="tinput" placeholder="1080" oninput="calcAR('h')"></div>
           </div>
           <div class="ar-result-box" id="arResult">
-            <div class="ar-ratio" id="arRatio">—</div>
+            <div class="ar-ratio" id="arRatio">-</div>
             <div class="ar-name" id="arName"></div>
           </div>
           <div class="tfield" style="margin-top:1rem"><label>Scale to New Width</label><input type="number" id="arNewW" class="tinput" placeholder="Enter new width..." oninput="scaleAR()"></div>
@@ -1134,7 +996,7 @@
         <div class="tpreview-col">
           <div class="ar-visual-wrap">
             <div class="ar-visual-box" id="arVisual">
-              <span id="arVisualLabel">—</span>
+              <span id="arVisualLabel">-</span>
             </div>
           </div>
         </div>
@@ -1142,12 +1004,12 @@
     </div>
 
 
-    <!-- ─── GST CALCULATOR ─── -->
+    <!-- â”€â”€â”€ GST CALCULATOR â”€â”€â”€ -->
     <div class="tpanel" id="tp-gst">
-      <div class="tpanel-header"><div><h2>💰 GST Calculator</h2><p>GST add karo ya nikalo — 5%, 12%, 18%, 28% sab rates</p></div></div>
+      <div class="tpanel-header"><div><h2>GST Calculator</h2><p>GST add karo ya nikalo - 5%, 12%, 18%, 28% sab rates</p></div></div>
       <div class="tpanel-body">
         <div class="tform-col">
-          <div class="tfield"><label>Amount (₹)</label><input type="number" id="gstAmt" class="tinput" placeholder="1000" oninput="calcGST()"></div>
+          <div class="tfield"><label>Amount (Rs)</label><input type="number" id="gstAmt" class="tinput" placeholder="1000" oninput="calcGST()"></div>
           <div class="tfield"><label>GST Rate</label>
             <div class="gst-rates">
               <button class="gst-rate-btn active" onclick="setGSTRate(5,this)">5%</button>
@@ -1165,28 +1027,28 @@
         </div>
         <div class="tpreview-col">
           <div class="gst-result-box" id="gstResult">
-            <div class="gst-res-row"><span>Original Amount</span><strong id="gstOrig">₹0</strong></div>
-            <div class="gst-res-row"><span>CGST (<span class="gst-half">0</span>%)</span><strong id="gstCGST">₹0</strong></div>
-            <div class="gst-res-row"><span>SGST (<span class="gst-half">0</span>%)</span><strong id="gstSGST">₹0</strong></div>
-            <div class="gst-res-row total"><span>Total Amount</span><strong id="gstTotal">₹0</strong></div>
-            <div class="gst-res-row"><span>GST Amount</span><strong id="gstAmt2">₹0</strong></div>
+            <div class="gst-res-row"><span>Original Amount</span><strong id="gstOrig">Rs0</strong></div>
+            <div class="gst-res-row"><span>CGST (<span class="gst-half">0</span>%)</span><strong id="gstCGST">Rs0</strong></div>
+            <div class="gst-res-row"><span>SGST (<span class="gst-half">0</span>%)</span><strong id="gstSGST">Rs0</strong></div>
+            <div class="gst-res-row total"><span>Total Amount</span><strong id="gstTotal">Rs0</strong></div>
+            <div class="gst-res-row"><span>GST Amount</span><strong id="gstAmt2">Rs0</strong></div>
             <button class="tbtn-xs" style="margin-top:12px" onclick="copyText(document.getElementById('gstTotal').textContent,this)">Copy Total</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ─── PROFIT MARGIN CALCULATOR ─── -->
+    <!-- â”€â”€â”€ PROFIT MARGIN CALCULATOR â”€â”€â”€ -->
     <div class="tpanel" id="tp-profit">
-      <div class="tpanel-header"><div><h2>📊 Profit Margin Calculator</h2><p>Cost aur selling price se profit, margin aur markup nikalo</p></div></div>
+      <div class="tpanel-header"><div><h2>Profit Margin Calculator</h2><p>Cost aur selling price se profit, margin aur markup nikalo</p></div></div>
       <div class="tpanel-body">
         <div class="tform-col">
-          <div class="tfield"><label>Cost Price (₹)</label><input type="number" id="profCost" class="tinput" placeholder="500" oninput="calcProfit()"></div>
-          <div class="tfield"><label>Selling Price (₹)</label><input type="number" id="profSell" class="tinput" placeholder="800" oninput="calcProfit()"></div>
+          <div class="tfield"><label>Cost Price (Rs)</label><input type="number" id="profCost" class="tinput" placeholder="500" oninput="calcProfit()"></div>
+          <div class="tfield"><label>Selling Price (Rs)</label><input type="number" id="profSell" class="tinput" placeholder="800" oninput="calcProfit()"></div>
           <div class="tfield"><label>Quantity (optional)</label><input type="number" id="profQty" class="tinput" placeholder="1" value="1" oninput="calcProfit()"></div>
           <div class="tfield"><label>Currency</label>
             <select id="profCur" class="tinput" onchange="calcProfit()">
-              <option value="₹">₹ INR</option><option value="$">$ USD</option><option value="€">€ EUR</option>
+              <option value="Rs">Rs INR</option><option value="$">$ USD</option><option value="EUR">EUR EUR</option>
             </select>
           </div>
         </div>
@@ -1194,26 +1056,26 @@
           <div class="profit-result-box" id="profitResult">
             <div class="profit-main"><div class="profit-big" id="profMarginBig">0%</div><div class="profit-label">Profit Margin</div></div>
             <div class="profit-rows">
-              <div class="profit-row"><span>Revenue</span><strong id="profRevenue">₹0</strong></div>
-              <div class="profit-row"><span>Total Cost</span><strong id="profTotalCost">₹0</strong></div>
-              <div class="profit-row green"><span>Gross Profit</span><strong id="profGross">₹0</strong></div>
+              <div class="profit-row"><span>Revenue</span><strong id="profRevenue">Rs0</strong></div>
+              <div class="profit-row"><span>Total Cost</span><strong id="profTotalCost">Rs0</strong></div>
+              <div class="profit-row green"><span>Gross Profit</span><strong id="profGross">Rs0</strong></div>
               <div class="profit-row"><span>Markup %</span><strong id="profMarkup">0%</strong></div>
-              <div class="profit-row"><span>Break-even Units</span><strong id="profBreak">—</strong></div>
+              <div class="profit-row"><span>Break-even Units</span><strong id="profBreak">-</strong></div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ─── POMODORO TIMER ─── -->
-    <div class="tpanel" id="tp-pomo2">
-      <div class="tpanel-header"><div><h2>⏱️ Pomodoro Timer</h2><p>Focus karo — 25 min kaam, 5 min break. Proven productivity technique.</p></div></div>
+    <!-- â”€â”€â”€ POMODORO TIMER â”€â”€â”€ -->
+    <div class="tpanel" id="tp-pomo">
+      <div class="tpanel-header"><div><h2>Pomodoro Timer</h2><p>Focus karo - 25 min kaam, 5 min break. Proven productivity technique.</p></div></div>
       <div class="tpanel-body" style="display:block">
         <div class="pomo-container">
           <div class="pomo-mode-tabs">
-            <button class="pomo-mode active" id="pomoModeFocus" onclick="setPomoMode('focus',this)">🎯 Focus (25 min)</button>
-            <button class="pomo-mode" id="pomoModeShort" onclick="setPomoMode('short',this)">☕ Short Break (5 min)</button>
-            <button class="pomo-mode" id="pomoModeLong"  onclick="setPomoMode('long',this)">🛌 Long Break (15 min)</button>
+            <button class="pomo-mode active" id="pomoModeFocus" onclick="setPomoMode('focus',this)">Focus (25 min)</button>
+            <button class="pomo-mode" id="pomoModeShort" onclick="setPomoMode('short',this)">Short Break (5 min)</button>
+            <button class="pomo-mode" id="pomoModeLong"  onclick="setPomoMode('long',this)">Long Break (15 min)</button>
           </div>
           <div class="pomo-clock">
             <svg class="pomo-ring" viewBox="0 0 200 200">
@@ -1224,8 +1086,8 @@
             <div class="pomo-status" id="pomoStatus">Ready</div>
           </div>
           <div class="pomo-controls">
-            <button class="tbtn primary" id="pomoStartBtn" onclick="togglePomo()">▶ Start</button>
-            <button class="tbtn secondary" onclick="resetPomo()">↺ Reset</button>
+            <button class="tbtn primary" id="pomoStartBtn" onclick="togglePomo()">Start</button>
+            <button class="tbtn secondary" onclick="resetPomo()">Reset</button>
           </div>
           <div class="pomo-stats">
             <div class="pomo-stat"><div class="pomo-stat-num" id="pomoCount">0</div><div class="pomo-stat-label">Pomodoros Done</div></div>
@@ -1239,24 +1101,24 @@
       </div>
     </div>
 
-    <!-- ─── UNIT CONVERTER ─── -->
-    <div class="tpanel" id="tp-unit2">
-      <div class="tpanel-header"><div><h2>📐 Unit Converter</h2><p>Length, Weight, Temperature, Area, Speed — sab ek jagah</p></div></div>
+    <!-- â”€â”€â”€ UNIT CONVERTER â”€â”€â”€ -->
+    <div class="tpanel" id="tp-unit">
+      <div class="tpanel-header"><div><h2>Unit Converter</h2><p>Length, Weight, Temperature, Area, Speed - sab ek jagah</p></div></div>
       <div class="tpanel-body" style="display:block">
         <div class="unit-cats">
-          <button class="unit-cat active" onclick="setUnitCat('length',this)">📏 Length</button>
-          <button class="unit-cat" onclick="setUnitCat('weight',this)">⚖️ Weight</button>
-          <button class="unit-cat" onclick="setUnitCat('temp',this)">🌡️ Temperature</button>
-          <button class="unit-cat" onclick="setUnitCat('area',this)">▭ Area</button>
-          <button class="unit-cat" onclick="setUnitCat('speed',this)">💨 Speed</button>
-          <button class="unit-cat" onclick="setUnitCat('data',this)">💾 Data</button>
+          <button class="unit-cat active" onclick="setUnitCat('length',this)">Length</button>
+          <button class="unit-cat" onclick="setUnitCat('weight',this)">Weight</button>
+          <button class="unit-cat" onclick="setUnitCat('temp',this)">Temperature</button>
+          <button class="unit-cat" onclick="setUnitCat('area',this)">Area</button>
+          <button class="unit-cat" onclick="setUnitCat('speed',this)">Speed</button>
+          <button class="unit-cat" onclick="setUnitCat('data',this)">Data</button>
         </div>
         <div class="unit-converter-wrap">
           <div class="unit-input-side">
             <select id="unitFrom" class="tinput" onchange="convertUnit()"></select>
             <input type="number" id="unitVal" class="tinput" placeholder="Value daalo..." oninput="convertUnit()" value="1">
           </div>
-          <button class="unit-swap-btn" onclick="swapUnits()">⇄</button>
+          <button class="unit-swap-btn" onclick="swapUnits()">Swap</button>
           <div class="unit-input-side">
             <select id="unitTo" class="tinput" onchange="convertUnit()"></select>
             <input type="number" id="unitResult" class="tinput" readonly>
@@ -1267,9 +1129,9 @@
       </div>
     </div>
 
-    <!-- ─── CSS GRADIENT GENERATOR ─── -->
-    <div class="tpanel" id="tp-grad2">
-      <div class="tpanel-header"><div><h2>🎨 CSS Gradient Generator</h2><p>Beautiful gradients banao — CSS copy karo, live preview dekho</p></div></div>
+    <!-- â”€â”€â”€ CSS GRADIENT GENERATOR â”€â”€â”€ -->
+    <div class="tpanel" id="tp-grad">
+      <div class="tpanel-header"><div><h2>CSS Gradient Generator</h2><p>Beautiful gradients banao - CSS copy karo, live preview dekho</p></div></div>
       <div class="tpanel-body">
         <div class="tform-col">
           <div class="tfield"><label>Type</label>
@@ -1307,9 +1169,9 @@
       </div>
     </div>
 
-    <!-- ─── AGE CALCULATOR ─── -->
-    <div class="tpanel" id="tp-age2">
-      <div class="tpanel-header"><div><h2>📅 Age &amp; Date Calculator</h2><p>Exact age nikalo, days count karo, koi bhi date difference</p></div></div>
+    <!-- â”€â”€â”€ AGE CALCULATOR â”€â”€â”€ -->
+    <div class="tpanel" id="tp-age">
+      <div class="tpanel-header"><div><h2>Age &amp; Date Calculator</h2><p>Exact age nikalo, days count karo, koi bhi date difference</p></div></div>
       <div class="tpanel-body">
         <div class="tform-col">
           <div class="tfield"><label>Date of Birth</label><input type="date" id="ageDOB" class="tinput" oninput="calcAge()"></div>
@@ -1324,20 +1186,20 @@
         </div>
         <div class="tpreview-col">
           <div class="age-result-box" id="ageResult">
-            <div class="age-main"><div class="age-big" id="ageYears">—</div><div class="age-label">Years Old</div></div>
+            <div class="age-main"><div class="age-big" id="ageYears">-</div><div class="age-label">Years Old</div></div>
             <div class="age-breakdown">
-              <div class="age-row"><span>Months</span><strong id="ageMonths">—</strong></div>
-              <div class="age-row"><span>Weeks</span><strong id="ageWeeks">—</strong></div>
-              <div class="age-row"><span>Days</span><strong id="ageDays">—</strong></div>
-              <div class="age-row"><span>Hours</span><strong id="ageHours">—</strong></div>
-              <div class="age-row accent"><span>Next Birthday</span><strong id="ageNextBday">—</strong></div>
+              <div class="age-row"><span>Months</span><strong id="ageMonths">-</strong></div>
+              <div class="age-row"><span>Weeks</span><strong id="ageWeeks">-</strong></div>
+              <div class="age-row"><span>Days</span><strong id="ageDays">-</strong></div>
+              <div class="age-row"><span>Hours</span><strong id="ageHours">-</strong></div>
+              <div class="age-row accent"><span>Next Birthday</span><strong id="ageNextBday">-</strong></div>
             </div>
           </div>
           <div class="date-diff-result" id="dateDiffResult" style="display:none">
-            <div class="age-row"><span>Total Days</span><strong id="ddDays">—</strong></div>
-            <div class="age-row"><span>Weeks</span><strong id="ddWeeks">—</strong></div>
-            <div class="age-row"><span>Months (approx)</span><strong id="ddMonths">—</strong></div>
-            <div class="age-row"><span>Working Days (approx)</span><strong id="ddWork">—</strong></div>
+            <div class="age-row"><span>Total Days</span><strong id="ddDays">-</strong></div>
+            <div class="age-row"><span>Weeks</span><strong id="ddWeeks">-</strong></div>
+            <div class="age-row"><span>Months (approx)</span><strong id="ddMonths">-</strong></div>
+            <div class="age-row"><span>Working Days (approx)</span><strong id="ddWork">-</strong></div>
           </div>
         </div>
       </div>
@@ -1347,57 +1209,9 @@
 
 </main>
 
-<!-- ═══ FOOTER ═══ -->
-<footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <a href="/" class="footer-logo">Snap<em>Link</em></a>
-      <p>URL shortener + free tools —<br>India ka sabse sasta toolkit.</p>
-    </div>
-    <div class="footer-links">
-      <div class="footer-col">
-        <h4>Product</h4>
-        <a href="/">Home</a>
-        <a href="/pricing">Pricing</a>
-        <a href="/about">About</a>
-      </div>
-      <div class="footer-col">
-        <h4>Free Tools</h4>
-        <a href="#" onclick="openTool('qr');return false">QR Generator</a>
-        <a href="#" onclick="openTool('img');return false">Image Compressor</a>
-        <a href="#" onclick="openTool('yt');return false">YT Downloader</a>
-        <a href="#" onclick="openTool('utm');return false">UTM Builder</a>
-        <a href="#" onclick="openTool('json');return false">JSON Formatter</a>
-      </div>
-      <div class="footer-col">
-        <h4>Account</h4>
-        <% if (typeof user === 'undefined' || !user) { %>
-          <a href="/signup">Sign Up</a>
-          <a href="/login">Log In</a>
-        <% } else { %>
-          <a href="/dashboard">Dashboard</a>
-          <a href="/logout">Logout</a>
-        <% } %>
-      </div>
-      <div class="footer-col">
-        <h4>Legal</h4>
-        <a href="/privacy">Privacy Policy</a>
-        <a href="/terms">Terms of Service</a>
-      </div>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>&copy; <%= new Date().getFullYear() %> SnapLink. All rights reserved.</p>
-    <div class="footer-socials">
-      <a href="https://github.com/SortedBro" target="_blank"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg></a>
-      <a href="https://x.com/AliAzmat35014" target="_blank"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-    </div>
-  </div>
-</footer>
+<%- include('partials/footer', { footerCopy: 'Free browser-based utility tools for marketers, creators, and developers who need quick outputs without setup.' }) %>
 
-
-
-  <!-- QR Library -->
+  <script src="/js/shared/theme.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <!-- Tools JS -->
   <script src="/js/pages/tools.js"></script>
@@ -1413,7 +1227,7 @@
 
 </body>
 </html>
-</body>
-</html>
+
+
 
 

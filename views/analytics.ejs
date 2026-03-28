@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Analytics — <%= url.shortCode %> | SnapLink</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/css/pages/generated/analytics.inline.css" />
+  <%
+    const seo = {
+      title: 'Link Analytics | SnapLink',
+      description: 'Review clicks, audience, exports, and device data for a SnapLink short link.',
+      path: '',
+      robots: 'noindex, nofollow',
+      stylesheets: ["/css/pages/site-shell.css","/css/pages/generated/analytics.inline.css","/css/pages/app-shell.css"]
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
-<body>
+<body class="workspace-page">
 
-  <nav>
+  <nav class="workspace-nav">
     <a class="nav-logo" href="/"><span></span>SnapLink</a>
     <div class="nav-right">
-      <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
+      <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">Theme</button>
       <% if (user) { %>
         <span style="color:var(--text2)">👋 <%= user.name %></span>
         <a href="/logout">Logout</a>
@@ -25,7 +30,7 @@
     <!-- Header -->
     <div class="page-header">
       <div>
-        <a href="/dashboard" class="back-link">← Dashboard pe wapas</a>
+        <a href="/dashboard" class="back-link">Back to Dashboard</a>
         <div class="page-title">Analytics — <span>/<%= url.shortCode %></span></div>
         <div class="url-info">
           <span class="url-pill"><%= url.shortUrl %></span>
@@ -34,9 +39,9 @@
       </div>
       <!-- Download buttons -->
       <div class="download-btns">
-        <button class="dl-btn excel" onclick="downloadExcel()">📊 Excel</button>
-        <button class="dl-btn pdf"   onclick="downloadPDF()">📄 PDF</button>
-        <button class="dl-btn csv"   onclick="downloadCSV()">⬇ CSV</button>
+        <button class="dl-btn excel" onclick="downloadExcel()">Excel</button>
+        <button class="dl-btn pdf"   onclick="downloadPDF()">PDF</button>
+        <button class="dl-btn csv"   onclick="downloadCSV()">CSV</button>
       </div>
     </div>
 

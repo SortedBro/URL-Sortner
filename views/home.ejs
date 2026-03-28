@@ -1,43 +1,33 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- SEO: keyword 'url short' in title -->
-  <title>SnapLink — Free URL Short Generator | Short URL Online India</title>
-  <meta name="description"
-    content="SnapLink is a free URL short generator. Create short URL links instantly, track clicks, generate QR codes. Best Bitly alternative — short url free, custom alias, ₹99/mo Pro." />
-  <meta name="keywords"
-    content="url short, short url, short url generator, short url free, short url online, short url maker, short url converter, create short url, free short url, custom short url, short link url, long url to short, make url short, bitly short url alternative india" />
+  <title>SnapLink - Free URL Shortener for Fast, Branded Links</title>
+  <meta name="description" content="Create clean short links, branded aliases, QR codes, and conversion-ready analytics with SnapLink. Built for creators, marketers, and growing teams." />
+  <meta name="keywords" content="url shortener, branded links, short links, QR code, analytics, custom alias, white label, india link shortener" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://snaplink.fun/" />
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="SnapLink — Free URL Short Generator | Short URL Online" />
-  <meta property="og:description"
-    content="Create short URL links instantly. Free URL short tool with click analytics, QR codes, custom alias. India's best Bitly alternative at ₹99/mo." />
+  <meta property="og:title" content="SnapLink - Free URL Shortener" />
+  <meta property="og:description" content="Create fast branded links, track every click, and launch short URLs that look professional." />
   <meta property="og:url" content="https://snaplink.fun/" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://snaplink.fun/images/url-short-snaplink-og.webp" />
+  <meta property="og:image" content="https://snaplink.fun/favicon.png" />
   <meta property="og:site_name" content="SnapLink" />
 
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="SnapLink — Free URL Short Generator" />
-  <meta name="twitter:description"
-    content="Short URL free tool — create short links, track clicks, generate QR codes. India's best Bitly alternative." />
-  <meta name="twitter:image" content="https://snaplink.fun/images/url-short-snaplink-og.webp" />
+  <meta name="twitter:title" content="SnapLink - Free URL Shortener" />
+  <meta name="twitter:description" content="Shorten links, track clicks, and launch branded URLs with a clean dashboard." />
+  <meta name="twitter:image" content="https://snaplink.fun/favicon.png" />
 
-  <!-- Schema.org WebSite + SoftwareApplication -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "SnapLink",
     "url": "https://snaplink.fun",
-    "description": "Free URL short generator — create short URL links, track clicks, generate QR codes instantly.",
+    "description": "Fast link shortening platform for branded links, analytics, and QR codes.",
     "potentialAction": {
       "@type": "SearchAction",
       "target": "https://snaplink.fun/search?q={search_term_string}",
@@ -45,427 +35,402 @@
     }
   }
   </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "SnapLink URL Shortener",
-    "applicationCategory": "WebApplication",
-    "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "INR",
-      "description": "Free URL short generator — 10 links/month free"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "reviewCount": "120"
-    }
-  }
-  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap"
-    rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="stylesheet" href="/css/pages/home.css">
-  <script src="https://quge5.com/88/tag.min.js" data-zone="224031" async data-cfasync="false"></script>
+  <link rel="stylesheet" href="/css/pages/home-landing.css">
   <script src="/js/shared/theme.js"></script>
-  <script>(function(s){s.dataset.zone='10796131',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
-  <link rel="stylesheet" href="/css/pages/generated/home.inline.css" />
 </head>
+<body class="home-page">
+  <% const isLoggedIn = typeof user !== 'undefined' && user; %>
+  <% const isFree = isLoggedIn && user.plan === 'free'; %>
+  <% const userPlan = isLoggedIn ? String(user.plan || 'free').toUpperCase() : 'FREE'; %>
 
-<body>
-
-  <!-- ═══════════════════════════
-       NAVBAR
-  ═══════════════════════════ -->
-  <nav class="navbar">
+  <nav class="navbar home-navbar">
     <a href="/" class="nav-logo">
       <span class="logo-dot"></span>
       Snap<em>Link</em>
     </a>
 
     <div class="nav-center">
-      <a href="/tools" class="nav-link">🛠️ Tools</a>
+      <a href="/tools" class="nav-link">Tools</a>
       <a href="/features" class="nav-link">Features</a>
       <a href="/pricing" class="nav-link">Pricing</a>
-      <a href="/affiliate/dashboard" class="nav-link">Affiliate</a>
-
       <a href="/about" class="nav-link">About</a>
     </div>
 
     <div class="nav-right">
-      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
-      <% if (user) { %>
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">Moon</button>
+      <% if (isLoggedIn) { %>
         <div class="nav-user">
-          <div class="nav-avatar">
-            <%= user.name.charAt(0).toUpperCase() %>
-          </div>
-          <span class="nav-username">
-            <%= user.name %>
-          </span>
+          <div class="nav-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+          <span class="nav-username"><%= user.name %></span>
         </div>
         <a href="/dashboard" class="nav-link">Dashboard</a>
         <a href="/logout" class="nav-btn-outline">Logout</a>
-        <% } else { %>
-          <a href="/login" class="nav-link">Login</a>
-          <a href="/signup" class="nav-btn-solid">Get Started</a>
-          <% } %>
+      <% } else { %>
+        <a href="/login" class="nav-link">Login</a>
+        <a href="/signup" class="nav-btn-solid">Get Started</a>
+      <% } %>
     </div>
   </nav>
 
-  <!-- ═══════════════════════════
-       HERO
-  ═══════════════════════════ -->
-  <main>
-    <section class="hero">
-      <!-- keyword in first 50 words -->
-      <div class="hero-badge">✦ Free URL Short Generator</div>
-      <h1 class="hero-title">
-        Long URLs ko<br>
-        <span class="accent">Snap</span> karo
-      </h1>
-      <p class="hero-sub">
-        India's fastest <strong style="color:#f5c842">URL short</strong> tool — clean, trackable short links seconds
-        mein banao.
-      </p>
+  <main class="home-main">
+    <section class="hero-shell">
+      <div class="hero-copy">
+        <div class="hero-chip">Fast links. Branded look. Real analytics.</div>
+        <h1 class="hero-title">Turn every long URL into a sharper <span>growth asset</span>.</h1>
+        <p class="hero-subtitle">
+          SnapLink helps creators, marketers, and teams launch short links that look clean,
+          convert better, and stay trackable from first click to final campaign report.
+        </p>
 
-      <!-- URL Form -->
-      <div class="form-wrap">
-        <% if (error) { %>
-          <div class="error-msg">⚠ <%= error %>
+        <div class="hero-points">
+          <div class="hero-point">
+            <span class="hero-point-kicker">Custom</span>
+            <p>Aliases, password locks, expiry, QR code, and white-label support in one workflow.</p>
           </div>
+          <div class="hero-point">
+            <span class="hero-point-kicker">Built to scale</span>
+            <p>Redis-backed redirects, buffered click logging, and business-ready API access.</p>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <% if (isLoggedIn) { %>
+            <a href="/dashboard" class="hero-btn-primary">Open Dashboard</a>
+          <% } else { %>
+            <a href="/signup" class="hero-btn-primary">Create Free Account</a>
+          <% } %>
+          <a href="/pricing" class="hero-btn-secondary">See Pricing</a>
+        </div>
+
+        <div class="hero-proof">
+          <span>10 free links every month</span>
+          <span>Pro at Rs 99 per month</span>
+          <span>Business white-label ready</span>
+        </div>
+      </div>
+
+      <div class="hero-panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-label">Launch a new link</p>
+            <h2>Command center</h2>
+          </div>
+          <span class="plan-pill"><%= userPlan %></span>
+        </div>
+
+        <% if (error) { %>
+          <div class="alert error">
+            <strong>Issue:</strong>
+            <span><%= error %></span>
+          </div>
+        <% } %>
+
+        <form action="/shorten" method="POST" class="launch-form">
+          <label class="field-group field-group-wide">
+            <span class="field-label">Long URL</span>
+            <input type="url" name="orginalUrl" placeholder="https://example.com/really-long-campaign-url" required class="field-input field-input-lg" />
+          </label>
+
+          <% if (isLoggedIn) { %>
+            <label class="field-group field-group-wide field-group-alias">
+              <span class="field-label">Custom alias</span>
+              <input type="text" name="customAlias" placeholder="brand-campaign" class="field-input" <%= isFree ? 'disabled' : '' %> />
+              <% if (isFree) { %>
+                <a href="/pricing" class="inline-upgrade">Unlock in Pro</a>
+              <% } %>
+            </label>
           <% } %>
 
-            <% const isLoggedIn = typeof user !== 'undefined' && user; %>
-            <% const isFree = isLoggedIn && user.plan === 'free'; %>
-            <form action="/shorten" method="POST" class="url-form">
-              <div class="input-group">
-                    <input type="url" name="orginalUrl" placeholder="https://example.com/bahut-lamba-url..." required
-                      class="url-input" />
+          <% if (isLoggedIn) { %>
+            <div class="advanced-card">
+              <button type="button" class="advanced-toggle" onclick="toggleAdSettings()" id="adToggleBtn">
+                <span>Ad interstitial settings</span>
+                <svg id="adChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
 
-                    <% if (isLoggedIn) { %>
-                      <div class="alias-wrapper">
-                        <input type="text" name="customAlias" placeholder="Custom alias (optional)" class="alias-input"
-                          <%= isFree ? 'disabled' : '' %> />
-                        <% if (isFree) { %>
-                          <a href="/pricing" class="pro-chip-link">
-                            <span class="pro-chip">PRO</span>
-                          </a>
-                        <% } %>
-                      </div>
-                    <% } %>
-              </div>
-              <!-- AD SETTINGS -->
-              <% if (isLoggedIn) { %>
-              <div class="ad-toggle-row">
-                <button type="button" class="ad-toggle-btn" onclick="toggleAdSettings()" id="adToggleBtn">
-                  <span>💰 Ad Settings</span>
-                  <svg id="adChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s"><path d="M6 9l6 6 6-6"/></svg>
-                </button>
-                <span class="ad-earn-tip">Har click pe earn karo</span>
-              </div>
-              <div class="ad-settings-panel" id="adSettingsPanel">
-                <label class="ad-switch-row">
-                  <div class="ad-switch-info">
-                    <span class="ad-switch-label">Enable Ad Interstitial</span>
-                    <span class="ad-switch-sub">Link click hone par ad page dikhega</span>
+              <div class="advanced-panel" id="adSettingsPanel">
+                <label class="switch-row">
+                  <div>
+                    <span class="field-label">Enable ad page</span>
+                    <p class="field-help">Show a timed interstitial page before opening the destination.</p>
                   </div>
-                  <div class="ad-switch-wrap">
+                  <div class="switch-wrap">
                     <input type="checkbox" name="adEnabled" id="adEnabled" value="on" onchange="toggleAdFields(this)">
-                    <span class="ad-switch-track"></span>
+                    <span class="switch-track"></span>
                   </div>
                 </label>
-                <div id="adFields" style="display:none">
-                  <div class="ad-field-row">
-                    <label class="ad-field-label">Timer Duration</label>
-                    <div class="ad-timer-btns">
-                      <label class="ad-timer-opt"><input type="radio" name="adTimer" value="5" checked> <span>5s</span></label>
-                      <label class="ad-timer-opt"><input type="radio" name="adTimer" value="10"> <span>10s</span></label>
-                      <label class="ad-timer-opt"><input type="radio" name="adTimer" value="15"> <span>15s</span></label>
-                      <label class="ad-timer-opt"><input type="radio" name="adTimer" value="30"> <span>30s</span></label>
+
+                <div class="advanced-fields" id="adFields">
+                  <div class="timer-row">
+                    <span class="field-label">Timer</span>
+                    <div class="timer-options">
+                      <label><input type="radio" name="adTimer" value="5" checked><span>5s</span></label>
+                      <label><input type="radio" name="adTimer" value="10"><span>10s</span></label>
+                      <label><input type="radio" name="adTimer" value="15"><span>15s</span></label>
+                      <label><input type="radio" name="adTimer" value="30"><span>30s</span></label>
                     </div>
                   </div>
-                  <div class="ad-field-row">
-                    <label class="ad-field-label" for="adTitle">Ad Title <span class="ad-optional">(optional)</span></label>
-                    <input type="text" name="adTitle" id="adTitle" class="ad-text-input" placeholder="e.g. Check out this offer!" maxlength="80">
-                  </div>
-                  <div class="ad-field-row">
-                    <label class="ad-field-label" for="adDescription">Ad Description <span class="ad-optional">(optional)</span></label>
-                    <input type="text" name="adDescription" id="adDescription" class="ad-text-input" placeholder="Short description for the ad page" maxlength="160">
-                  </div>
-                  <label class="ad-switch-row" style="margin-top:8px">
-                    <div class="ad-switch-info">
-                      <span class="ad-switch-label">Allow Skip</span>
-                      <span class="ad-switch-sub">User half-time pe skip kar sakta hai</span>
+
+                  <label class="field-group field-group-wide">
+                    <span class="field-label">Ad title</span>
+                    <input type="text" name="adTitle" id="adTitle" class="field-input" placeholder="For example: Check this partner offer" maxlength="80">
+                  </label>
+
+                  <label class="field-group field-group-wide">
+                    <span class="field-label">Ad description</span>
+                    <input type="text" name="adDescription" id="adDescription" class="field-input" placeholder="Short supporting line for the ad page" maxlength="160">
+                  </label>
+
+                  <label class="switch-row compact">
+                    <div>
+                      <span class="field-label">Allow skip</span>
+                      <p class="field-help">Let users continue before the timer fully ends.</p>
                     </div>
-                    <div class="ad-switch-wrap">
+                    <div class="switch-wrap">
                       <input type="checkbox" name="adSkipable" value="on" checked>
-                      <span class="ad-switch-track"></span>
+                      <span class="switch-track"></span>
                     </div>
                   </label>
                 </div>
               </div>
-              <% } %>
+            </div>
+          <% } %>
 
-              <button type="submit" class="snap-btn">
-                <span>Snap URL</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </button>
-            </form>
+          <button type="submit" class="launch-button">
+            <span>Snap URL</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </form>
 
-            <% if (shortUrl) { %>
-              <div class="result-card">
-                <div class="result-label">✓ Tera Short URL</div>
-                <div class="result-row">
-                  <a href="<%= shortUrl %>" target="_blank" class="result-url" id="resultUrl">
-                    <%= shortUrl %>
-                  </a>
-                  <button class="copy-btn" onclick="copyUrl('<%= shortUrl %>', this)">Copy</button>
-                </div>
-              </div>
-              <% } %>
-      </div>
-    </section>
+        <% if (shortUrl) { %>
+          <div class="alert success">
+            <div>
+              <strong>Short link ready</strong>
+              <a href="<%= shortUrl %>" target="_blank" class="result-link" id="resultUrl"><%= shortUrl %></a>
+            </div>
+            <button class="copy-btn" onclick="copyUrl('<%= shortUrl %>', this)">Copy</button>
+          </div>
+        <% } %>
 
-    <!-- Features strip -->
-    <section class="features-strip">
-      <div class="feature-item">
-        <span class="feature-icon">⚡</span>
-        <span>Instant Short Links</span>
-      </div>
-      <div class="feature-divider"></div>
-      <div class="feature-item">
-        <span class="feature-icon">📊</span>
-        <span>Click Analytics</span>
-      </div>
-      <div class="feature-divider"></div>
-      <div class="feature-item">
-        <span class="feature-icon">🎯</span>
-        <span>Custom Aliases</span>
-      </div>
-      <div class="feature-divider"></div>
-      <div class="feature-item">
-        <span class="feature-icon">🔒</span>
-        <span>Secure & Reliable</span>
-      </div>
-    </section>
-
-    <!-- WHY SNAPLINK -->
-    <section class="why-section">
-      <div class="why-inner">
-        <div class="section-badge">✦ Why SnapLink?</div>
-        <h2 class="why-title">Bitly se <span class="accent">30x sasta</span>,<br>wahi features</h2>
-        <p class="why-sub">India ke creators, marketers aur small businesses ke liye banaya — dollar pricing nahi, rupee
-          pricing.</p>
-
-        <div class="why-grid">
-          <div class="why-card">
-            <div class="why-icon">💸</div>
-            <h3>₹99/month mein Pro</h3>
-            <p>Bitly ka Pro plan ₹2,900/month hai. Humara sirf ₹99 — wahi unlimited links, wahi analytics.</p>
+        <div class="panel-footer-metrics">
+          <div>
+            <span>Analytics</span>
+            <strong>Real-time</strong>
           </div>
-          <div class="why-card">
-            <div class="why-icon">🇮🇳</div>
-            <h3>India-first tool</h3>
-            <p>UPI se payment, rupee pricing, Hindi support — koi foreign card ki zaroorat nahi.</p>
+          <div>
+            <span>QR export</span>
+            <strong>Included</strong>
           </div>
-          <div class="why-card">
-            <div class="why-icon">📊</div>
-            <h3>Real-time analytics</h3>
-            <p>Har click track hota hai — country, city, device, browser, referrer sab kuch ek jagah.</p>
-          </div>
-          <div class="why-card">
-            <div class="why-icon">🔗</div>
-            <h3>Custom short URLs</h3>
-            <p>snap.link/tumhara-naam — apni marzi ka alias banao. Brand recall instantly badhta hai.</p>
-          </div>
-          <div class="why-card">
-            <div class="why-icon">🔒</div>
-            <h3>Password protection</h3>
-            <p>Links ko password se protect karo — sirf sahi log access kar sakein.</p>
-          </div>
-          <div class="why-card">
-            <div class="why-icon">⏰</div>
-            <h3>Link expiry date</h3>
-            <p>Ek date ke baad link automatically expire ho jaata hai — limited time offers ke liye perfect.</p>
+          <div>
+            <span>API access</span>
+            <strong>Pro+</strong>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- HOW IT WORKS -->
-    <section class="how-section">
-      <div class="how-inner">
-        <div class="section-badge">✦ Itna aasaan</div>
-        <h2 class="how-title">3 steps mein <span class="accent">done</span></h2>
-        <div class="steps-row">
-          <div class="step-card">
-            <div class="step-num">01</div>
-            <h3>URL paste karo</h3>
-            <p>Apna lamba URL home page pe paste karo</p>
-          </div>
-          <div class="step-arrow">→</div>
-          <div class="step-card">
-            <div class="step-num">02</div>
-            <h3>Snap karo</h3>
-            <p>1 click mein clean short link ready</p>
-          </div>
-          <div class="step-arrow">→</div>
-          <div class="step-card">
-            <div class="step-num">03</div>
-            <h3>Share & Track</h3>
-            <p>Link share karo, har click real-time track hota hai</p>
-          </div>
+    <section class="signal-band">
+      <div class="signal-card">
+        <span class="signal-kicker">For creators</span>
+        <strong>Launch memorable profile, bio, and campaign links.</strong>
+      </div>
+      <div class="signal-card">
+        <span class="signal-kicker">For marketers</span>
+        <strong>Track clicks, geo, devices, and referrers without extra tools.</strong>
+      </div>
+      <div class="signal-card">
+        <span class="signal-kicker">For teams</span>
+        <strong>Use white-label domains, reports, API keys, and business workflows.</strong>
+      </div>
+    </section>
+
+    <section class="story-grid">
+      <article class="story-card story-featured">
+        <p class="section-kicker">Why teams switch</p>
+        <h2>Clean links are only the start. SnapLink is the operating layer behind them.</h2>
+        <p>
+          Instead of juggling one tool for shortening, another for analytics, and a third for branded
+          campaigns, SnapLink keeps the entire flow in one dashboard.
+        </p>
+        <ul class="story-list">
+          <li>Custom aliases that stay on-brand</li>
+          <li>Click insights that help campaigns improve faster</li>
+          <li>White-label setup for agencies and businesses</li>
+        </ul>
+      </article>
+
+      <article class="story-card">
+        <p class="section-kicker">Built for action</p>
+        <h3>Fast launch flow</h3>
+        <p>Paste a long URL, add optional controls, and publish a polished short link in seconds.</p>
+      </article>
+
+      <article class="story-card">
+        <p class="section-kicker">Smart controls</p>
+        <h3>Protected when needed</h3>
+        <p>Use password locks, expiry rules, ad pages, and business domains where the campaign needs more control.</p>
+      </article>
+
+      <article class="story-card">
+        <p class="section-kicker">Clear visibility</p>
+        <h3>One analytics view</h3>
+        <p>Country, city, device, browser, referrer, and top-link snapshots all stay easy to read.</p>
+      </article>
+    </section>
+
+    <section class="stack-section">
+      <div class="section-heading">
+        <p class="section-kicker">Product stack</p>
+        <h2>Everything you need to ship, share, and optimize links.</h2>
+      </div>
+
+      <div class="stack-grid">
+        <article class="stack-card">
+          <span class="stack-index">01</span>
+          <h3>Branded short URLs</h3>
+          <p>Create memorable aliases that feel like part of the campaign, not an afterthought.</p>
+        </article>
+        <article class="stack-card">
+          <span class="stack-index">02</span>
+          <h3>QR and download flow</h3>
+          <p>Generate a share-ready QR code instantly for offline print, packaging, and events.</p>
+        </article>
+        <article class="stack-card">
+          <span class="stack-index">03</span>
+          <h3>Detailed analytics</h3>
+          <p>See what is working across geography, devices, timing, and referral channels.</p>
+        </article>
+        <article class="stack-card">
+          <span class="stack-index">04</span>
+          <h3>Bulk and API access</h3>
+          <p>Scale link operations when you need more than one-off manual creation.</p>
+        </article>
+        <article class="stack-card">
+          <span class="stack-index">05</span>
+          <h3>White-label delivery</h3>
+          <p>Use your own brand domain and business identity for a more premium customer experience.</p>
+        </article>
+        <article class="stack-card">
+          <span class="stack-index">06</span>
+          <h3>Affiliate and wallet workflows</h3>
+          <p>Keep monetization features, reporting, and campaign operations close to the link data.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="affiliate-showcase">
+      <div class="section-heading">
+        <p class="section-kicker">Affiliate growth</p>
+        <h2>Bring affiliate campaigns, wallet earnings, and payout visibility into the same product.</h2>
+      </div>
+
+      <div class="affiliate-grid">
+        <article class="stack-card">
+          <span class="stack-index">01</span>
+          <h3>Affiliate dashboards</h3>
+          <p>Track referred clicks, campaign activity, and performance snapshots without moving to a separate system.</p>
+        </article>
+        <article class="stack-card">
+          <span class="stack-index">02</span>
+          <h3>Wallet and payout flow</h3>
+          <p>Keep earnings, payout requests, and account-level wallet history visible for creators, partners, and operators.</p>
+        </article>
+        <article class="stack-card">
+          <span class="stack-index">03</span>
+          <h3>Referral-ready landing flow</h3>
+          <p>Turn link sharing into a monetizable channel with affiliate onboarding and business-ready reporting.</p>
+        </article>
+      </div>
+
+      <div class="affiliate-cta-card">
+        <div>
+          <p class="section-kicker">Monetization layer</p>
+          <h3>Affiliate and wallet tools now sit inside SnapLink, not outside it.</h3>
+          <p>Perfect for creators, agencies, and partner-led growth teams that want links and revenue workflows in one place.</p>
+        </div>
+        <div class="cta-actions">
+          <% if (isLoggedIn) { %>
+            <a href="/affiliate/dashboard" class="hero-btn-primary">Open Affiliate Dashboard</a>
+          <% } else { %>
+            <a href="/signup" class="hero-btn-primary">Create Affiliate Account</a>
+          <% } %>
+          <a href="/pricing" class="hero-btn-secondary">See Business Features</a>
         </div>
       </div>
     </section>
 
-    <!-- COMPETITOR COMPARISON -->
-    <section class="compare-section">
-      <div class="compare-inner">
-        <div class="section-badge">💰 Price comparison</div>
-        <h2 class="compare-title">Doosron se <span class="accent">compare karo</span></h2>
-        <div class="compare-table-wrap">
-          <table class="compare-table">
-            <thead>
-              <tr>
-                <th>Tool</th>
-                <th>Free Plan</th>
-                <th>Pro Price</th>
-                <th>India Payments</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Bitly</td>
-                <td><span class="tag red">5 links/mo</span></td>
-                <td>~₹2,900/mo</td>
-                <td><span class="tag red">✕</span></td>
-              </tr>
-              <tr>
-                <td>TinyURL</td>
-                <td><span class="tag yellow">Limited</span></td>
-                <td>~₹1,100/mo</td>
-                <td><span class="tag red">✕</span></td>
-              </tr>
-              <tr>
-                <td>Dub.co</td>
-                <td><span class="tag yellow">25/mo</span></td>
-                <td>~₹1,600/mo</td>
-                <td><span class="tag red">✕</span></td>
-              </tr>
-              <tr class="our-row">
-                <td><strong>SnapLink 🇮🇳</strong></td>
-                <td><span class="tag green">10/mo</span></td>
-                <td><strong class="accent">₹99/mo</strong></td>
-                <td><span class="tag green">✓ UPI/Card</span></td>
-              </tr>
-            </tbody>
-          </table>
+    <section class="comparison-panel">
+      <div class="comparison-copy">
+        <p class="section-kicker">Why it stands out</p>
+        <h2>Made for India-first pricing, serious use, and clean UI.</h2>
+        <p>
+          SnapLink stays affordable enough for solo creators, but structured enough for businesses that
+          need analytics, white-label, team workflows, and API-backed automation.
+        </p>
+      </div>
+
+      <div class="comparison-matrix">
+        <div class="matrix-row matrix-head">
+          <span>Capability</span>
+          <span>SnapLink</span>
+        </div>
+        <div class="matrix-row">
+          <span>Free entry point</span>
+          <strong>Yes, 10 links monthly</strong>
+        </div>
+        <div class="matrix-row">
+          <span>Pro tier</span>
+          <strong>Rs 99 per month</strong>
+        </div>
+        <div class="matrix-row">
+          <span>Business setup</span>
+          <strong>White-label plus reports</strong>
+        </div>
+        <div class="matrix-row">
+          <span>Growth tooling</span>
+          <strong>Analytics, API, QR, bulk</strong>
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
-    <section class="cta-section">
-      <div class="cta-inner">
-        <h2 class="cta-title">Abhi shuru karo — <span class="accent">free mein</span></h2>
-        <p class="cta-sub">No credit card. No hidden charges. Seedha signup karo aur apna pehla link banao.</p>
-        <div class="cta-btns">
-          <% if (!user) { %>
-            <a href="/signup" class="snap-btn" style="display:inline-flex;width:auto;padding:13px 32px">Free account
-              banao →</a>
-            <a href="/pricing" class="nav-btn-outline" style="padding:13px 24px;font-size:14px">Pricing dekho</a>
-            <% } else { %>
-              <a href="/dashboard" class="snap-btn" style="display:inline-flex;width:auto;padding:13px 32px">Dashboard
-                pe jao →</a>
-              <% } %>
+    <section class="home-cta">
+      <div class="home-cta-inner">
+        <p class="section-kicker">Start now</p>
+        <h2>Build your next short link in under a minute.</h2>
+        <p>Start free, upgrade only when you need more volume, more control, or more branding power.</p>
+        <div class="cta-actions">
+          <% if (isLoggedIn) { %>
+            <a href="/dashboard" class="hero-btn-primary">Go to Dashboard</a>
+          <% } else { %>
+            <a href="/signup" class="hero-btn-primary">Create Free Account</a>
+          <% } %>
+          <a href="/features" class="hero-btn-secondary">Explore Features</a>
         </div>
-        <p class="cta-note">✓ Free forever plan &nbsp;•&nbsp; ✓ 10 links/month &nbsp;•&nbsp; ✓ QR code included</p>
       </div>
     </section>
-
   </main>
 
-  <!-- ═══════════════════════════
-       FOOTER
-  ═══════════════════════════ -->
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <a href="/" class="footer-logo">Snap<em>Link</em></a>
-        <p>Turn long URLs into clean,<br>shareable short links — instantly.</p>
-      </div>
+  <%- include('partials/footer', { footerCopy: 'Turn long URLs into clean, branded, and trackable links that are easy to share.' }) %>
 
-      <div class="footer-links">
-        <div class="footer-col">
-          <h4>Product</h4>
-          <a href="/tools">Tools</a>
-          <a href="/features">Features</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/faq">FAQ</a>
-        </div>
-        <div class="footer-col">
-          <h4>Account</h4>
-          <% if (!user) { %>
-            <a href="/signup">Sign Up</a>
-            <a href="/login">Log In</a>
-            <% } %>
-              <% if (user) { %>
-                <a href="/dashboard">Dashboard</a>
-                <a href="/logout">Logout</a>
-                <% } %>
-                  <a href="/about">About Us</a>
-        </div>
-        <div class="footer-col">
-          <h4>Legal</h4>
-          <a href="/privacy">Privacy Policy</a>
-          <a href="/terms">Terms of Service</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <p>&copy; <%= new Date().getFullYear() %> SnapLink. All rights reserved.</p>
-      <div class="footer-socials">
-        <a href="https://github.com" target="_blank">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
-          </svg>
-        </a>
-        <a href="https://twitter.com" target="_blank">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-          </svg>
-        </a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- ═══════════════════════════
-       SEO CONTENT SECTION
-       Footer ke neeche — Google ke liye
-  ═══════════════════════════ -->
-
-
-  <script src="/js/shared/theme.js"></script>
   <script>
-
     function copyUrl(url, btn) {
       navigator.clipboard.writeText(url).then(() => {
-        btn.textContent = 'Copied!';
+        btn.textContent = 'Copied';
         btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 1800);
       });
     }
 
@@ -477,14 +442,9 @@
     }
 
     function toggleAdFields(checkbox) {
-      document.getElementById('adFields').style.display = checkbox.checked ? 'block' : 'none';
+      document.getElementById('adFields').classList.toggle('is-active', checkbox.checked);
     }
   </script>
-
 </body>
-
 </html>
-
-
-
 

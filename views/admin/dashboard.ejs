@@ -2,16 +2,19 @@
 <html lang="en" data-theme="dark">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard — SnapLink</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="/css/pages/generated/admin/dashboard.inline.css" />
+  <%
+    const seo = {
+      title: 'Admin Dashboard | SnapLink',
+      description: 'Review system-wide users, revenue, clicks, and health from the SnapLink admin dashboard.',
+      path: '/admin/dashboard',
+      robots: 'noindex, nofollow',
+      stylesheets: ["/css/pages/site-shell.css","/css/pages/generated/admin/dashboard.inline.css","/css/pages/app-shell.css"]
+    };
+  %>
+  <%- include('../partials/seo-head', { seo }) %>
 </head>
 
-<body>
+<body class="app-shell-page">
 
   <!-- ═══ SIDEBAR ═══ -->
   <aside class="sidebar">
@@ -23,29 +26,29 @@
     <nav class="sidebar-nav">
       <div class="nav-section">Overview</div>
       <a href="/admin/dashboard" class="nav-item active">
-        <span class="nav-icon">📊</span> Dashboard
+        <span class="nav-icon" aria-hidden="true"></span> Dashboard
       </a>
       <a href="/admin/campaigns" class="nav-item">
-  <span class="nav-icon">🛡</span> Campaign Panel
+  <span class="nav-icon" aria-hidden="true"></span> Campaign Panel
 </a>
 
       <div class="nav-section">Manage</div>
       <a href="/admin/users" class="nav-item">
-        <span class="nav-icon">👥</span> Users
+        <span class="nav-icon" aria-hidden="true"></span> Users
       </a>
       <a href="/admin/urls" class="nav-item">
-        <span class="nav-icon">🔗</span> URLs
+        <span class="nav-icon" aria-hidden="true"></span> URLs
       </a>
 
       <div class="nav-section">Site</div>
       <a href="/" class="nav-item">
-        <span class="nav-icon">🏠</span> View Site
+        <span class="nav-icon" aria-hidden="true"></span> View Site
       </a>
       <a href="/dashboard" class="nav-item">
-        <span class="nav-icon">⚡</span> My Dashboard
+        <span class="nav-icon" aria-hidden="true"></span> My Dashboard
       </a>
       <a href="/logout" class="nav-item">
-        <span class="nav-icon">🚪</span> Logout
+        <span class="nav-icon" aria-hidden="true"></span> Logout
       </a>
     </nav>
 
@@ -71,8 +74,8 @@
     <div class="topbar">
       <div class="topbar-title">Admin Dashboard</div>
       <div class="topbar-right">
-        <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
-        <a href="/" class="view-site">↗ View Site</a>
+        <button class="btn-theme" onclick="toggleTheme()" id="theme-btn">Theme</button>
+        <a href="/" class="view-site">View Site</a>
       </div>
     </div>
 
@@ -145,7 +148,7 @@
         <div class="card">
           <div class="card-head">
             <span class="card-title">Recent Users</span>
-            <a href="/admin/users" class="card-link">Sab dekho →</a>
+            <a href="/admin/users" class="card-link">Sab dekho</a>
           </div>
           <div class="table-x">
           <table class="mini-table">

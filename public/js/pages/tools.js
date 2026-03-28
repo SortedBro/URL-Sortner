@@ -1,95 +1,91 @@
-// ═══════════════════════════════════════════════════
-//  SnapLink — Tools Page JS
-//  public/script/tools.js
-// ═══════════════════════════════════════════════════
+/* SnapLink tools page interactions */
 
-/* ── Theme ── */
-const saved = localStorage.getItem('theme') || 'dark';
-document.documentElement.setAttribute('data-theme', saved);
-document.getElementById('themeBtn').textContent = saved === 'dark' ? '🌙' : '☀️';
-function toggleTheme() {
-  const d = document.documentElement.getAttribute('data-theme') === 'dark';
-  const n = d ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', n);
-  localStorage.setItem('theme', n);
-  document.getElementById('themeBtn').textContent = n === 'dark' ? '🌙' : '☀️';
-}
+function copyText(text, button) {
+  const normalizedText = typeof text === 'string' ? text.trim() : '';
+  if (!normalizedText || normalizedText === '-' || normalizedText === '—' || normalizedText === 'â€”') return;
 
-/* ── Copy ── */
-function copyText(t, btn) {
-  if (!t || t === '—') return;
-  navigator.clipboard.writeText(t).then(() => {
-    if (btn) { const o = btn.textContent; btn.textContent = '✓ Copied'; setTimeout(() => btn.textContent = o, 2000); }
+  navigator.clipboard.writeText(normalizedText).then(() => {
+    if (!button) return;
+    const originalText = button.textContent;
+    button.textContent = 'Copied';
+    setTimeout(() => {
+      button.textContent = originalText;
+    }, 2000);
   });
 }
 
-/* ── Tool switching ── */
-window.openTool = function openTool(id, btn) {
-  // Hide all panels with direct style — CSS override se bachao
-  document.querySelectorAll('.tpanel').forEach(p => {
-    p.style.display = 'none';
-    p.classList.remove('active');
-  });
-  document.querySelectorAll('.ttab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tnav-card').forEach(c => c.classList.remove('active'));
+function getToolNavCard(id) {
+  return document.querySelector(`.tnav-card[onclick*="openTool('${id}')"]`);
+}
 
-  // Show selected panel
+window.openTool = function openTool(id, button, options = {}) {
+  const skipScroll = Boolean(options.skipScroll);
+
+  document.querySelectorAll('.tpanel').forEach((panel) => {
+    panel.style.display = 'none';
+    panel.classList.remove('active');
+  });
+  document.querySelectorAll('.ttab').forEach((tab) => tab.classList.remove('active'));
+  document.querySelectorAll('.tnav-card').forEach((card) => card.classList.remove('active'));
+
   const panel = document.getElementById('tp-' + id);
-  const tab   = document.getElementById('ttab-' + id);
+  const tab = document.getElementById('ttab-' + id);
+  const navCard = button && button.classList && button.classList.contains('tnav-card') ? button : getToolNavCard(id);
 
   if (panel) {
     panel.style.display = 'block';
     panel.classList.add('active');
   }
+
   if (tab) {
     tab.classList.add('active');
-    tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    if (!skipScroll) {
+      tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
   }
-  if (btn) btn.classList.add('active');
 
-  // Scroll to panel area (not tab bar)
+  if (navCard) {
+    navCard.classList.add('active');
+  }
+
+  if (panel && window.location.hash !== '#' + id) {
+    history.replaceState(null, '', '#' + id);
+  }
+
   const wrap = document.querySelector('.tools-panels-wrap');
-  if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (wrap && !skipScroll) {
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
-/* ── Init on load ── */
 window.addEventListener('DOMContentLoaded', () => {
-  // Pehle sab panels hide karo
-  document.querySelectorAll('.tpanel').forEach(p => {
-    p.style.display = 'none';
-    p.classList.remove('active');
+  document.querySelectorAll('.tpanel').forEach((panel) => {
+    panel.style.display = 'none';
+    panel.classList.remove('active');
   });
 
-  // URL hash check karo, warna pehla tool dikhao
   const hash = window.location.hash.replace('#', '');
   if (hash && document.getElementById('tp-' + hash)) {
-    openTool(hash);
+    openTool(hash, null, { skipScroll: true });
   } else {
-    openTool('qr'); // default: QR tool
+    openTool('qr', null, { skipScroll: true });
   }
 
-  // Color picker init
   if (document.getElementById('cPick')) updColor('#FAC775');
-
-  // Password generate on load
   if (document.getElementById('passLen')) genPass();
-
-  // Emoji init
   if (document.getElementById('emojiCats')) initEmoji();
 
-  // Invoice default dates
   if (document.getElementById('invDate')) {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('invDate').value = today;
-    const due = new Date(); due.setDate(due.getDate() + 30);
+    const due = new Date();
+    due.setDate(due.getDate() + 30);
     document.getElementById('invDue').value = due.toISOString().split('T')[0];
     addInvItem('Website Development', 1, 15000);
     addInvItem('Logo Design', 1, 5000);
     updateInv();
   }
 });
-
-/* ════ 1. QR Generator ════ */
 function genQR() {
   const val = document.getElementById('qrInput').value.trim();
   const ph = document.getElementById('qrPlaceholder');

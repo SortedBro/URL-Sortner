@@ -2,32 +2,34 @@
 <html lang="en" data-theme="dark">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Campaigns — SnapLink Affiliate</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="/css/pages/generated/affiliate-dashboard.inline.css" />
+  <%
+    const seo = {
+      title: 'Affiliate Campaigns | SnapLink',
+      description: 'Monitor affiliate campaigns, clicks, and pending earnings inside your SnapLink workspace.',
+      path: '/affiliate/dashboard',
+      robots: 'noindex, nofollow',
+      stylesheets: ["/css/pages/site-shell.css","/css/pages/generated/affiliate-dashboard.inline.css","/css/pages/app-shell.css"]
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
 
-<body>
+<body class="workspace-page">
 
-  <nav>
+  <nav class="workspace-nav">
     <a class="nav-logo" href="/">
-      <div class="logo-mark">⚡</div>
+      <div class="logo-mark">SL</div>
       SnapLink
     </a>
     <div class="nav-links">
       <a class="nav-link" href="/dashboard">URLs</a>
       <a class="nav-link active" href="/affiliate/dashboard">Affiliate</a>
       <a class="nav-link" href="/brand/campaigns">Brand</a>
-      <a class="nav-link" href="/affiliate/wallet">💰 Wallet</a>
+      <a class="nav-link" href="/affiliate/wallet">Wallet</a>
 
     </div>
     <div class="nav-right">
-      <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
+      <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">Theme</button>
       <a class="btn-nav ghost" href="/logout">Logout</a>
     </div>
   </nav>
@@ -106,7 +108,7 @@
     <div class="campaigns-grid">
       <% if (links.length===0) { %>
         <div class="empty-state">
-          <span class="empty-glyph">🔗</span>
+          <span class="empty-glyph">LINK</span>
           <h3>Koi campaign nahi hai abhi</h3>
           <p>Pehla affiliate link banao aur track karna shuru karo</p>
           <button class="btn-new" onclick="openModal()" style="display:inline-flex">
@@ -121,7 +123,7 @@
               data-title="<%= link.title %>"
               data-short="<%= link.shortCode %>"
               data-original="<%= link.originalUrl %>"
-              data-status="<%= link.isActive ? 'active' : 'inactive' %>"
+              data-status="<%= link.isActive ? 'Active' : 'Inactive' %>"
               data-source="<%= link.campaign ? 'campaign' : 'personal' %>"
               style="animation: fadeUp 0.4s <%= 0.1 + i * 0.05 %>s ease both; opacity:0"
             >

@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <%
+    const faqItems = [
+      { q: 'What kind of links can I create in SnapLink?', a: 'You can publish standard short links, branded aliases, password-protected links, expiry-based links, and ad-interstitial links depending on your plan.' },
+      { q: 'Does SnapLink support business features?', a: 'Yes. Business features include white-label settings, custom domain support, webhook delivery, weekly reports, and team management tools.' },
+      { q: 'Can I use SnapLink without coding?', a: 'Absolutely. The dashboard is designed for manual workflows first. API access is available later when you want programmatic creation.' },
+      { q: 'How do redirects stay fast?', a: 'The app uses route optimization, Redis-backed caching, and buffered click processing so hot redirect paths stay lightweight.' },
+      { q: 'Where can I find legal information?', a: 'Use the privacy and terms pages linked in the footer and legal section of the site for current policy coverage.' },
+      { q: 'How can I reach support or the builder?', a: 'Use the contact form on the About page or the public email links in the footer for direct communication.' }
+    ];
+    const seo = {
+      title: 'SnapLink FAQ | Product, Pricing, and Platform Questions',
+      description: 'Find answers to common questions about SnapLink features, pricing, redirects, analytics, white-label support, and account workflows.',
+      keywords: 'snaplink faq, url shortener faq, branded links help, link analytics help, snaplink support',
+      path: '/faq',
+      stylesheets: ['/css/pages/site-shell.css', '/css/pages/marketing-pages.css'],
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqItems.map((item) => ({
+          '@type': 'Question',
+          name: item.q,
+          acceptedAnswer: { '@type': 'Answer', text: item.a }
+        }))
+      }
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
+</head>
+<body class="site-page faq-page">
+  <%- include('partials/site-navbar', { currentPage: 'faq' }) %>
+
+  <main class="page-shell page-stack">
+    <section class="page-hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">FAQ</div>
+          <h1 class="hero-title">Answers for the most common <span>product questions</span>.</h1>
+          <p class="hero-text">
+            This page covers product setup, pricing, redirect behavior, account workflows, and where to go when you need more help.
+          </p>
+        </div>
+        <aside class="hero-panel">
+          <h3>Need something more specific?</h3>
+          <p>If your question is about integrations, deployment, or a custom workflow, the About page contact form is the fastest next step.</p>
+          <div class="btn-row">
+            <a href="/about" class="btn-primary">Contact via About page</a>
+            <a href="/pricing" class="btn-secondary">Review pricing</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-kicker">Questions</div>
+      <h2 class="section-title">Everything users usually ask before or after launching.</h2>
+      <div class="faq-list">
+        <% faqItems.forEach((item, index) => { %>
+          <article class="faq-item <%= index === 0 ? 'is-open' : '' %>">
+            <button type="button" class="faq-question" onclick="toggleFaq(this)">
+              <span><%= item.q %></span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer"><p><%= item.a %></p></div>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer', { footerCopy: 'Answers for new users, active customers, and teams evaluating SnapLink for production work.' }) %>
+  <script src="/js/shared/theme.js"></script>
+  <script>
+    function toggleFaq(button) {
+      const item = button.closest('.faq-item');
+      const isOpen = item.classList.contains('is-open');
+      document.querySelectorAll('.faq-item').forEach((node) => node.classList.remove('is-open'));
+      if (!isOpen) item.classList.add('is-open');
+    }
+  </script>
+</body>
+</html>

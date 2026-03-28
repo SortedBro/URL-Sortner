@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Brand Dashboard — SnapLink</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/css/pages/generated/brand-dashboard.inline.css" />
+  <%
+    const seo = {
+      title: 'Brand Campaigns | SnapLink',
+      description: 'Create, submit, and monitor brand campaigns inside your SnapLink workspace.',
+      path: '/brand/campaigns',
+      robots: 'noindex, nofollow',
+      stylesheets: ["/css/pages/site-shell.css","/css/pages/generated/brand-dashboard.inline.css","/css/pages/app-shell.css"]
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
-<body>
+<body class="workspace-page">
 
-<nav>
+<nav class="workspace-nav">
   <a class="nav-logo" href="/">
-    <div class="logo-mark">⚡</div>
+    <div class="logo-mark">SL</div>
     SnapLink
   </a>
   <div class="nav-links">
@@ -21,7 +25,7 @@
     <a class="nav-link active" href="/brand/campaigns">Brand</a>
   </div>
   <div class="nav-right">
-    <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
+    <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">Theme</button>
     <a class="btn-nav ghost" href="/logout">Logout</a>
   </div>
 </nav>
@@ -67,7 +71,7 @@
   <div class="campaigns-grid">
     <% if (campaigns.length === 0) { %>
       <div class="empty-state">
-        <span class="empty-glyph">📢</span>
+        <span class="empty-glyph">NEW</span>
         <h3>Koi campaign nahi hai abhi</h3>
         <p>Pehla brand campaign submit karo, admin approve karega</p>
         <button class="btn-new" onclick="openModal()" style="display:inline-flex">
@@ -81,7 +85,7 @@
           <div class="card-top">
             <span class="card-title"><%= c.title %></span>
             <span class="badge <%= c.status %>">
-              <%= c.status === 'pending' ? '⏳ Pending' : c.status === 'approved' ? '✅ Approved' : '❌ Rejected' %>
+              <%= c.status === 'pending' ? 'Pending' : c.status === 'approved' ? 'Approved' : 'Rejected' %>
             </span>
           </div>
           <div class="card-url"><%= c.targetUrl %></div>
@@ -101,7 +105,7 @@
         <div class="card-right">
           <% if (c.status === 'pending') { %>
             <form action="/brand/campaigns/<%= c._id %>/delete" method="POST" style="margin:0">
-              <button class="btn-action danger" type="submit" onclick="return confirm('Campaign delete karo?')">✕ Delete</button>
+              <button class="btn-action danger" type="submit" onclick="return confirm('Campaign delete karo?')">Delete</button>
             </form>
           <% } %>
         </div>
@@ -117,7 +121,7 @@
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title">Submit Campaign</span>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" onclick="closeModal()">Close</button>
     </div>
 
     <div class="form-error" id="form-error"></div>

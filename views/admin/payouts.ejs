@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Payouts — Admin Panel</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/css/pages/generated/admin/payouts.inline.css" />
+  <%
+    const seo = {
+      title: 'Payout Requests | SnapLink Admin',
+      description: 'Review affiliate payout requests and status updates from the SnapLink admin workspace.',
+      path: '/admin/payout-requests',
+      robots: 'noindex, nofollow',
+      stylesheets: ["/css/pages/site-shell.css","/css/pages/generated/admin/payouts.inline.css","/css/pages/app-shell.css"]
+    };
+  %>
+  <%- include('../partials/seo-head', { seo }) %>
 </head>
-<body>
+<body class="workspace-page">
 
-<nav>
+<nav class="workspace-nav">
   <a class="nav-logo" href="/admin/dashboard">
     <div class="logo-dot"></div>Admin
   </a>
@@ -21,7 +25,7 @@
     <a class="nav-link active" href="/admin/payout-requests">Payouts</a>
   </div>
   <div class="nav-right">
-    <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
+    <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">Theme</button>
     <a class="btn-nav" href="/logout">Logout</a>
   </div>
 </nav>

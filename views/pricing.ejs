@@ -1,309 +1,193 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pricing — SnapLink</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/favicon.png">
-  <link rel="stylesheet" href="/css/pages/home.css">
-  <link rel="stylesheet" href="/css/pages/generated/pricing.inline.css" />
+  <%
+    const activePlan = user ? String(user.plan || 'free') : 'free';
+    const faqItems = [
+      { q: 'Do I need a card for the free plan?', a: 'No. The free plan starts without payment details, so you can begin shortening links right away.' },
+      { q: 'What happens if I downgrade from Pro?', a: 'Existing links keep working. Your account simply returns to the free creation limit and feature access.' },
+      { q: 'Which payment methods are supported?', a: 'Razorpay checkout supports UPI, cards, net banking, and wallet-based payment methods.' },
+      { q: 'What does Business include beyond Pro?', a: 'Business adds white label controls, team seats, weekly reports, webhook support, and business operations settings.' },
+      { q: 'Can I switch between monthly and yearly billing?', a: 'Yes. Choose the cadence that fits your usage. Yearly billing keeps the same feature set with better effective pricing.' }
+    ];
+    const seo = {
+      title: 'SnapLink Pricing | Free, Pro, and Business Plans',
+      description: 'Compare SnapLink pricing for free, Pro, and Business plans. Start free, unlock analytics and API access, and scale into white-label workflows.',
+      keywords: 'snaplink pricing, url shortener pricing, branded link pricing, white label link plans, analytics pricing',
+      path: '/pricing',
+      stylesheets: ['/css/pages/site-shell.css', '/css/pages/marketing-pages.css'],
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqItems.map((item) => ({
+          '@type': 'Question',
+          name: item.q,
+          acceptedAnswer: { '@type': 'Answer', text: item.a }
+        }))
+      }
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
+<body class="site-page pricing-page">
+  <%- include('partials/site-navbar', { currentPage: 'pricing' }) %>
 
-<body>
-
-  <!-- ═══ NAVBAR ═══ -->
-  <nav class="navbar">
-    <a href="/" class="nav-logo">
-      <span class="logo-dot"></span>
-      Snap<em>Link</em>
-    </a>
-    <div class="nav-center">
-      <a href="/" class="nav-link">Home</a>
-      <a href="/features" class="nav-link">Features</a>
-      <a href="/pricing" class="nav-link" style="color:var(--accent)">Pricing</a>
-      <a href="/about" class="nav-link">About</a>
-    </div>
-    <div class="nav-right">
-      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
-      <% if (typeof user !== 'undefined' && user) { %>
-        <div class="nav-user">
-          <div class="nav-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
-          <span class="nav-username"><%= user.name %></span>
+  <main class="page-shell page-stack">
+    <section class="page-hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Pricing</div>
+          <h1 class="hero-title">Start free. Upgrade only when the workflow needs <span>more power</span>.</h1>
+          <p class="hero-text">
+            SnapLink pricing stays simple: a free starting point for early use, Pro for advanced operators,
+            and Business for teams that need white-label delivery and automation.
+          </p>
+          <div class="hero-actions">
+            <button type="button" class="btn-secondary" id="billingToggle">Monthly billing</button>
+            <span class="form-note">Toggle to yearly pricing for the same features and better effective spend.</span>
+          </div>
         </div>
-        <a href="/dashboard" class="nav-link">Dashboard</a>
-        <a href="/logout" class="nav-btn-outline">Logout</a>
-      <% } else { %>
-        <a href="/login" class="nav-link">Login</a>
-        <a href="/signup" class="nav-btn-solid">Get Started</a>
-      <% } %>
-    </div>
-  </nav>
 
-  <main>
-
-    <!-- ═══ HERO ═══ -->
-    <section class="pricing-hero">
-      <div class="pricing-badge">💰 Simple Pricing</div>
-      <h1 class="pricing-title">Sahi plan <span>choose karo</span></h1>
-      <p class="pricing-sub">Free mein shuru karo — jab scale karna ho tab upgrade karo. Koi hidden charges nahi.</p>
-
-      <!-- Billing toggle -->
-      <div class="billing-toggle">
-        <span id="monthlyLabel" style="color:var(--text)">Monthly</span>
-        <button class="toggle-switch" id="billingToggle" onclick="toggleBilling()">
-          <div class="toggle-knob"></div>
-        </button>
-        <span id="yearlyLabel">Yearly</span>
-        <span class="save-badge">2 months free</span>
+        <aside class="hero-panel">
+          <h3>Why the pricing is structured this way</h3>
+          <p>It should be easy to try the product, affordable to grow into Pro, and strong enough for agencies and businesses that need brand control.</p>
+          <ul class="check-list">
+            <li>Free entry for testing real workflows</li>
+            <li>Pro unlocks scale, analytics depth, and API access</li>
+            <li>Business adds team, reporting, and white-label operations</li>
+          </ul>
+        </aside>
       </div>
     </section>
 
-    <!-- ═══ PLANS ═══ -->
-    <div class="plans-section">
-      <div class="plans-grid">
-
-        <!-- FREE -->
-        <div class="plan-card">
-          <div class="plan-name">Free</div>
-          <div class="plan-price">
-            <span class="price-currency">₹</span>
-            <span class="price-amount">0</span>
-            <span class="price-period">/month</span>
+    <section class="pricing-grid">
+      <article class="plan-card">
+        <div class="plan-label-row">
+          <div>
+            <div class="plan-chip">Free</div>
+            <h3>Start and ship</h3>
           </div>
-          <p class="plan-desc">Shuru karne ke liye — bilkul free, hamesha.</p>
-          <hr class="plan-divider">
-          <ul class="features-list">
-            <li class="feature-li"><span class="feature-check">✓</span> 10 URLs per month</li>
-            <li class="feature-li"><span class="feature-check">✓</span> Basic click analytics</li>
-            <li class="feature-li"><span class="feature-check">✓</span> 30 day link history</li>
-            <li class="feature-li"><span class="feature-check">✓</span> QR Code generate</li>
-            <li class="feature-li disabled"><span class="feature-check cross">✕</span> Custom alias</li>
-            <li class="feature-li disabled"><span class="feature-check cross">✕</span> Password protected links</li>
-            <li class="feature-li disabled"><span class="feature-check cross">✕</span> Link expiry date</li>
-            <li class="feature-li disabled"><span class="feature-check cross">✕</span> Bulk shortener</li>
-            <li class="feature-li disabled"><span class="feature-check cross">✕</span> API access</li>
-          </ul>
-          <% if (typeof user !== 'undefined' && user) { %>
-            <span class="plan-btn current">Current Plan</span>
-          <% } else { %>
-            <a href="/signup" class="plan-btn free">Get Started Free</a>
-          <% } %>
+          <% if (activePlan === 'free') { %><span class="plan-current">Current</span><% } %>
         </div>
+        <div class="plan-price"><strong data-monthly="0" data-yearly="0">Rs 0</strong><span>Always free</span></div>
+        <p class="plan-subtitle">Perfect for trying SnapLink, testing link flows, and shipping a few campaigns each month.</p>
+        <ul class="plan-features">
+          <li>10 URLs per month</li>
+          <li>Basic click analytics</li>
+          <li>30-day history</li>
+          <li>QR code generation</li>
+        </ul>
+        <% if (user) { %>
+          <span class="plan-current"><%= activePlan === 'free' ? 'Current plan' : 'Available in your account' %></span>
+        <% } else { %>
+          <a href="/signup" class="plan-cta">Create free account</a>
+        <% } %>
+      </article>
 
-        <!-- PRO -->
-        <div class="plan-card popular">
-          <div class="popular-badge">★ MOST POPULAR</div>
-          <div class="plan-name">Pro</div>
-          <div class="plan-price">
-            <span class="price-currency">₹</span>
-            <span class="price-amount accent" id="proPrice">99</span>
-            <span class="price-period" id="proPeriod">/month</span>
+      <article class="plan-card is-featured">
+        <div class="plan-label-row">
+          <div>
+            <div class="plan-chip popular">Most popular</div>
+            <h3>Pro</h3>
           </div>
-          <p class="plan-desc">Serious creators aur marketers ke liye.</p>
-          <hr class="plan-divider">
-          <ul class="features-list">
-            <li class="feature-li"><span class="feature-check">✓</span> <strong>Unlimited</strong> URLs</li>
-            <li class="feature-li"><span class="feature-check">✓</span> Full click analytics</li>
-            <li class="feature-li"><span class="feature-check">✓</span> <strong>Lifetime</strong> link history</li>
-            <li class="feature-li"><span class="feature-check">✓</span> Custom alias</li>
-            <li class="feature-li"><span class="feature-check">✓</span> QR Code + Download</li>
-            <li class="feature-li"><span class="feature-check">✓</span> Password protected links</li>
-            <li class="feature-li"><span class="feature-check">✓</span> Link expiry date</li>
-            <li class="feature-li"><span class="feature-check">✓</span> Bulk shortener</li>
-            <li class="feature-li"><span class="feature-check">✓</span> Analytics export CSV</li>
-            <li class="feature-li"><span class="feature-check">✓</span> API access</li>
-          </ul>
-          <a href="/upgrade?plan=pro" class="plan-btn pro">Upgrade to Pro →</a>
+          <% if (activePlan === 'pro') { %><span class="plan-current">Current</span><% } %>
         </div>
+        <div class="plan-price"><strong id="proPrice" data-monthly="99" data-yearly="990">Rs 99</strong><span id="proPeriod">per month</span></div>
+        <p class="plan-subtitle">For creators and marketers who need analytics depth, custom control, and faster publishing.</p>
+        <ul class="plan-features">
+          <li>Unlimited URLs</li>
+          <li>Full analytics and export</li>
+          <li>Custom aliases</li>
+          <li>Password protection and expiry</li>
+          <li>Bulk shortener and API access</li>
+        </ul>
+        <% if (activePlan === 'pro') { %>
+          <span class="plan-current">Current plan</span>
+        <% } else { %>
+          <a href="/upgrade?plan=pro" class="plan-cta">Upgrade to Pro</a>
+        <% } %>
+      </article>
 
-        <!-- BUSINESS -->
-        <div class="plan-card">
-          <div class="plan-name">Business</div>
-          <div class="plan-price">
-            <span class="price-currency">₹</span>
-            <span class="price-amount" id="bizPrice">299</span>
-            <span class="price-period" id="bizPeriod">/month</span>
+      <article class="plan-card">
+        <div class="plan-label-row">
+          <div>
+            <div class="plan-chip">Business</div>
+            <h3>Scale with brand control</h3>
           </div>
-          <p class="plan-desc">Teams aur agencies ke liye — sab kuch unlimited.</p>
-          <hr class="plan-divider">
-          <ul class="features-list">
-            <li class="feature-li"><span class="feature-check">✓</span> Sab Pro features</li>
-            <li class="feature-li"><span class="feature-check">✓</span> 5 team members</li>
-            <li class="feature-li"><span class="feature-check">✓</span> Custom domain</li>
-            <li class="feature-li"><span class="feature-check">✓</span> White label</li>
-            <li class="feature-li"><span class="feature-check">✓</span> Weekly email reports</li>
-            <li class="feature-li"><span class="feature-check">✓</span> UTM tracking</li>
-            <li class="feature-li"><span class="feature-check">✓</span> Webhook support</li>
-            <li class="feature-li"><span class="feature-check">✓</span> Priority support</li>
-            <li class="feature-li"><span class="feature-check">✓</span> SLA guarantee</li>
-          </ul>
-          <a href="/upgrade?plan=business" class="plan-btn business">Upgrade to Business →</a>
+          <% if (activePlan === 'business') { %><span class="plan-current">Current</span><% } %>
         </div>
+        <div class="plan-price"><strong id="businessPrice" data-monthly="299" data-yearly="2990">Rs 299</strong><span id="businessPeriod">per month</span></div>
+        <p class="plan-subtitle">For agencies, internal teams, and businesses that need white-label delivery, reports, and operational tooling.</p>
+        <ul class="plan-features">
+          <li>Everything in Pro</li>
+          <li>White label and custom domain</li>
+          <li>5 team seats</li>
+          <li>Weekly email reports</li>
+          <li>Webhook support and priority workflows</li>
+        </ul>
+        <% if (activePlan === 'business') { %>
+          <span class="plan-current">Current plan</span>
+        <% } else { %>
+          <a href="/upgrade?plan=business" class="plan-cta">Upgrade to Business</a>
+        <% } %>
+      </article>
+    </section>
 
+    <section class="section-card">
+      <div class="section-kicker">Comparison</div>
+      <h2 class="section-title">Where each plan starts to diverge.</h2>
+      <div class="compare-grid">
+        <div class="compare-row"><span>Publishing volume</span><strong>Free: 10 per month, Pro and Business: unlimited</strong></div>
+        <div class="compare-row"><span>Analytics depth</span><strong>Free: basic, Pro: full, Business: full plus reporting workflows</strong></div>
+        <div class="compare-row"><span>Branding control</span><strong>Custom alias in Pro, white-label and custom domain in Business</strong></div>
+        <div class="compare-row"><span>Automation</span><strong>API in Pro, webhook and business reporting in Business</strong></div>
       </div>
-    </div>
+    </section>
 
-    <!-- ═══ COMPARISON TABLE ═══ -->
-    <div class="compare-section">
-      <h2 class="compare-title">Plans <span>compare karo</span></h2>
-      <div class="compare-table-wrap">
-        <table class="compare-table">
-          <thead>
-            <tr>
-              <th>Feature</th>
-              <th>Free</th>
-              <th class="highlight">Pro</th>
-              <th>Business</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>URLs per month</td>
-              <td>10</td>
-              <td class="highlight-col">Unlimited</td>
-              <td>Unlimited</td>
-            </tr>
-            <tr>
-              <td>Click analytics</td>
-              <td>Basic</td>
-              <td class="highlight-col">Full</td>
-              <td>Full + Export</td>
-            </tr>
-            <tr>
-              <td>Custom alias</td>
-              <td><span class="cross">✕</span></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-            </tr>
-            <tr>
-              <td>QR Code</td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-            </tr>
-            <tr>
-              <td>Password protection</td>
-              <td><span class="cross">✕</span></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-            </tr>
-            <tr>
-              <td>Link expiry</td>
-              <td><span class="cross">✕</span></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-            </tr>
-            <tr>
-              <td>API access</td>
-              <td><span class="cross">✕</span></td>
-              <td><span class="check">✓</span></td>
-              <td><span class="check">✓</span></td>
-            </tr>
-            <tr>
-              <td>Team members</td>
-              <td><span class="cross">✕</span></td>
-              <td><span class="cross">✕</span></td>
-              <td>5 seats</td>
-            </tr>
-            <tr>
-              <td>Custom domain</td>
-              <td><span class="cross">✕</span></td>
-              <td><span class="cross">✕</span></td>
-              <td><span class="check">✓</span></td>
-            </tr>
-          </tbody>
-        </table>
+    <section class="section-card">
+      <div class="section-kicker">FAQ</div>
+      <h2 class="section-title">Common pricing questions before you upgrade.</h2>
+      <div class="faq-list">
+        <% faqItems.forEach((item, index) => { %>
+          <article class="faq-item <%= index === 0 ? 'is-open' : '' %>">
+            <button type="button" class="faq-question" onclick="toggleFaq(this)">
+              <span><%= item.q %></span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer"><p><%= item.a %></p></div>
+          </article>
+        <% }) %>
       </div>
-    </div>
-
-    <!-- ═══ FAQ ═══ -->
-    <div class="faq-section">
-      <h2 class="faq-title">Sawaal <span>Jawaab</span></h2>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          Free plan mein card details chahiye?
-          <span class="faq-icon">+</span>
-        </div>
-        <div class="faq-a">Nahi! Free plan ke liye koi payment ya card ki zaroorat nahi. Seedha signup karo aur use karo.</div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          Subscription kaise cancel karein?
-          <span class="faq-icon">+</span>
-        </div>
-        <div class="faq-a">Kabhi bhi cancel kar sakte ho — Dashboard → Settings → Cancel Subscription. Billing period khatam hone tak Pro features milte rahenge.</div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          Pro se Free pe wapas aaye toh kya hoga?
-          <span class="faq-icon">+</span>
-        </div>
-        <div class="faq-a">Tumhare saare links kaam karte rahenge lekin naye links banane ki limit 10/month ho jaayegi. Purana data safe rahega.</div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          Payment methods kaunse hain?
-          <span class="faq-icon">+</span>
-        </div>
-        <div class="faq-a">UPI, Credit/Debit Card, Net Banking, aur Wallets — Razorpay ke through sab accept karte hain.</div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
-          Yearly plan mein kitni savings hogi?
-          <span class="faq-icon">+</span>
-        </div>
-        <div class="faq-a">Yearly plan mein 2 mahine free milte hain — Pro pe ₹198 bachoge aur Business pe ₹598 bachoge har saal!</div>
-      </div>
-
-    </div>
-
+    </section>
   </main>
 
-  <%- include('partials/footer') %>
-
+  <%- include('partials/footer', { footerCopy: 'Straightforward pricing so you can start free, grow into Pro, and scale into Business when brand control matters.' }) %>
   <script src="/js/shared/theme.js"></script>
   <script>
-    // ── Theme ──
+    let yearlyBilling = false;
 
-    // ── Billing toggle ──
-    let isYearly = false;
-    function toggleBilling() {
-      isYearly = !isYearly;
-      const btn = document.getElementById('billingToggle');
-      btn.classList.toggle('active', isYearly);
-
-      document.getElementById('monthlyLabel').style.color = isYearly ? 'var(--muted)' : 'var(--text)';
-      document.getElementById('yearlyLabel').style.color  = isYearly ? 'var(--text)' : 'var(--muted)';
-
-      // Pro price
-      document.getElementById('proPrice').textContent  = isYearly ? '990' : '99';
-      document.getElementById('proPeriod').textContent = isYearly ? '/year' : '/month';
-
-      // Business price
-      document.getElementById('bizPrice').textContent  = isYearly ? '2990' : '299';
-      document.getElementById('bizPeriod').textContent = isYearly ? '/year' : '/month';
+    function syncPrice(nodeId, periodId) {
+      const node = document.getElementById(nodeId);
+      const period = document.getElementById(periodId);
+      if (!node || !period) return;
+      const value = yearlyBilling ? node.dataset.yearly : node.dataset.monthly;
+      node.textContent = `Rs ${value}`;
+      period.textContent = yearlyBilling ? 'per year' : 'per month';
     }
 
-    // ── FAQ ──
-    function toggleFaq(el) {
-      const item = el.parentElement;
-      const isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-      if (!isOpen) item.classList.add('open');
+    function toggleFaq(button) {
+      const item = button.closest('.faq-item');
+      const isOpen = item.classList.contains('is-open');
+      document.querySelectorAll('.faq-item').forEach((node) => node.classList.remove('is-open'));
+      if (!isOpen) item.classList.add('is-open');
     }
+
+    document.getElementById('billingToggle').addEventListener('click', function () {
+      yearlyBilling = !yearlyBilling;
+      this.textContent = yearlyBilling ? 'Yearly billing' : 'Monthly billing';
+      syncPrice('proPrice', 'proPeriod');
+      syncPrice('businessPrice', 'businessPeriod');
+    });
   </script>
-
 </body>
 </html>
-
-
-
-

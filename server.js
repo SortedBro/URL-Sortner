@@ -134,6 +134,7 @@ function configureRouteContext(expressApp) {
     expressApp.use(softAuth);
     expressApp.use((req, res, next) => {
         res.locals.user = req.user || null;
+        res.locals.appUrl = appConfig.appUrl || `${req.protocol}://${req.get('host')}`;
         next();
     });
 }
@@ -168,13 +169,16 @@ function registerCoreRoutes(expressApp) {
     });
 
     expressApp.get('/sitemap.xml', (req, res) => {
+        const siteUrl = (appConfig.appUrl || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
         const pages = [
-            'https://snaplink.fun/',
-            'https://snaplink.fun/features',
-            'https://snaplink.fun/pricing',
-            'https://snaplink.fun/about',
-            'https://snaplink.fun/faq',
-            'https://snaplink.fun/tools',
+            `${siteUrl}/`,
+            `${siteUrl}/features`,
+            `${siteUrl}/pricing`,
+            `${siteUrl}/about`,
+            `${siteUrl}/tools`,
+            `${siteUrl}/faq`,
+            `${siteUrl}/privacy`,
+            `${siteUrl}/terms`,
         ];
 
         const urls = pages

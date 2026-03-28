@@ -2,19 +2,20 @@
 <html lang="en" data-theme="dark">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard — SnapLink</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap"
-    rel="stylesheet" />
-  <link rel="icon" type="image/png" href="/favicon.png" />
+  <%
+    const seo = {
+      title: 'Dashboard | SnapLink',
+      description: 'Manage your short links, analytics, exports, and plan activity from the SnapLink dashboard.',
+      path: '/dashboard',
+      robots: 'noindex, nofollow',
+      stylesheets: ["/css/pages/site-shell.css","/css/pages/dashboard.css","/css/pages/app-shell.css"]
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <link rel="stylesheet" href="/css/pages/dashboard.css">
 </head>
 
-<body>
+<body class="app-shell-page">
 
   <!-- ═══════ SIDEBAR ═══════ -->
   <aside class="sidebar">
@@ -82,7 +83,7 @@
     <div class="sidebar-bottom">
       <div class="theme-row">
         <span>Theme</span>
-        <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+        <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">Theme</button>
       </div>
 
       <% if (typeof user !=='undefined' && user) { %>
@@ -95,7 +96,7 @@
               <div class="plan-username">
                 <%= user.name.split(' ')[0] %></div>
             <div class="plan-label">
-              <%= user.plan === 'free' ? 'FREE PLAN' : user.plan==='pro' ? '⭐ PRO' : '💎 BUSINESS' %>
+              <%= user.plan === 'free' ? 'FREE PLAN' : user.plan==='pro' ? 'PRO' : 'BUSINESS' %>
               </div>
             </div>
           </div>
@@ -111,7 +112,7 @@
                 <div class="plan-bar-fill" style="width:<%= Math.min((urls.length/10)*100,100) %>%"></div>
               </div>
             </div>
-            <a href="/pricing" class="upgrade-btn">⚡ Upgrade — ₹99/mo</a>
+            <a href="/pricing" class="upgrade-btn">Upgrade - Rs 99/mo</a>
             <% } else { %>
               <a href="/pricing" class="upgrade-btn"
                 style="background:var(--bg4);color:var(--text2);border:1px solid var(--border2)">Manage Plan</a>
@@ -127,7 +128,7 @@
     <div class="topbar-left">
       <h1>Hey, <span>
           <%= typeof user !=='undefined' ? user.name.split(' ')[0] : ' there' %>
-        </span> 👋</h1>
+        </span></h1>
       <p>Tumhare saare links aur unki analytics ek jagah</p>
     </div>
     <div class="topbar-right">

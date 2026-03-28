@@ -1,77 +1,72 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= page.metaTitle %></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="stylesheet" href="/css/pages/legal.css" />
-  <link rel="stylesheet" href="/css/footer.css" />
+  <%
+    const seo = {
+      title: page.metaTitle,
+      description: page.summary,
+      path: page.key === 'privacy' ? '/privacy' : '/terms',
+      robots: 'index, follow',
+      stylesheets: ['/css/pages/site-shell.css', '/css/pages/marketing-pages.css']
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
-<body>
-  <header class="legal-topbar">
-    <a href="/" class="legal-brand">Snap<em>Link</em></a>
+<body class="site-page legal-page">
+  <%- include('partials/site-navbar', { currentPage: '' }) %>
 
-    <nav class="legal-toplinks" aria-label="Main">
-      <a href="/features">Features</a>
-      <a href="/pricing">Pricing</a>
-      <a href="/about">About</a>
-    </nav>
+  <main class="page-shell page-stack">
+    <section class="page-hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Legal</div>
+          <h1 class="hero-title"><span><%= page.title %></span> for SnapLink.</h1>
+          <p class="hero-text"><%= page.summary %></p>
+          <div class="hero-stats">
+            <div class="hero-stat"><strong><%= page.effectiveDate %></strong><span>Effective date</span></div>
+            <div class="hero-stat"><strong>Policy</strong><span>Applies to usage, analytics, billing, and white-label workflows</span></div>
+          </div>
+        </div>
+        <aside class="hero-panel">
+          <h3>Policy center</h3>
+          <p><%= page.note %></p>
+          <div class="btn-row">
+            <% legalLinks.forEach((link) => { %>
+              <a href="<%= link.href %>" class="btn-secondary"><%= link.label %></a>
+            <% }) %>
+          </div>
+        </aside>
+      </div>
+    </section>
 
-    <div class="legal-actions">
-      <% if (user) { %>
-        <a href="/dashboard" class="legal-btn legal-btn-ghost">Dashboard</a>
-      <% } else { %>
-        <a href="/login" class="legal-btn legal-btn-ghost">Login</a>
-        <a href="/signup" class="legal-btn legal-btn-solid">Get Started</a>
-      <% } %>
-      <button class="theme-btn" id="themeBtn" type="button" onclick="toggleTheme()" aria-label="Toggle theme"></button>
-    </div>
-  </header>
-
-  <main class="legal-main">
     <section class="legal-shell">
       <aside class="legal-sidebar">
-        <p class="legal-kicker">Legal</p>
-        <h1 class="legal-sidebar-title">Policy Center</h1>
-        <p class="legal-sidebar-copy">
-          Core policies for SnapLink usage, analytics, billing, affiliate flows, and platform operations.
-        </p>
-
-        <nav class="legal-directory" aria-label="Legal pages">
+        <div class="section-kicker">Directory</div>
+        <h3>Legal pages</h3>
+        <div class="legal-directory">
           <% legalLinks.forEach((link) => { %>
             <a href="<%= link.href %>" class="<%= link.key === page.key ? 'active' : '' %>">
               <span><%= link.label %></span>
-              <span class="legal-arrow">/</span>
+              <span>/</span>
             </a>
           <% }) %>
-        </nav>
-
-        <div class="legal-meta-card">
-          <span class="meta-label">Effective date</span>
-          <strong><%= page.effectiveDate %></strong>
         </div>
       </aside>
 
       <article class="legal-content">
-        <div class="legal-chip">Production Legal Template</div>
-        <h2 class="legal-title"><%= page.title %></h2>
+        <div class="legal-chip">SnapLink policy document</div>
+        <h2 class="legal-title"><span><%= page.title %></span></h2>
         <p class="legal-summary"><%= page.summary %></p>
-        <div class="legal-note"><%= page.note %></div>
+        <p class="legal-note"><%= page.note %></p>
 
         <% page.sections.forEach((section, index) => { %>
           <section class="legal-section">
             <div class="legal-section-index"><%= String(index + 1).padStart(2, '0') %></div>
             <div class="legal-section-body">
               <h3><%= section.title %></h3>
-
               <% section.body.forEach((paragraph) => { %>
-                <p><%= paragraph %></p>
+                <p class="section-copy"><%= paragraph %></p>
               <% }) %>
-
               <% if (section.list && section.list.length) { %>
                 <ul>
                   <% section.list.forEach((item) => { %>
@@ -86,8 +81,7 @@
     </section>
   </main>
 
-  <%- include('partials/footer') %>
-
+  <%- include('partials/footer', { footerCopy: 'Clear policies for product usage, analytics, billing, affiliate workflows, and white-label operations.' }) %>
   <script src="/js/shared/theme.js"></script>
 </body>
 </html>

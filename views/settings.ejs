@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Settings - SnapLink</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="/favicon.png" />
-  <link rel="stylesheet" href="/css/pages/generated/settings.inline.css" />
-  <link rel="stylesheet" href="/css/pages/settings-features.css" />
+  <%
+    const seo = {
+      title: 'Settings | SnapLink',
+      description: 'Control account, API, white-label, wallet, and business settings for your SnapLink workspace.',
+      path: '/settings',
+      robots: 'noindex, nofollow',
+      stylesheets: ["/css/pages/site-shell.css","/css/pages/generated/settings.inline.css","/css/pages/settings-features.css","/css/pages/app-shell.css"]
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
-<body>
+<body class="app-shell-page">
 <%
   const isFreePlan = user.plan === 'free';
   const isProPlan = user.plan === 'pro';
   const isBusinessPlan = user.plan === 'business';
   const planLabel = isFreePlan ? 'FREE' : isProPlan ? 'PRO' : 'BUSINESS';
+  const apiKeyPlainTextValue = typeof apiKeyPlainText !== 'undefined' ? apiKeyPlainText : '';
   const teamMembers = user.teamWorkspace && Array.isArray(user.teamWorkspace.members)
     ? user.teamWorkspace.members
     : [];
@@ -165,10 +167,10 @@
             <% } %>
           </div>
 
-          <% if (apiKeyPlainText) { %>
+          <% if (apiKeyPlainTextValue) { %>
             <div class="secret-panel">
               <div class="secret-panel-head">Copy this API key now. Security reasons ke liye yeh sirf ek baar show hoti hai.</div>
-              <code><%= apiKeyPlainText %></code>
+              <code><%= apiKeyPlainTextValue %></code>
             </div>
           <% } %>
 

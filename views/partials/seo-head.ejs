@@ -1,0 +1,47 @@
+﻿<%
+const siteOrigin = (typeof appUrl !== 'undefined' && appUrl ? appUrl : '').replace(/\/$/, '');
+const seoData = typeof seo !== 'undefined' && seo ? seo : {};
+const pageTitle = seoData.title || 'SnapLink';
+const pageDescription = seoData.description || 'SnapLink helps creators, marketers, and teams launch branded short links with fast redirects and clear analytics.';
+const pageKeywords = seoData.keywords || '';
+const pagePath = typeof seoData.path === 'string' ? seoData.path : '';
+const canonicalUrl = seoData.canonical || (siteOrigin ? `${siteOrigin}${pagePath}` : pagePath || '');
+const robotsContent = seoData.robots || 'index, follow';
+const pageType = seoData.ogType || 'website';
+const imagePath = seoData.image || '/favicon.png';
+const pageImage = imagePath.startsWith('http') ? imagePath : (siteOrigin ? `${siteOrigin}${imagePath}` : imagePath);
+const stylesheets = Array.isArray(seoData.stylesheets) ? seoData.stylesheets : [];
+const jsonLdBlocks = Array.isArray(seoData.jsonLd) ? seoData.jsonLd : (seoData.jsonLd ? [seoData.jsonLd] : []);
+const themeColor = seoData.themeColor || '#0b0f12';
+%>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= pageTitle %></title>
+<meta name="description" content="<%= pageDescription %>">
+<% if (pageKeywords) { %><meta name="keywords" content="<%= pageKeywords %>"><% } %>
+<meta name="robots" content="<%= robotsContent %>">
+<meta name="theme-color" content="<%= themeColor %>">
+<% if (canonicalUrl) { %><link rel="canonical" href="<%= canonicalUrl %>"><% } %>
+
+<meta property="og:title" content="<%= pageTitle %>">
+<meta property="og:description" content="<%= pageDescription %>">
+<meta property="og:type" content="<%= pageType %>">
+<meta property="og:site_name" content="SnapLink">
+<% if (canonicalUrl) { %><meta property="og:url" content="<%= canonicalUrl %>"><% } %>
+<meta property="og:image" content="<%= pageImage %>">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= pageTitle %>">
+<meta name="twitter:description" content="<%= pageDescription %>">
+<meta name="twitter:image" content="<%= pageImage %>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="/favicon.png">
+<% stylesheets.forEach((href) => { %>
+<link rel="stylesheet" href="<%= href %>">
+<% }) %>
+<% jsonLdBlocks.forEach((block) => { %>
+<script type="application/ld+json"><%- JSON.stringify(block) %></script>
+<% }) %>

@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /admin
+Disallow: /api/
+Disallow: /internal/
+Disallow: /login
+Disallow: /signup
+Disallow: /verify-otp
+Disallow: /upgrade
+Sitemap: https://snaplink.fun/sitemap.xml

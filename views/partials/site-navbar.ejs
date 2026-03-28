@@ -1,0 +1,39 @@
+﻿<%
+const activePage = typeof currentPage !== 'undefined' ? currentPage : '';
+const navbarClassName = ['navbar', typeof navbarClass !== 'undefined' ? navbarClass : 'site-navbar'].filter(Boolean).join(' ');
+const navLinks = [
+    { key: 'home', href: '/', label: 'Home' },
+    { key: 'tools', href: '/tools', label: 'Tools' },
+    { key: 'features', href: '/features', label: 'Features' },
+    { key: 'pricing', href: '/pricing', label: 'Pricing' },
+    { key: 'about', href: '/about', label: 'About' },
+    { key: 'faq', href: '/faq', label: 'FAQ' },
+];
+%>
+<nav class="<%= navbarClassName %>">
+  <a href="/" class="nav-logo">
+    <span class="logo-dot"></span>
+    Snap<em>Link</em>
+  </a>
+
+  <div class="nav-center">
+    <% navLinks.forEach((link) => { %>
+      <a href="<%= link.href %>" class="nav-link <%= activePage === link.key ? 'is-active' : '' %>"><%= link.label %></a>
+    <% }) %>
+  </div>
+
+  <div class="nav-right">
+    <button class="theme-btn" id="themeBtn" type="button" onclick="toggleTheme()">Theme</button>
+    <% if (typeof user !== 'undefined' && user) { %>
+      <div class="nav-user">
+        <div class="nav-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+        <span class="nav-username"><%= user.name %></span>
+      </div>
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="/logout" class="nav-btn-outline">Logout</a>
+    <% } else { %>
+      <a href="/login" class="nav-link">Login</a>
+      <a href="/signup" class="nav-btn-solid">Get Started</a>
+    <% } %>
+  </div>
+</nav>

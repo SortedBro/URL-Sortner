@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel — SnapLink</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/css/pages/generated/admin-panel.inline.css" />
+  <%
+    const seo = {
+      title: 'Campaign Approvals | SnapLink Admin',
+      description: 'Review, approve, or reject brand campaigns from the SnapLink admin workspace.',
+      path: '/admin/campaigns',
+      robots: 'noindex, nofollow',
+      stylesheets: ["/css/pages/site-shell.css","/css/pages/generated/admin-panel.inline.css","/css/pages/app-shell.css"]
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
-<body>
+<body class="workspace-page">
 
-<nav>
+<nav class="workspace-nav">
   <a class="nav-logo" href="/">
-    <div class="logo-mark">🛡</div>
+    <div class="logo-mark">ADM</div>
     SnapLink
   </a>
   <span class="admin-badge">Admin</span>
@@ -52,16 +56,16 @@
   <!-- Filter Tabs -->
   <div class="filter-tabs">
     <button class="filter-tab active" data-filter="all" onclick="filterCards('all', this)">All</button>
-    <button class="filter-tab pending" data-filter="pending" onclick="filterCards('pending', this)">⏳ Pending</button>
-    <button class="filter-tab approved" data-filter="approved" onclick="filterCards('approved', this)">✅ Approved</button>
-    <button class="filter-tab rejected" data-filter="rejected" onclick="filterCards('rejected', this)">❌ Rejected</button>
+    <button class="filter-tab pending" data-filter="pending" onclick="filterCards('pending', this)">Pending</button>
+    <button class="filter-tab approved" data-filter="approved" onclick="filterCards('approved', this)">Approved</button>
+    <button class="filter-tab rejected" data-filter="rejected" onclick="filterCards('rejected', this)">Rejected</button>
   </div>
 
   <!-- Campaigns List -->
   <div class="campaigns-list" id="campaigns-list">
     <% if (campaigns.length === 0) { %>
       <div class="empty-state">
-        <span class="empty-glyph">📭</span>
+        <span class="empty-glyph">MAIL</span>
         <h3>Koi campaign nahi hai abhi</h3>
         <p>Brands abhi tak koi campaign submit nahi ki</p>
       </div>
@@ -75,7 +79,7 @@
           <div class="card-row1">
             <span class="card-title"><%= c.title %></span>
             <span class="badge <%= c.status %>">
-              <%= c.status === 'pending' ? '⏳ Pending' : c.status === 'approved' ? '✅ Approved' : '❌ Rejected' %>
+              <%= c.status === 'pending' ? 'Pending' : c.status === 'approved' ? 'Approved' : 'Rejected' %>
             </span>
           </div>
           <div class="brand-info">
@@ -85,7 +89,7 @@
             <% } %>
           </div>
           <div class="card-desc"><%= c.description %></div>
-          <div class="card-url">→ <%= c.targetUrl %></div>
+          <div class="card-url">Target URL -> <%= c.targetUrl %></div>
           <div class="card-meta">
             <span class="meta-chip"><%= new Date(c.createdAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'2-digit'}) %></span>
             <span class="meta-chip commission">
@@ -108,15 +112,11 @@
             <textarea class="note-area" id="note-<%= c._id %>" placeholder="Reason ya feedback..."></textarea>
             <form action="/admin/campaigns/<%= c._id %>/approve" method="POST" id="approve-<%= c._id %>">
               <input type="hidden" name="note" id="approve-note-<%= c._id %>"/>
-              <button class="btn-approve" type="button" onclick="submitAction('approve', '<%= c._id %>')">
-                ✅ Approve
-              </button>
+              <button class="btn-approve" type="button" onclick="submitAction('approve', '<%= c._id %>')">Approve</button>
             </form>
             <form action="/admin/campaigns/<%= c._id %>/reject" method="POST" id="reject-<%= c._id %>">
               <input type="hidden" name="note" id="reject-note-<%= c._id %>"/>
-              <button class="btn-reject" type="button" onclick="submitAction('reject', '<%= c._id %>')">
-                ❌ Reject
-              </button>
+              <button class="btn-reject" type="button" onclick="submitAction('reject', '<%= c._id %>')">Reject</button>
             </form>
           <% } else { %>
             <div style="font-size:0.75rem; color:var(--text3); text-align:center; padding-top:8px;">

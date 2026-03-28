@@ -1,211 +1,150 @@
-<!DOCTYPE html>
-<html lang="en">
-
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify OTP</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/pages/generated/verify-otp.inline.css" />
+  <%
+    const seo = {
+      title: 'Verify OTP | SnapLink',
+      description: 'Verify your email with the OTP sent during SnapLink signup.',
+      path: '/verify-otp',
+      robots: 'noindex, nofollow',
+      stylesheets: ['/css/pages/site-shell.css', '/css/pages/marketing-pages.css', '/css/pages/auth-shell.css']
+    };
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
+<body class="site-page auth-page">
+  <%- include('partials/auth-navbar', { helperLinkHref: '/login', helperLinkLabel: 'Log in', helperCopyText: 'Already verified?' }) %>
 
-<body>
-
-    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
-
-    <div class="card">
-        <span class="otp-icon">📩</span>
-
-        <div class="card-title">OTP verify karo</div>
-        <div class="card-sub">
-            Humne ek 6-digit code bheja hai<br>
-            <!-- Server se email pass karo: -->
-            <strong>
-                <%= email %>
-            </strong> pe
+  <main class="auth-main">
+    <section class="auth-shell">
+      <aside class="auth-aside">
+        <div class="auth-kicker">Email verification</div>
+        <h1 class="auth-title">Confirm your email to activate the account.</h1>
+        <p class="auth-copy">We sent a six-digit code to <strong><%= email %></strong>. Enter it below to finish signup.</p>
+        <div class="auth-points">
+          <div class="auth-point"><strong>Secure activation</strong><p class="section-copy">The account stays protected until the OTP is verified.</p></div>
+          <div class="auth-point"><strong>Fast retry</strong><p class="section-copy">If the code is delayed, use the resend action after the timer ends.</p></div>
         </div>
-        <% if (typeof error !=='undefined' && error) { %>
-            <div class="msg error">
-                <%= error %>
-            </div>
-            <% } else if (typeof success !=='undefined' && success) { %>
-                <div class="msg success">
-                    <%= success %>
-                </div>
-                <% } else { %>
-                    <div class="msg" id="clientMsg"></div>
-                    <% } %>
+      </aside>
 
+      <div class="auth-card">
+        <div class="auth-kicker">One-time password</div>
+        <h2 class="auth-title">Enter your 6-digit OTP.</h2>
+        <p class="auth-copy">Check your inbox and paste the code if you copied it from email.</p>
 
-                        <form action="/verify-otp" method="POST" id="otpForm">
-                            <!-- Hidden field — email bhi saath bhejo -->
-                            <input type="hidden" name="email" value="<%= email %>" />
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="inline-alert error"><%= error %></div>
+        <% } else if (typeof success !== 'undefined' && success) { %>
+          <div class="inline-alert success"><%= success %></div>
+        <% } else { %>
+          <div class="inline-alert" id="clientMsg" style="display:none;"></div>
+        <% } %>
 
-                            <!-- 6 OTP boxes -->
-                            <div class="otp-inputs">
-                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
-                                    autocomplete="off" id="o1" />
-                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
-                                    autocomplete="off" id="o2" />
-                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
-                                    autocomplete="off" id="o3" />
-                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
-                                    autocomplete="off" id="o4" />
-                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
-                                    autocomplete="off" id="o5" />
-                                <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
-                                    autocomplete="off" id="o6" />
-                            </div>
+        <form action="/verify-otp" method="POST" id="otpForm" class="auth-form">
+          <input type="hidden" name="email" value="<%= email %>">
+          <input type="hidden" name="otp" id="otpValue">
+          <div class="otp-grid">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+          </div>
+          <button class="btn-submit" type="submit" id="verifyBtn" disabled>Verify OTP</button>
+        </form>
 
-                            <!-- Hidden combined OTP -->
-                            <input type="hidden" name="otp" id="otpValue" />
+        <div class="otp-helper">
+          <span>Did not receive the code?</span>
+          <button class="text-button" id="resendBtn" type="button" disabled onclick="resendOtp()">Resend in <span id="timer">30</span>s</button>
+        </div>
+      </div>
+    </section>
+  </main>
 
-                            <button class="verify-btn" type="submit" id="verifyBtn" disabled>
-                                Verify karo
-                            </button>
-                        </form>
+  <script src="/js/shared/theme.js"></script>
+  <script>
+    const boxes = Array.from(document.querySelectorAll('.otp-box'));
+    const verifyBtn = document.getElementById('verifyBtn');
+    const otpValue = document.getElementById('otpValue');
+    const clientMsg = document.getElementById('clientMsg');
+    const resendBtn = document.getElementById('resendBtn');
+    let seconds = 30;
+    let countdownId = null;
 
-                        <!-- Resend -->
-                        <div class="resend-row">
-                            Code nahi aaya?
-                            <button class="resend-btn" id="resendBtn" disabled onclick="resendOtp()">
-                                Resend karo (<span id="timer">30</span>s)
-                            </button>
-                        </div>
+    function checkComplete() {
+      const otp = boxes.map((box) => box.value).join('');
+      otpValue.value = otp;
+      verifyBtn.disabled = otp.length < 6;
+    }
 
-                        <div class="divider"></div>
-                        <a href="/login" class="back-link">← Login pe wapas jao</a>
-    </div>
-
-    <script>
-        // ── Dark mode ──
-        const saved = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (saved === 'dark' || (!saved && prefersDark)) {
-            document.body.classList.add('dark');
-            document.getElementById('themeBtn').textContent = '☀️';
+    function startCountdown() {
+      clearInterval(countdownId);
+      seconds = 30;
+      resendBtn.disabled = true;
+      resendBtn.innerHTML = `Resend in <span id="timer">${seconds}</span>s`;
+      countdownId = setInterval(() => {
+        seconds -= 1;
+        const timerNode = document.getElementById('timer');
+        if (timerNode) timerNode.textContent = seconds;
+        if (seconds <= 0) {
+          clearInterval(countdownId);
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend OTP';
         }
-        function toggleTheme() {
-            document.body.classList.toggle('dark');
-            const isDark = document.body.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
+      }, 1000);
+    }
+
+    boxes.forEach((box, index) => {
+      box.addEventListener('input', () => {
+        box.value = box.value.replace(/[^0-9]/g, '');
+        if (box.value && index < boxes.length - 1) boxes[index + 1].focus();
+        checkComplete();
+      });
+
+      box.addEventListener('keydown', (event) => {
+        if (event.key === 'Backspace' && !box.value && index > 0) {
+          boxes[index - 1].focus();
         }
+      });
 
-        // ── OTP boxes logic ──
-        const boxes = Array.from(document.querySelectorAll('.otp-box'));
-        const verifyBtn = document.getElementById('verifyBtn');
-        const otpValue = document.getElementById('otpValue');
-        const clientMsg = document.getElementById('clientMsg');
+      box.addEventListener('paste', (event) => {
+        event.preventDefault();
+        const pasted = event.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+        pasted.split('').forEach((char, pastedIndex) => {
+          if (boxes[pastedIndex]) boxes[pastedIndex].value = char;
+        });
+        checkComplete();
+      });
+    });
 
-        boxes.forEach((box, i) => {
-            box.addEventListener('input', (e) => {
-                // Sirf number allow karo
-                box.value = box.value.replace(/[^0-9]/g, '');
-
-                if (box.value) {
-                    box.classList.add('filled');
-                    box.classList.remove('error');
-                    // Agla box pe focus
-                    if (i < 5) boxes[i + 1].focus();
-                } else {
-                    box.classList.remove('filled');
-                }
-                checkComplete();
-            });
-
-            // Backspace — pichle box pe jao
-            box.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !box.value && i > 0) {
-                    boxes[i - 1].focus();
-                    boxes[i - 1].value = '';
-                    boxes[i - 1].classList.remove('filled');
-                    checkComplete();
-                }
-            });
-
-            // Paste support — 6 digit ek saath paste
-            box.addEventListener('paste', (e) => {
-                e.preventDefault();
-                const pasted = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
-                pasted.split('').forEach((char, idx) => {
-                    if (boxes[idx]) {
-                        boxes[idx].value = char;
-                        boxes[idx].classList.add('filled');
-                    }
-                });
-                if (pasted.length === 6) boxes[5].focus();
-                checkComplete();
-            });
+    async function resendOtp() {
+      resendBtn.disabled = true;
+      resendBtn.textContent = 'Sending...';
+      try {
+        const response = await fetch('/resend-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: '<%= email %>' })
         });
 
-        function checkComplete() {
-            const otp = boxes.map(b => b.value).join('');
-            otpValue.value = otp;
-            verifyBtn.disabled = otp.length < 6;
+        if (response.ok && clientMsg) {
+          clientMsg.textContent = 'OTP sent again successfully.';
+          clientMsg.className = 'inline-alert success';
+          clientMsg.style.display = 'block';
         }
-
-    // Shake on server error
-     if (typeof error !== 'undefined' && error) { 
-            boxes.forEach(b => b.classList.add('error'));
-     } 
-
-            // ── Resend timer ──
-            let seconds = 30;
-        const timerEl = document.getElementById('timer');
-        const resendBtn = document.getElementById('resendBtn');
-
-        const countdown = setInterval(() => {
-            seconds--;
-            timerEl.textContent = seconds;
-            if (seconds <= 0) {
-                clearInterval(countdown);
-                resendBtn.disabled = false;
-                resendBtn.innerHTML = 'Resend karo';
-            }
-        }, 1000);
-
-        async function resendOtp() {
-            resendBtn.disabled = true;
-            resendBtn.textContent = 'Bhej raha hai...';
-
-            try {
-                const res = await fetch('/resend-otp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: '<%= email %>' })
-                });
-
-                if (res.ok) {
-                    if (clientMsg) {
-                        clientMsg.textContent = '✓ OTP dobara bhej diya!';
-                        clientMsg.className = 'msg success';
-                    }
-                    // Timer reset
-                    seconds = 30;
-                    timerEl.textContent = seconds;
-                    resendBtn.innerHTML = `Resend karo (<span id="timer">${seconds}</span>s)`;
-                    const newTimer = setInterval(() => {
-                        seconds--;
-                        document.getElementById('timer').textContent = seconds;
-                        if (seconds <= 0) {
-                            clearInterval(newTimer);
-                            resendBtn.disabled = false;
-                            resendBtn.innerHTML = 'Resend karo';
-                        }
-                    }, 1000);
-                }
-            } catch (e) {
-                resendBtn.disabled = false;
-                resendBtn.textContent = 'Resend karo';
-            }
+      } catch (error) {
+        if (clientMsg) {
+          clientMsg.textContent = 'Could not resend OTP right now.';
+          clientMsg.className = 'inline-alert error';
+          clientMsg.style.display = 'block';
         }
+      }
+      startCountdown();
+    }
 
-        // Auto focus first box
-        boxes[0].focus();
-    </script>
-
+    boxes[0].focus();
+    startCountdown();
+  </script>
 </body>
-
 </html>
-

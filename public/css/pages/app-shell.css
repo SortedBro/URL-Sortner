@@ -1,0 +1,274 @@
+:root {
+  --app-sidebar-width: 280px;
+  --app-shell-gap: 1rem;
+}
+
+body.app-shell-page,
+body.workspace-page {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--site-text);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(95, 212, 192, 0.12), transparent 24%),
+    radial-gradient(circle at 100% 0%, rgba(139, 157, 255, 0.12), transparent 28%),
+    linear-gradient(180deg, var(--site-bg) 0%, var(--site-bg-soft) 48%, var(--site-bg) 100%);
+}
+
+body.app-shell-page::before,
+body.workspace-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.14;
+  pointer-events: none;
+  z-index: -1;
+}
+
+body.app-shell-page {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(240px, var(--app-sidebar-width)) minmax(0, 1fr);
+  gap: var(--app-shell-gap);
+  padding: 1rem;
+}
+
+body.app-shell-page .sidebar {
+  position: sticky;
+  top: 1rem;
+  height: calc(100vh - 2rem);
+  overflow: auto;
+  border: 1px solid var(--site-border);
+  background: var(--site-surface);
+  backdrop-filter: blur(18px);
+  border-radius: 28px;
+  box-shadow: var(--site-shadow);
+}
+
+body.app-shell-page .main-content,
+body.app-shell-page .settings-shell,
+body.app-shell-page > div:not(.sidebar) {
+  min-width: 0;
+  border: 1px solid var(--site-border);
+  background: rgba(9, 15, 23, 0.72);
+  backdrop-filter: blur(18px);
+  border-radius: 32px;
+  box-shadow: var(--site-shadow);
+}
+
+body.app-shell-page .topbar,
+body.workspace-page nav.workspace-nav,
+body.workspace-page nav {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--site-border);
+  border-radius: 22px;
+  backdrop-filter: blur(18px);
+}
+
+body.app-shell-page .topbar {
+  margin: 1rem;
+  padding: 1rem 1.15rem;
+}
+
+body.app-shell-page .main-content,
+body.app-shell-page .settings-shell {
+  padding-bottom: 1rem;
+}
+
+body.app-shell-page .main-content > .page,
+body.app-shell-page .settings-main,
+body.app-shell-page .main,
+body.app-shell-page .main-content > main {
+  padding: 0 1rem 1rem;
+}
+
+body.app-shell-page .sidebar-logo,
+body.workspace-page .nav-logo,
+body.workspace-page .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: -0.04em;
+}
+
+body.app-shell-page .sidebar-logo em,
+body.workspace-page .nav-logo em,
+body.workspace-page .brand em {
+  color: var(--site-accent);
+  font-style: normal;
+}
+
+body.app-shell-page .sidebar-section,
+body.app-shell-page .nav-section,
+body.workspace-page .eyebrow,
+body.workspace-page .hero-eyebrow {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--site-text-soft);
+}
+
+body.app-shell-page .nav-item,
+body.workspace-page .nav-link,
+body.workspace-page .btn-nav,
+body.app-shell-page .topbar-btn,
+body.app-shell-page .btn,
+body.app-shell-page .btn-theme {
+  min-height: 42px;
+  border-radius: 14px;
+}
+
+body.app-shell-page .nav-item,
+body.workspace-page .nav-link,
+body.workspace-page .btn-nav,
+body.app-shell-page .topbar-btn,
+body.app-shell-page .btn-theme,
+body.workspace-page .btn-nav,
+body.workspace-page .nav-link {
+  border: 1px solid var(--site-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--site-text-soft);
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+body.app-shell-page .nav-item:hover,
+body.app-shell-page .nav-item.active,
+body.workspace-page .nav-link:hover,
+body.workspace-page .nav-link.active,
+body.workspace-page .btn-nav:hover,
+body.app-shell-page .topbar-btn:hover,
+body.app-shell-page .btn-theme:hover {
+  transform: translateY(-1px);
+  border-color: var(--site-border-strong);
+  color: var(--site-text);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.app-shell-page .stat-card,
+body.workspace-page .stat-card,
+body.workspace-page .stat-tile,
+body.app-shell-page .settings-card,
+body.app-shell-page .plan-info-card,
+body.app-shell-page .table-section,
+body.workspace-page .card,
+body.workspace-page .chart-card,
+body.workspace-page .list-card,
+body.workspace-page .campaign-card,
+body.workspace-page .table-wrap,
+body.workspace-page .filter-bar {
+  border: 1px solid var(--site-border);
+  background: var(--site-surface);
+  border-radius: 24px;
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.22);
+}
+
+body.workspace-page {
+  margin: 0;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+body.workspace-page nav.workspace-nav,
+body.workspace-page nav {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 0.9rem 1rem;
+}
+
+body.workspace-page main {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 1rem auto 0;
+}
+
+body.workspace-page .hero,
+body.workspace-page .page-header {
+  margin-bottom: 1rem;
+  padding: 1.5rem 1.6rem;
+  border: 1px solid var(--site-border);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 28px;
+  backdrop-filter: blur(16px);
+}
+
+body.workspace-page .hero h1,
+body.workspace-page .page-header h1,
+body.app-shell-page .topbar h1 {
+  font-family: 'Syne', sans-serif;
+  letter-spacing: -0.04em;
+}
+
+body.workspace-page .hero-sub,
+body.workspace-page .page-sub,
+body.app-shell-page .topbar p {
+  color: var(--site-text-soft);
+}
+
+body.workspace-page table,
+body.app-shell-page table {
+  width: 100%;
+}
+
+body.workspace-page .table-wrap,
+body.app-shell-page .table-wrap {
+  overflow: hidden;
+}
+
+body.workspace-page .table-scroll,
+body.app-shell-page .table-x {
+  overflow: auto;
+}
+
+body.workspace-page .empty-state,
+body.app-shell-page .empty-state {
+  border: 1px dashed var(--site-border-strong);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+@media (max-width: 1100px) {
+  body.app-shell-page {
+    grid-template-columns: 1fr;
+  }
+
+  body.app-shell-page .sidebar {
+    position: relative;
+    top: 0;
+    height: auto;
+  }
+}
+
+@media (max-width: 780px) {
+  body.app-shell-page,
+  body.workspace-page {
+    padding: 0.75rem;
+  }
+
+  body.workspace-page nav.workspace-nav,
+  body.workspace-page nav,
+  body.workspace-page main {
+    width: 100%;
+  }
+
+  body.workspace-page nav.workspace-nav,
+  body.workspace-page nav {
+    padding: 0.85rem;
+  }
+
+  body.workspace-page .nav-links,
+  body.workspace-page .nav-right,
+  body.app-shell-page .topbar-right {
+    flex-wrap: wrap;
+  }
+
+  body.app-shell-page .topbar,
+  body.workspace-page .hero,
+  body.workspace-page .page-header {
+    padding: 1rem;
+  }
+}
