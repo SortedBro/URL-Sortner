@@ -1,207 +1,462 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Settings — SnapLink</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="icon" type="image/png" href="/favicon.png"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings - SnapLink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="stylesheet" href="/css/pages/generated/settings.inline.css" />
+  <link rel="stylesheet" href="/css/pages/settings-features.css" />
 </head>
 <body>
+<%
+  const isFreePlan = user.plan === 'free';
+  const isProPlan = user.plan === 'pro';
+  const isBusinessPlan = user.plan === 'business';
+  const planLabel = isFreePlan ? 'FREE' : isProPlan ? 'PRO' : 'BUSINESS';
+  const teamMembers = user.teamWorkspace && Array.isArray(user.teamWorkspace.members)
+    ? user.teamWorkspace.members
+    : [];
+  const teamSeatLimit = user.capabilities ? user.capabilities.teamSeatLimit : 0;
+  const formatDateTime = (value) => value ? new Date(value).toLocaleString('en-IN', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+  }) : 'Never';
+%>
 
 <aside class="sidebar">
   <a class="sidebar-logo" href="/">
     <span class="dot"></span>Snap<em>Link</em>
   </a>
+
   <div class="sidebar-section">Main</div>
-  <a class="nav-item" href="/dashboard">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    Dashboard
-  </a>
-  <a class="nav-item" href="/dashboard">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-    My Links
-  </a>
+  <a class="nav-item" href="/dashboard">Dashboard</a>
+  <a class="nav-item" href="/dashboard">My Links</a>
+
   <div class="sidebar-sep"></div>
   <div class="sidebar-section">Manage</div>
-  <a class="nav-item" href="/qr-codes">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="5"/><rect x="16" y="3" width="5" height="5"/><rect x="3" y="16" width="5" height="5"/><path d="M21 16h-3v3M21 21h-1M16 16h1"/></svg>
-    QR Codes
-  </a>
-  <a class="nav-item active" href="/settings">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Settings
-  </a>
+  <a class="nav-item" href="/qr-codes">QR Codes</a>
+  <a class="nav-item active" href="/settings">Settings</a>
+
   <div class="sidebar-bottom">
     <div class="theme-row">
       <span>Theme</span>
-      <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+      <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">Theme</button>
     </div>
+
     <div class="plan-card">
       <div class="plan-card-top">
         <div class="plan-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
         <div>
           <div class="plan-username"><%= user.name.split(' ')[0] %></div>
-          <div class="plan-label"><%= user.plan === 'free' ? 'FREE PLAN' : user.plan === 'pro' ? '⭐ PRO' : '💎 BUSINESS' %></div>
+          <div class="plan-label"><%= planLabel %> PLAN</div>
         </div>
       </div>
-      <% if (user.plan === 'free') { %>
-        <a href="/pricing" class="upgrade-btn">⚡ Upgrade — ₹99/mo</a>
+      <% if (isFreePlan) { %>
+        <a href="/pricing" class="upgrade-btn">Upgrade to Pro</a>
       <% } %>
     </div>
+
     <a href="/logout" class="logout-link">Logout</a>
   </div>
 </aside>
 
-<div style="display:flex;flex-direction:column;min-height:100vh">
+<div class="settings-shell">
   <header class="topbar">
     <div>
       <h1>Settings</h1>
-      <p>Account aur security manage karo</p>
+      <p>Account, API access, white-label, aur business controls ek jagah.</p>
     </div>
     <div class="topbar-right">
       <button class="theme-toggle" id="themeBtnTop" onclick="toggleTheme()">Theme</button>
+      <a href="/pricing" class="topbar-btn">Pricing</a>
       <a href="/dashboard" class="topbar-btn">Dashboard</a>
       <a href="/logout" class="topbar-btn">Logout</a>
     </div>
   </header>
 
-  <div class="main">
-
+  <main class="main settings-main">
     <% if (success) { %>
-      <div class="alert alert-success">✓ <%= success %></div>
-    <% } %>
-    <% if (error) { %>
-      <div class="alert alert-error">⚠ <%= error %></div>
+      <div class="alert alert-success"><%= success %></div>
     <% } %>
 
-    <!-- Plan Info -->
-    <div class="plan-info-card">
+    <% if (error) { %>
+      <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <section class="plan-info-card">
       <div class="plan-info-left">
         <h3>Current Plan</h3>
-        <p>Tumhara active subscription</p>
+        <p>Pricing page pe jo features dikh rahe hain, unka live control yahan milta hai.</p>
       </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span class="plan-badge">
-          <%= user.plan === 'free' ? 'FREE' : user.plan === 'pro' ? '⭐ PRO' : '💎 BUSINESS' %>
-        </span>
-        <% if (user.plan === 'free') { %>
-          <a href="/pricing" class="btn-manage">Upgrade →</a>
-        <% } else { %>
-          <a href="/pricing" class="btn-manage">Manage</a>
-        <% } %>
+      <div class="plan-actions">
+        <span class="plan-badge"><%= planLabel %></span>
+        <a href="/pricing" class="btn-manage"><%= isFreePlan ? 'Upgrade' : 'Manage plan' %></a>
       </div>
-    </div>
+    </section>
 
-    <!-- Profile -->
-    <div class="settings-card">
+    <section class="settings-card">
       <div class="card-header">
         <h2>Profile</h2>
-        <p>Apna naam aur email update karo</p>
+        <p>Basic account details update karo.</p>
       </div>
       <form action="/settings/profile" method="POST">
         <div class="card-body">
           <div class="form-row">
             <div class="form-group">
               <label>Full Name</label>
-              <input type="text" name="name" class="form-input" value="<%= user.name %>" required/>
+              <input type="text" name="name" class="form-input" value="<%= user.name %>" required />
             </div>
             <div class="form-group">
               <label>Email Address</label>
-              <input type="email" name="email" class="form-input" value="<%= user.email %>" required/>
+              <input type="email" name="email" class="form-input" value="<%= user.email %>" required />
             </div>
           </div>
           <button type="submit" class="save-btn">Save Changes</button>
         </div>
       </form>
-    </div>
+    </section>
 
-    <!-- Password -->
-    <div class="settings-card">
+    <section class="settings-card">
       <div class="card-header">
         <h2>Change Password</h2>
-        <p>Strong password rakho account secure karne ke liye</p>
+        <p>Account security ko strong rakho.</p>
       </div>
       <form action="/settings/password" method="POST">
         <div class="card-body">
           <div class="form-group">
             <label>Current Password</label>
-            <input type="password" name="currentPassword" class="form-input" placeholder="••••••••" required/>
+            <input type="password" name="currentPassword" class="form-input" placeholder="Current password" required />
           </div>
           <div class="form-row">
             <div class="form-group">
               <label>New Password</label>
-              <input type="password" name="newPassword" class="form-input" placeholder="Min. 6 characters" required/>
+              <input type="password" name="newPassword" class="form-input" placeholder="Minimum 6 characters" required />
             </div>
             <div class="form-group">
               <label>Confirm New Password</label>
-              <input type="password" name="confirmPassword" class="form-input" placeholder="Repeat password" required/>
+              <input type="password" name="confirmPassword" class="form-input" placeholder="Repeat password" required />
             </div>
           </div>
           <button type="submit" class="save-btn">Update Password</button>
         </div>
       </form>
-    </div>
+    </section>
 
-    <!-- White Label -->
-    <div class="settings-card">
+    <section class="settings-card">
+      <div class="card-header">
+        <h2>API Access</h2>
+        <p>External apps aur automation ke liye production API key manage karo.</p>
+      </div>
+      <div class="card-body">
+        <% if (!user.capabilities.apiAccess) { %>
+          <p class="card-note">API access Pro aur Business plans ke liye reserved hai.</p>
+          <a href="/pricing" class="btn-manage">Upgrade for API Access</a>
+        <% } else { %>
+          <div class="feature-status-row">
+            <span class="inline-badge <%= user.apiAccess.enabled ? 'is-live' : 'is-muted' %>">
+              <%= user.apiAccess.enabled ? 'Active key' : 'No active key' %>
+            </span>
+            <% if (user.apiAccess.keyPreview) { %>
+              <span class="status-meta">Preview: <code><%= user.apiAccess.keyPreview %></code></span>
+            <% } %>
+          </div>
+
+          <% if (apiKeyPlainText) { %>
+            <div class="secret-panel">
+              <div class="secret-panel-head">Copy this API key now. Security reasons ke liye yeh sirf ek baar show hoti hai.</div>
+              <code><%= apiKeyPlainText %></code>
+            </div>
+          <% } %>
+
+          <div class="support-grid compact-grid">
+            <div class="support-item">
+              <span class="support-label">Last rotated</span>
+              <strong><%= formatDateTime(user.apiAccess.lastRotatedAt) %></strong>
+            </div>
+            <div class="support-item">
+              <span class="support-label">Last used</span>
+              <strong><%= formatDateTime(user.apiAccess.lastUsedAt) %></strong>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <form action="/settings/api-access/rotate" method="POST">
+              <button type="submit" class="save-btn">Generate New API Key</button>
+            </form>
+            <% if (user.apiAccess.enabled) { %>
+              <form action="/settings/api-access/disable" method="POST">
+                <button type="submit" class="secondary-btn">Disable API Access</button>
+              </form>
+            <% } %>
+          </div>
+
+          <div class="api-snippet">
+            <div class="secret-panel-head">Quick start</div>
+            <pre><code>curl -X GET <%= '/api/v1/urls' %> \
+  -H "x-api-key: YOUR_API_KEY"</code></pre>
+          </div>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="settings-card">
+      <div class="card-header">
+        <h2>Webhook Delivery</h2>
+        <p>Link create, click, aur delete events ko apne system tak bhejo.</p>
+      </div>
+      <div class="card-body">
+        <% if (!user.capabilities.businessFeatures) { %>
+          <p class="card-note">Webhook support Business plan me included hai.</p>
+          <a href="/pricing" class="btn-manage">Upgrade to Business</a>
+        <% } else { %>
+          <form action="/settings/webhooks" method="POST">
+            <div class="form-group checkbox-row">
+              <label class="checkbox-label">
+                <input type="checkbox" name="enabled" <%= user.webhookSettings.enabled ? 'checked' : '' %> />
+                Enable outbound webhooks
+              </label>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Endpoint URL</label>
+                <input type="url" name="endpointUrl" class="form-input" placeholder="https://app.example.com/webhooks/snaplink" value="<%= user.webhookSettings.endpointUrl %>" />
+              </div>
+              <div class="form-group">
+                <label>Signing Secret</label>
+                <input type="text" name="signingSecret" class="form-input" placeholder="Auto-generated if left blank" value="<%= user.webhookSettings.signingSecret %>" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Events</label>
+              <div class="checkbox-grid">
+                <% webhookEvents.forEach((eventName) => { %>
+                  <label class="checkbox-pill">
+                    <input
+                      type="checkbox"
+                      name="events"
+                      value="<%= eventName %>"
+                      <%= user.webhookSettings.events.includes(eventName) ? 'checked' : '' %>
+                    />
+                    <span><%= eventName %></span>
+                  </label>
+                <% }) %>
+              </div>
+            </div>
+
+            <div class="support-grid compact-grid">
+              <div class="support-item">
+                <span class="support-label">Last delivery</span>
+                <strong><%= formatDateTime(user.webhookSettings.lastTriggeredAt) %></strong>
+              </div>
+              <div class="support-item">
+                <span class="support-label">Last status</span>
+                <strong><%= user.webhookSettings.lastStatus || 'never' %></strong>
+              </div>
+            </div>
+
+            <button type="submit" class="save-btn">Save Webhook Settings</button>
+          </form>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="settings-card">
+      <div class="card-header">
+        <h2>Weekly Email Reports</h2>
+        <p>Business plan ke weekly analytics summaries directly inbox me bhejo.</p>
+      </div>
+      <div class="card-body">
+        <% if (!user.capabilities.businessFeatures) { %>
+          <p class="card-note">Weekly reports Business plan me available hain.</p>
+          <a href="/pricing" class="btn-manage">Upgrade to Business</a>
+        <% } else { %>
+          <form action="/settings/reports/weekly" method="POST">
+            <div class="form-group checkbox-row">
+              <label class="checkbox-label">
+                <input type="checkbox" name="enabled" <%= user.weeklyReportSettings.enabled ? 'checked' : '' %> />
+                Enable weekly summary emails
+              </label>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Recipient Email</label>
+                <input type="email" name="recipientEmail" class="form-input" value="<%= user.weeklyReportSettings.recipientEmail %>" required />
+              </div>
+              <div class="form-group">
+                <label>Send On</label>
+                <select name="weekday" class="form-input">
+                  <% weekdayOptions.forEach((weekday) => { %>
+                    <option value="<%= weekday %>" <%= user.weeklyReportSettings.weekday === weekday ? 'selected' : '' %>>
+                      <%= weekday.charAt(0).toUpperCase() + weekday.slice(1) %>
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button type="submit" class="save-btn">Save Weekly Report Settings</button>
+            </div>
+          </form>
+
+          <div class="support-grid compact-grid top-gap">
+            <div class="support-item">
+              <span class="support-label">Last sent</span>
+              <strong><%= formatDateTime(user.weeklyReportSettings.lastSentAt) %></strong>
+            </div>
+            <div class="support-item support-item-action">
+              <span class="support-label">Manual trigger</span>
+              <form action="/settings/reports/weekly/send-now" method="POST">
+                <button type="submit" class="secondary-btn">Send Report Now</button>
+              </form>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="settings-card">
+      <div class="card-header">
+        <h2>Team Workspace</h2>
+        <p>Business plan me up to 5 members ke saath workspace manage karo.</p>
+      </div>
+      <div class="card-body">
+        <% if (!user.capabilities.businessFeatures) { %>
+          <p class="card-note">Team workspace Business plan feature hai.</p>
+          <a href="/pricing" class="btn-manage">Upgrade to Business</a>
+        <% } else { %>
+          <div class="team-summary">
+            <strong><%= teamMembers.length %>/<%= teamSeatLimit %></strong>
+            <span>Seats in use</span>
+          </div>
+
+          <form action="/settings/team/invite" method="POST">
+            <div class="form-row form-row-three">
+              <div class="form-group">
+                <label>Name</label>
+                <input type="text" name="name" class="form-input" placeholder="Optional display name" />
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" class="form-input" placeholder="member@company.com" required />
+              </div>
+              <div class="form-group">
+                <label>Role</label>
+                <select name="role" class="form-input">
+                  <option value="member">Member</option>
+                  <option value="manager">Manager</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="save-btn">Add Team Member</button>
+          </form>
+
+          <% if (teamMembers.length) { %>
+            <div class="member-list">
+              <% teamMembers.forEach((member) => { %>
+                <div class="member-item">
+                  <div class="member-meta">
+                    <strong><%= member.name || member.email.split('@')[0] %></strong>
+                    <span><%= member.email %></span>
+                  </div>
+                  <div class="member-meta member-meta-right">
+                    <span class="member-status <%= member.status === 'active' ? 'active' : 'invited' %>"><%= member.status %></span>
+                    <span class="status-meta"><%= member.role %></span>
+                    <form action="/settings/team/remove" method="POST">
+                      <input type="hidden" name="email" value="<%= member.email %>" />
+                      <button type="submit" class="secondary-btn">Remove</button>
+                    </form>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <p class="card-note">Abhi tak koi team member added nahi hai.</p>
+          <% } %>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="settings-card">
       <div class="card-header">
         <h2>White Label</h2>
-        <p>Apna brand domain aur branding settings manage karo</p>
+        <p>Apna custom domain aur branding yahan manage karo.</p>
       </div>
-      <% if (user.plan !== 'business') { %>
-        <div class="card-body">
-          <p style="font-size:12px;color:var(--text2)">White-label sirf Business plan me available hai.</p>
+      <div class="card-body">
+        <% if (!isBusinessPlan) { %>
+          <p class="card-note">White-label sirf Business plan me available hai.</p>
           <a href="/pricing" class="btn-manage">Upgrade to Business</a>
-        </div>
-      <% } else { %>
-        <form action="/settings/white-label" method="POST">
-          <div class="card-body">
-            <div class="form-group">
-              <label style="display:flex;align-items:center;gap:10px">
-                <input type="checkbox" name="enabled" <%= user.whiteLabel && user.whiteLabel.enabled ? 'checked' : '' %> />
-                Enable white-label links
+        <% } else { %>
+          <form action="/settings/white-label" method="POST">
+            <div class="form-group checkbox-row">
+              <label class="checkbox-label">
+                <input type="checkbox" name="enabled" <%= user.whiteLabel.enabled ? 'checked' : '' %> />
+                Enable branded short links
               </label>
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label>Custom Domain</label>
-                <input type="text" name="customDomain" class="form-input" placeholder="links.yourbrand.com" value="<%= user.whiteLabel?.customDomain || '' %>"/>
+                <input type="text" name="customDomain" class="form-input" placeholder="links.yourbrand.com" value="<%= user.whiteLabel.customDomain %>" />
               </div>
               <div class="form-group">
                 <label>Brand Name</label>
-                <input type="text" name="brandName" class="form-input" placeholder="Your Brand" value="<%= user.whiteLabel?.brandName || '' %>"/>
+                <input type="text" name="brandName" class="form-input" placeholder="Your Brand" value="<%= user.whiteLabel.brandName %>" />
               </div>
             </div>
             <div class="form-group">
-              <label>Logo URL (optional)</label>
-              <input type="url" name="logoUrl" class="form-input" placeholder="https://example.com/logo.png" value="<%= user.whiteLabel?.logoUrl || '' %>"/>
+              <label>Logo URL</label>
+              <input type="url" name="logoUrl" class="form-input" placeholder="https://example.com/logo.png" value="<%= user.whiteLabel.logoUrl %>" />
             </div>
-            <button type="submit" class="save-btn">Save White Label</button>
-          </div>
-        </form>
-      <% } %>
-    </div>
-
-    <!-- Danger Zone -->
-    <div class="danger-card">
-      <div>
-        <h3>Delete Account</h3>
-        <p>Sab links aur data permanently delete ho jayega — wapas nahi aayega</p>
+            <button type="submit" class="save-btn">Save White Label Settings</button>
+          </form>
+        <% } %>
       </div>
-      <button class="btn-danger" onclick="return confirm('Pakka delete karna hai? Yeh action undo nahi hoga.')">Delete Account</button>
-    </div>
+    </section>
 
-  </div>
+    <section class="settings-card">
+      <div class="card-header">
+        <h2>Priority Support</h2>
+        <p>Business customers ke liye fast response aur operational SLA visibility.</p>
+      </div>
+      <div class="card-body">
+        <% if (isBusinessPlan) { %>
+          <div class="support-grid">
+            <div class="support-item">
+              <span class="support-label">Support channel</span>
+              <strong>priority@snaplink.fun</strong>
+            </div>
+            <div class="support-item">
+              <span class="support-label">SLA window</span>
+              <strong>Initial response within 1 business day</strong>
+            </div>
+          </div>
+          <p class="card-note">Use this channel for white-label setup, billing help, migration, and urgent business issues.</p>
+          <a class="btn-manage" href="mailto:priority@snaplink.fun?subject=SnapLink%20Priority%20Support">Open Priority Support</a>
+        <% } else { %>
+          <p class="card-note">Priority support aur SLA guarantee Business plan ke saath unlock hoti hai.</p>
+          <a href="/pricing" class="btn-manage">Upgrade to Business</a>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="danger-card">
+      <div>
+        <h3>Account Closure</h3>
+        <p>Permanent deletion request ke liye verified email se support ko contact karo.</p>
+      </div>
+      <div class="danger-actions">
+        <a class="btn-danger" href="mailto:support@snaplink.fun?subject=SnapLink%20Account%20Closure%20Request">Request Account Closure</a>
+      </div>
+    </section>
+  </main>
 </div>
 
 <script src="/js/shared/theme.js"></script>
-  <script>
-</script>
 </body>
 </html>
-
-
-

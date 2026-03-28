@@ -72,4 +72,12 @@ const urlSchema = new mongoose.Schema(
     }
 );
 
+// Redirects use `shortCode`; dashboards and APIs list by owner/date; duplicate-check flow
+// uses `(createdBy, orginalUrl)` to avoid re-creating the same basic link repeatedly.
+urlSchema.index({ createdBy: 1, createdAt: -1 });
+urlSchema.index({ createdBy: 1, shortCode: 1 });
+urlSchema.index({ createdBy: 1, orginalUrl: 1 });
+urlSchema.index({ createdAt: -1 });
+urlSchema.index({ isActive: 1, expiresAt: 1 });
+
 module.exports = mongoose.model('Url', urlSchema);

@@ -39,4 +39,8 @@ const brandCampaignSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+brandCampaignSchema.index({ createdBy: 1, createdAt: -1 });
+brandCampaignSchema.index({ status: 1, createdAt: -1 });
+brandCampaignSchema.index({ createdBy: 1, status: 1, createdAt: -1 });
+
 module.exports = mongoose.model('BrandCampaign', brandCampaignSchema);

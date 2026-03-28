@@ -28,6 +28,14 @@ function buildDailyWindows(days = 7) {
     return windows;
 }
 
+function toDateKey(dateInput) {
+    const date = new Date(dateInput);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 function withOriginalUrl(urlDoc) {
     const originalUrl = String(urlDoc?.orginalUrl || '');
     return {
@@ -48,34 +56,68 @@ exports.getDashboard = async (req, res) => {
         const now = new Date();
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-
         const dayWindows = buildDailyWindows(7);
+        const growthWindowStart = dayWindows[0].start;
 
         const [
-            totalUsers,
-            newToday,
-            newThisMonth,
-            proUsers,
-            businessUsers,
-            bannedUsers,
-            totalUrls,
-            urlsToday,
-            urlsThisMonth,
-            clicksAgg,
+            userSummaryAgg,
+            urlSummaryAgg,
             recentUsers,
             recentUrls,
-            growthCounts,
+            growthRows,
         ] = await Promise.all([
-            User.countDocuments(),
-            User.countDocuments({ createdAt: { $gte: todayStart } }),
-            User.countDocuments({ createdAt: { $gte: monthStart } }),
-            User.countDocuments({ plan: 'pro' }),
-            User.countDocuments({ plan: 'business' }),
-            User.countDocuments({ isBanned: true }),
-            Url.countDocuments(),
-            Url.countDocuments({ createdAt: { $gte: todayStart } }),
-            Url.countDocuments({ createdAt: { $gte: monthStart } }),
-            Url.aggregate([{ $group: { _id: null, total: { $sum: '$clicks' } } }]),
+            User.aggregate([
+                {
+                    $group: {
+                        _id: null,
+                        totalUsers: { $sum: 1 },
+                        newToday: {
+                            $sum: {
+                                $cond: [{ $gte: ['$createdAt', todayStart] }, 1, 0],
+                            },
+                        },
+                        newThisMonth: {
+                            $sum: {
+                                $cond: [{ $gte: ['$createdAt', monthStart] }, 1, 0],
+                            },
+                        },
+                        proUsers: {
+                            $sum: {
+                                $cond: [{ $eq: ['$plan', 'pro'] }, 1, 0],
+                            },
+                        },
+                        businessUsers: {
+                            $sum: {
+                                $cond: [{ $eq: ['$plan', 'business'] }, 1, 0],
+                            },
+                        },
+                        bannedUsers: {
+                            $sum: {
+                                $cond: ['$isBanned', 1, 0],
+                            },
+                        },
+                    },
+                },
+            ]),
+            Url.aggregate([
+                {
+                    $group: {
+                        _id: null,
+                        totalUrls: { $sum: 1 },
+                        urlsToday: {
+                            $sum: {
+                                $cond: [{ $gte: ['$createdAt', todayStart] }, 1, 0],
+                            },
+                        },
+                        urlsThisMonth: {
+                            $sum: {
+                                $cond: [{ $gte: ['$createdAt', monthStart] }, 1, 0],
+                            },
+                        },
+                        totalClicks: { $sum: '$clicks' },
+                    },
+                },
+            ]),
             User.find()
                 .sort({ createdAt: -1 })
                 .limit(5)
@@ -84,26 +126,48 @@ exports.getDashboard = async (req, res) => {
             Url.find()
                 .sort({ createdAt: -1 })
                 .limit(5)
+                .select('shortCode shortUrl orginalUrl clicks createdAt createdBy')
                 .populate('createdBy', 'firstName email')
                 .lean(),
-            Promise.all(
-                dayWindows.map((window) =>
-                    User.countDocuments({
-                        createdAt: { $gte: window.start, $lt: window.end },
-                    })
-                )
-            ),
+            User.aggregate([
+                {
+                    $match: {
+                        createdAt: { $gte: growthWindowStart },
+                    },
+                },
+                {
+                    $group: {
+                        _id: {
+                            $dateToString: {
+                                format: '%Y-%m-%d',
+                                date: '$createdAt',
+                                timezone: 'Asia/Kolkata',
+                            },
+                        },
+                        count: { $sum: 1 },
+                    },
+                },
+            ]),
         ]);
 
+        const userSummary = userSummaryAgg[0] || {};
+        const urlSummary = urlSummaryAgg[0] || {};
         const sanitizedRecentUrls = recentUrls.map(withOriginalUrl);
-        const totalClicks = Number(clicksAgg?.[0]?.total || 0);
+        const growthMap = growthRows.reduce((acc, row) => {
+            acc[String(row?._id || '')] = Number(row?.count || 0);
+            return acc;
+        }, {});
+
+        const proUsers = Number(userSummary.proUsers || 0);
+        const businessUsers = Number(userSummary.businessUsers || 0);
+        const totalClicks = Number(urlSummary.totalClicks || 0);
         const proRevenue = proUsers * 99;
         const businessRevenue = businessUsers * 299;
         const totalRevenue = proRevenue + businessRevenue;
 
-        const userGrowth = dayWindows.map((window, index) => ({
+        const userGrowth = dayWindows.map((window) => ({
             date: window.start.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
-            count: Number(growthCounts[index] || 0),
+            count: Number(growthMap[toDateKey(window.start)] || 0),
         }));
 
         const uptimeSeconds = process.uptime();
@@ -114,15 +178,15 @@ exports.getDashboard = async (req, res) => {
         return res.render('admin/dashboard', {
             user: req.user,
             stats: {
-                totalUsers,
-                newToday,
-                newThisMonth,
+                totalUsers: Number(userSummary.totalUsers || 0),
+                newToday: Number(userSummary.newToday || 0),
+                newThisMonth: Number(userSummary.newThisMonth || 0),
                 proUsers,
                 businessUsers,
-                bannedUsers,
-                totalUrls,
-                urlsToday,
-                urlsThisMonth,
+                bannedUsers: Number(userSummary.bannedUsers || 0),
+                totalUrls: Number(urlSummary.totalUrls || 0),
+                urlsToday: Number(urlSummary.urlsToday || 0),
+                urlsThisMonth: Number(urlSummary.urlsThisMonth || 0),
                 totalClicks,
                 totalRevenue,
                 proRevenue,
@@ -235,6 +299,7 @@ exports.getUrls = async (req, res) => {
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * PAGE_SIZE)
                 .limit(PAGE_SIZE)
+                .select('shortCode shortUrl orginalUrl clicks createdAt createdBy')
                 .populate('createdBy', 'firstName email')
                 .lean(),
         ]);
@@ -265,10 +330,23 @@ exports.deleteUrl = async (req, res) => {
 
 exports.getAdminPanel = async (req, res) => {
     try {
-        const rawCampaigns = await BrandCampaign.find()
-            .populate('createdBy', 'firstName lastName email')
-            .sort({ status: 1, createdAt: -1 })
-            .lean();
+        const [rawCampaigns, campaignStatsRows] = await Promise.all([
+            BrandCampaign.find()
+                .select(
+                    'brandName title targetUrl status adminNote totalAffiliates totalClicks createdAt createdBy'
+                )
+                .populate('createdBy', 'firstName lastName email')
+                .sort({ status: 1, createdAt: -1 })
+                .lean(),
+            BrandCampaign.aggregate([
+                {
+                    $group: {
+                        _id: '$status',
+                        count: { $sum: 1 },
+                    },
+                },
+            ]),
+        ]);
 
         const campaigns = rawCampaigns.map((campaign) => {
             if (!campaign.createdBy) return campaign;
@@ -283,16 +361,15 @@ exports.getAdminPanel = async (req, res) => {
             };
         });
 
-        const stats = campaigns.reduce(
-            (acc, campaign) => {
-                acc.total += 1;
-                if (campaign.status === 'pending') acc.pending += 1;
-                else if (campaign.status === 'approved') acc.approved += 1;
-                else if (campaign.status === 'rejected') acc.rejected += 1;
-                return acc;
-            },
-            { total: 0, pending: 0, approved: 0, rejected: 0 }
-        );
+        const stats = { total: 0, pending: 0, approved: 0, rejected: 0 };
+        campaignStatsRows.forEach((row) => {
+            const status = String(row?._id || '');
+            const count = Number(row?.count || 0);
+            stats.total += count;
+            if (status === 'pending') stats.pending = count;
+            if (status === 'approved') stats.approved = count;
+            if (status === 'rejected') stats.rejected = count;
+        });
 
         return res.render('admin-panel', { campaigns, stats });
     } catch (error) {

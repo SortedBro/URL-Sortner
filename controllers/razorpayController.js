@@ -15,8 +15,8 @@ const PLANS = {
         yearly: 99000,
     },
     business: {
-        monthly: 29900,
-        yearly: 299000,
+        monthly: 299,
+        yearly: 299,
     },
 };
 

@@ -29,4 +29,10 @@ const affiliateLinkSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+affiliateLinkSchema.index({ createdBy: 1, createdAt: -1 });
+affiliateLinkSchema.index({ createdBy: 1, shortCode: 1 });
+affiliateLinkSchema.index({ campaign: 1, createdBy: 1 });
+affiliateLinkSchema.index({ campaign: 1, createdAt: -1 });
+affiliateLinkSchema.index({ createdBy: 1, isActive: 1, createdAt: -1 });
+
 module.exports = mongoose.model('AffiliateLink', affiliateLinkSchema);

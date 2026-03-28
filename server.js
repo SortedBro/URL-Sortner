@@ -25,6 +25,8 @@ const bulkRoutes = require('./routes/bulk');
 const affiliateRoutes = require('./routes/affiliateRoutes');
 const brandRoutes = require('./routes/brandRoutes');
 const payoutRoutes = require('./routes/payoutRoutes');
+const apiRoutes = require('./routes/apiRoutes');
+const internalRoutes = require('./routes/internalRoutes');
 const { clearAuthCookie } = require('./utils/authToken');
 
 const app = express();
@@ -154,6 +156,8 @@ ${urls}
 }
 
 function registerApplicationRoutes(expressApp) {
+    expressApp.use('/internal', internalRoutes);
+    expressApp.use('/api/v1', apiRoutes);
     expressApp.use('/', paymentRoutes);
     expressApp.use('/', payoutRoutes);
     expressApp.use('/', pageRouter);

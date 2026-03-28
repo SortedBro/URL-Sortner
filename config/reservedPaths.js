@@ -14,6 +14,7 @@ const RESERVED_TOP_LEVEL_PATHS = Object.freeze([
     'verify-otp',
     'contact',
     'shorten',
+    'api',
     'upgrade',
     'a',
     'affiliate',
@@ -28,6 +29,7 @@ const RESERVED_TOP_LEVEL_PATHS = Object.freeze([
     'brand',
     'sitemap',
     'settings',
+    'internal',
     'unlock',
     'qr-codes',
 ]);

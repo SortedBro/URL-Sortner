@@ -9,6 +9,7 @@ const User = require('../models/userSchema');
 const { incrementUrlCount } = require('../middleware/planLimit.middleware');
 const { RESERVED_TOP_LEVEL_PATHS } = require('../config/reservedPaths');
 const { appConfig } = require('../config/appConfig');
+const { dispatchUserWebhook } = require('../utils/webhooks');
 
 const redisClient = appConfig.redisUrl
     ? new redis(appConfig.redisUrl, {
@@ -24,6 +25,9 @@ const SHORT_CODE_LENGTH = 6;
 const MAX_SHORT_CODE_ATTEMPTS = 8;
 const MAX_CLICK_HISTORY_ITEMS = 5000;
 const ANALYTICS_RECENT_LIMIT = 200;
+const REDIRECT_URL_SELECT =
+    '_id shortCode shortUrl orginalUrl clicks createdBy isActive expiresAt hasPassword adEnabled adTimer adTitle adDescription adBannerUrl adSkipable refParam';
+const UNLOCK_URL_SELECT = '_id shortCode hasPassword isActive expiresAt accessPasswordHash';
 
 const RESERVED_CODES = new Set(RESERVED_TOP_LEVEL_PATHS);
 
@@ -75,10 +79,11 @@ async function findUrlByShortCode(code, extraFilter = {}, options = {}) {
 
     const selectFields = options.select || null;
     const useLean = Boolean(options.lean);
+    const allowCaseInsensitiveFallback = options.allowCaseInsensitiveFallback !== false;
 
-    const candidates = [normalizedCode];
     const lowered = normalizedCode.toLowerCase();
-    if (!candidates.includes(lowered)) candidates.push(lowered);
+    const candidates = [lowered];
+    if (normalizedCode !== lowered) candidates.push(normalizedCode);
 
     for (const shortCode of candidates) {
         let query = Url.findOne({ ...extraFilter, shortCode });
@@ -86,6 +91,10 @@ async function findUrlByShortCode(code, extraFilter = {}, options = {}) {
         if (useLean) query = query.lean();
         const doc = await query;
         if (doc) return doc;
+    }
+
+    if (!allowCaseInsensitiveFallback) {
+        return null;
     }
 
     let query = Url.findOne({
@@ -128,6 +137,43 @@ async function setCacheValue(shortCode, value) {
     } catch (error) {
         console.warn('Redis set failed (non-fatal):', error.message);
     }
+}
+
+function buildClickUpdatePayload(req, clickedAt, geo, result, ip) {
+    return {
+        $inc: { clicks: 1 },
+        $set: { lastClickedAt: clickedAt },
+        $push: {
+            clickHistory: {
+                $each: [{
+                    clickedAt,
+                    country: geo.country || 'Unknown',
+                    city: geo.city || 'Unknown',
+                    device: normalizeClickDevice(result?.device?.type),
+                    browser: result.browser.name || 'Unknown',
+                    os: result.os.name || 'Unknown',
+                    referrer: req.headers.referer || 'Direct',
+                    ip,
+                }],
+                // Prevent unbounded document growth while preserving recent analytics.
+                $slice: -MAX_CLICK_HISTORY_ITEMS,
+            },
+        },
+    };
+}
+
+function buildClickWebhookPayload(urlDoc, req, clickedAt, geo, result, clicks) {
+    return {
+        shortCode: urlDoc.shortCode,
+        shortUrl: urlDoc.shortUrl,
+        originalUrl: urlDoc.orginalUrl,
+        clicks,
+        clickedAt: clickedAt.toISOString(),
+        referrer: req.headers.referer || 'Direct',
+        country: geo.country || 'Unknown',
+        device: normalizeClickDevice(result?.device?.type),
+        browser: result.browser.name || 'Unknown',
+    };
 }
 
 exports.createShortUrl = async (req, res) => {
@@ -177,7 +223,7 @@ exports.createShortUrl = async (req, res) => {
 
         const userId = req.user?.user || null;
         const userDoc = userId
-            ? await User.findById(userId).select('plan whiteLabel')
+            ? await User.findById(userId).select('plan whiteLabel').lean()
             : null;
 
         const plan = userDoc?.plan || req.user?.plan || 'free';
@@ -216,9 +262,11 @@ exports.createShortUrl = async (req, res) => {
         }
 
         if (customAlias) {
-            const aliasExists = await Url.exists({
-                shortCode: new RegExp(`^${escapeRegex(customAlias)}$`, 'i'),
-            });
+            const aliasExists =
+                (await Url.exists({ shortCode: customAlias })) ||
+                (await Url.exists({
+                    shortCode: new RegExp(`^${escapeRegex(customAlias)}$`, 'i'),
+                }));
             if (aliasExists) {
                 setCreateError(req, 'Ye alias already le liya gaya hai');
                 return res.redirect(returnPath);
@@ -261,7 +309,9 @@ exports.createShortUrl = async (req, res) => {
             const existingUrl = await Url.findOne({
                 orginalUrl: originalUrlInput,
                 createdBy: userId,
-            });
+            })
+                .select('shortUrl')
+                .lean();
             if (existingUrl) {
                 setCreateSuccess(req, existingUrl.shortUrl);
                 return res.redirect(returnPath);
@@ -299,6 +349,14 @@ exports.createShortUrl = async (req, res) => {
 
         if (userId) {
             await incrementUrlCount(userId);
+
+            setImmediate(() => {
+                dispatchUserWebhook(userId, 'link.created', {
+                    shortCode: createdUrl.shortCode,
+                    shortUrl: createdUrl.shortUrl,
+                    originalUrl: createdUrl.orginalUrl,
+                }).catch(console.error);
+            });
         }
 
         setCreateSuccess(req, shortUrl);
@@ -315,7 +373,10 @@ exports.unlockProtectedUrl = async (req, res) => {
         const code = String(req.params.code || '').trim();
         const password = String(req.body.password || '').trim();
 
-        const url = await findUrlByShortCode(code);
+        const url = await findUrlByShortCode(code, {}, {
+            select: UNLOCK_URL_SELECT,
+            lean: true,
+        });
         if (!url) {
             return res.status(404).render('404');
         }
@@ -363,7 +424,7 @@ exports.redirectUrl = async (req, res) => {
             try {
                 const cached = await redisClient.get(`link:${requestedCode}`);
                 if (cached && cached !== COMPLEX_CACHE_SENTINEL) {
-                    setImmediate(() => trackClick(requestedCode, req).catch(console.error));
+                    setImmediate(() => trackClickByCode(requestedCode, req).catch(console.error));
                     return res.redirect(cached);
                 }
             } catch (error) {
@@ -371,7 +432,10 @@ exports.redirectUrl = async (req, res) => {
             }
         }
 
-        const url = await findUrlByShortCode(requestedCode);
+        const url = await findUrlByShortCode(requestedCode, {}, {
+            select: REDIRECT_URL_SELECT,
+            lean: true,
+        });
         if (!url) {
             return res.status(404).render('404');
         }
@@ -397,7 +461,7 @@ exports.redirectUrl = async (req, res) => {
             }
         }
 
-        setImmediate(() => trackClick(code, req).catch(console.error));
+        setImmediate(() => trackClickForResolvedUrl(url, req).catch(console.error));
 
         if (url.adEnabled) {
             return res.render('ad-interstitial', {
@@ -426,42 +490,73 @@ exports.redirectUrl = async (req, res) => {
     }
 };
 
-async function trackClick(code, req) {
+async function trackClickForResolvedUrl(urlDoc, req) {
+    if (!urlDoc?._id) return;
+
     const ip = (req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '').trim();
     const geo = geoip.lookup(ip) || {};
     const ua = new UAParser(req.headers['user-agent']);
     const result = ua.getResult();
     const clickedAt = new Date();
 
-    await Url.findOneAndUpdate(
-        { shortCode: code },
+    await Url.updateOne(
+        { _id: urlDoc._id },
+        buildClickUpdatePayload(req, clickedAt, geo, result, ip)
+    );
+
+    if (urlDoc.createdBy) {
+        setImmediate(() => {
+            dispatchUserWebhook(
+                urlDoc.createdBy,
+                'link.clicked',
+                buildClickWebhookPayload(
+                    urlDoc,
+                    req,
+                    clickedAt,
+                    geo,
+                    result,
+                    Number(urlDoc.clicks || 0) + 1
+                )
+            ).catch(console.error);
+        });
+    }
+}
+
+async function trackClickByCode(code, req) {
+    const normalizedCode = String(code || '').trim().toLowerCase();
+    const ip = (req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '').trim();
+    const geo = geoip.lookup(ip) || {};
+    const ua = new UAParser(req.headers['user-agent']);
+    const result = ua.getResult();
+    const clickedAt = new Date();
+
+    const url = await Url.findOneAndUpdate(
+        { shortCode: normalizedCode },
+        buildClickUpdatePayload(req, clickedAt, geo, result, ip),
         {
-            $inc: { clicks: 1 },
-            $set: { lastClickedAt: clickedAt },
-            $push: {
-                clickHistory: {
-                    $each: [{
-                        clickedAt,
-                        country: geo.country || 'Unknown',
-                        city: geo.city || 'Unknown',
-                        device: normalizeClickDevice(result?.device?.type),
-                        browser: result.browser.name || 'Unknown',
-                        os: result.os.name || 'Unknown',
-                        referrer: req.headers.referer || 'Direct',
-                        ip,
-                    }],
-                    // Prevent unbounded document growth while preserving recent analytics.
-                    $slice: -MAX_CLICK_HISTORY_ITEMS,
-                },
-            },
+            new: true,
+            select: 'shortCode shortUrl orginalUrl createdBy clicks',
         }
     );
+
+    if (url?.createdBy) {
+        setImmediate(() => {
+            dispatchUserWebhook(
+                url.createdBy,
+                'link.clicked',
+                buildClickWebhookPayload(url, req, clickedAt, geo, result, Number(url.clicks || 0))
+            ).catch(console.error);
+        });
+    }
 }
 
 exports.deleteUrl = async (req, res) => {
     try {
         const url = await findUrlByShortCode(req.params.code, {
             createdBy: req.user.user,
+        }, {
+            select: '_id shortCode shortUrl orginalUrl',
+            lean: true,
         });
 
         if (!url) {
@@ -476,7 +571,18 @@ exports.deleteUrl = async (req, res) => {
             }
         }
 
-        await url.deleteOne();
+        const deletedPayload = {
+            shortCode: url.shortCode,
+            shortUrl: url.shortUrl,
+            originalUrl: url.orginalUrl,
+        };
+
+        await Url.deleteOne({ _id: url._id });
+
+        setImmediate(() => {
+            dispatchUserWebhook(req.user.user, 'link.deleted', deletedPayload).catch(console.error);
+        });
+
         return res.redirect('/dashboard');
     } catch (error) {
         console.log(error);
@@ -612,3 +718,5 @@ exports.getAnalytics = async (req, res) => {
 exports.serverOn = (req, res) => {
     res.status(200).json({ ok: true, message: 'Server running' });
 };
+
+exports.buildAnalyticsSummary = buildAnalyticsSummary;

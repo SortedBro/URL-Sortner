@@ -25,5 +25,8 @@ const earningSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 earningSchema.index({ affiliate: 1, status: 1, earnedAt: 1 });
+earningSchema.index({ affiliate: 1, earnedAt: -1 });
+earningSchema.index({ campaign: 1, earnedAt: -1 });
+earningSchema.index({ affiliateLink: 1, earnedAt: -1 });
 
 module.exports = mongoose.model('Earning', earningSchema);

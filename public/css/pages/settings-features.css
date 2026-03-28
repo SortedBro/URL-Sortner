@@ -1,0 +1,268 @@
+.settings-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.settings-main {
+    gap: 24px;
+}
+
+.plan-actions,
+.card-actions,
+.danger-actions,
+.feature-status-row,
+.checkbox-row,
+.member-meta-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.form-row-three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 18px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text1, #f5f1e8);
+    font: inherit;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.inline-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.inline-badge.is-live {
+    background: rgba(114, 216, 175, 0.16);
+    color: #81d7ae;
+}
+
+.inline-badge.is-muted {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.status-meta,
+.card-note,
+.support-label {
+    color: var(--text2, rgba(255, 255, 255, 0.68));
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.status-meta code {
+    color: inherit;
+}
+
+.secret-panel,
+.api-snippet,
+.team-summary,
+.member-item,
+.support-item {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.secret-panel,
+.api-snippet {
+    margin: 18px 0;
+    padding: 16px 18px;
+}
+
+.secret-panel-head {
+    margin-bottom: 10px;
+    color: var(--text2, rgba(255, 255, 255, 0.68));
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.secret-panel code,
+.api-snippet code {
+    display: block;
+    overflow-x: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: #f7d27e;
+    white-space: pre;
+}
+
+.api-snippet pre {
+    margin: 0;
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.checkbox-pill,
+.checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text1, #f5f1e8);
+}
+
+.checkbox-pill {
+    min-height: 50px;
+    padding: 0 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.checkbox-pill input,
+.checkbox-label input {
+    accent-color: #f7d27e;
+}
+
+.support-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.compact-grid {
+    margin-bottom: 18px;
+}
+
+.top-gap {
+    margin-top: 18px;
+}
+
+.support-item {
+    padding: 16px 18px;
+}
+
+.support-item strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--text1, #f5f1e8);
+    line-height: 1.5;
+}
+
+.support-item-action form {
+    margin-top: 10px;
+}
+
+.team-summary {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 18px;
+    padding: 14px 18px;
+}
+
+.team-summary strong {
+    font-size: 24px;
+    color: #f7d27e;
+}
+
+.team-summary span {
+    color: var(--text2, rgba(255, 255, 255, 0.68));
+}
+
+.member-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.member-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 18px;
+}
+
+.member-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.member-meta strong {
+    color: var(--text1, #f5f1e8);
+}
+
+.member-meta span {
+    color: var(--text2, rgba(255, 255, 255, 0.68));
+}
+
+.member-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 82px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.member-status.active {
+    background: rgba(114, 216, 175, 0.16);
+    color: #81d7ae;
+}
+
+.member-status.invited {
+    background: rgba(247, 210, 126, 0.16);
+    color: #f7d27e;
+}
+
+@media (max-width: 1100px) {
+    .form-row-three,
+    .support-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 840px) {
+    .member-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .member-meta-right {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .plan-actions,
+    .card-actions,
+    .danger-actions,
+    .feature-status-row {
+        align-items: stretch;
+    }
+
+    .secondary-btn,
+    .btn-manage,
+    .save-btn,
+    .btn-danger {
+        width: 100%;
+    }
+}

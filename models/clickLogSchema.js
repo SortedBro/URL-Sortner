@@ -16,4 +16,7 @@ const clickLogSchema = new mongoose.Schema({
     clickedAt: { type: Date, default: Date.now }
 });
 
+clickLogSchema.index({ link: 1, clickedAt: -1 });
+clickLogSchema.index({ link: 1, ip: 1 });
+
 module.exports = mongoose.model('ClickLog', clickLogSchema);

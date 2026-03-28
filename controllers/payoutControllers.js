@@ -133,11 +133,16 @@ exports.getWallet = async (req, res) => {
         const [wallet, earnings, payouts, statementTx, previousTx, earningAgg, payoutAgg, earningCountThisMonth, pendingPayoutCount, paidPayoutCountThisMonth] = await Promise.all([
             ensureWallet(userId),
             Earning.find({ affiliate: userId })
+                .select('campaign amount status earnedAt')
                 .populate('campaign', 'title')
                 .sort({ earnedAt: -1 })
                 .limit(20)
                 .lean(),
-            Payout.find({ affiliate: userId }).sort({ requestedAt: -1 }).limit(20).lean(),
+            Payout.find({ affiliate: userId })
+                .select('amount method status requestedAt')
+                .sort({ requestedAt: -1 })
+                .limit(20)
+                .lean(),
             WalletTransaction.find({
                 user: userId,
                 transactionAt: { $gte: selectedMonth.start, $lt: selectedMonth.end },
@@ -464,6 +469,7 @@ exports.requestPayout = async (req, res) => {
 exports.adminGetPayouts = async (req, res) => {
     try {
         const payouts = await Payout.find()
+            .select('affiliate amount method upiId bankDetails status requestedAt')
             .populate('affiliate', 'firstName lastName email')
             .sort({ status: 1, createdAt: -1 })
             .lean();
@@ -535,7 +541,9 @@ exports.adminMarkPaid = async (req, res) => {
             const candidateEarnings = await Earning.find({
                 affiliate: payout.affiliate,
                 status: { $in: ['pending', 'partial'] },
-            }).sort({ earnedAt: 1 });
+            })
+                .select('amount settledAmount status earnedAt')
+                .sort({ earnedAt: 1 });
 
             for (const earning of candidateEarnings) {
                 if (remaining <= 0.0001) break;

@@ -89,7 +89,9 @@ exports.createLink = async (req, res) => {
             campaign = await BrandCampaign.findOne({
                 _id: campaignId,
                 status: 'approved',
-            }).select('title targetUrl refParam commissionType commissionValue brandName');
+            })
+                .select('title targetUrl refParam commissionType commissionValue brandName')
+                .lean();
 
             if (!campaign) {
                 return res.status(400).json({ error: 'Selected campaign invalid hai ya approve nahi hai' });
@@ -146,9 +148,13 @@ exports.createLink = async (req, res) => {
 exports.trackAndRedirect = async (req, res) => {
     try {
         const link = await AffiliateLink.findOne({ shortCode: req.params.code }).populate(
-            'campaign',
-            'status commissionType commissionValue budget refParam'
-        );
+            {
+                path: 'campaign',
+                select: 'status commissionType commissionValue budget refParam',
+            }
+        )
+            .select('originalUrl shortCode shortUrl refParam isActive createdBy campaign')
+            .lean();
 
         if (!link || !link.isActive) {
             if (req.accepts('html')) {
@@ -337,80 +343,69 @@ exports.getLinkAnalytics = async (req, res) => {
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-        const [dailyRows, countryRows, deviceRows, browserRows, totalLogs] = await Promise.all([
-            ClickLog.aggregate([
-                {
-                    $match: {
-                        link: linkObjectId,
-                        clickedAt: { $gte: sevenDaysAgo },
-                    },
+        const [analyticsFacet] = await ClickLog.aggregate([
+            {
+                $match: {
+                    link: linkObjectId,
+                    clickedAt: { $gte: sevenDaysAgo },
                 },
-                {
-                    $group: {
-                        _id: {
-                            $dateToString: {
-                                format: '%Y-%m-%d',
-                                date: '$clickedAt',
-                                timezone: 'Asia/Kolkata',
+            },
+            {
+                $facet: {
+                    dailyRows: [
+                        {
+                            $group: {
+                                _id: {
+                                    $dateToString: {
+                                        format: '%Y-%m-%d',
+                                        date: '$clickedAt',
+                                        timezone: 'Asia/Kolkata',
+                                    },
+                                },
+                                count: { $sum: 1 },
                             },
                         },
-                        count: { $sum: 1 },
-                    },
+                    ],
+                    countryRows: [
+                        {
+                            $group: {
+                                _id: { $ifNull: ['$country', 'Unknown'] },
+                                count: { $sum: 1 },
+                            },
+                        },
+                        { $sort: { count: -1 } },
+                        { $limit: 20 },
+                    ],
+                    deviceRows: [
+                        {
+                            $group: {
+                                _id: { $ifNull: ['$device', 'desktop'] },
+                                count: { $sum: 1 },
+                            },
+                        },
+                        { $sort: { count: -1 } },
+                        { $limit: 10 },
+                    ],
+                    browserRows: [
+                        {
+                            $group: {
+                                _id: { $ifNull: ['$browser', 'Unknown'] },
+                                count: { $sum: 1 },
+                            },
+                        },
+                        { $sort: { count: -1 } },
+                        { $limit: 20 },
+                    ],
+                    totals: [{ $count: 'count' }],
                 },
-            ]),
-            ClickLog.aggregate([
-                {
-                    $match: {
-                        link: linkObjectId,
-                        clickedAt: { $gte: sevenDaysAgo },
-                    },
-                },
-                {
-                    $group: {
-                        _id: { $ifNull: ['$country', 'Unknown'] },
-                        count: { $sum: 1 },
-                    },
-                },
-                { $sort: { count: -1 } },
-                { $limit: 20 },
-            ]),
-            ClickLog.aggregate([
-                {
-                    $match: {
-                        link: linkObjectId,
-                        clickedAt: { $gte: sevenDaysAgo },
-                    },
-                },
-                {
-                    $group: {
-                        _id: { $ifNull: ['$device', 'desktop'] },
-                        count: { $sum: 1 },
-                    },
-                },
-                { $sort: { count: -1 } },
-                { $limit: 10 },
-            ]),
-            ClickLog.aggregate([
-                {
-                    $match: {
-                        link: linkObjectId,
-                        clickedAt: { $gte: sevenDaysAgo },
-                    },
-                },
-                {
-                    $group: {
-                        _id: { $ifNull: ['$browser', 'Unknown'] },
-                        count: { $sum: 1 },
-                    },
-                },
-                { $sort: { count: -1 } },
-                { $limit: 20 },
-            ]),
-            ClickLog.countDocuments({
-                link: linkObjectId,
-                clickedAt: { $gte: sevenDaysAgo },
-            }),
+            },
         ]);
+
+        const dailyRows = analyticsFacet?.dailyRows || [];
+        const countryRows = analyticsFacet?.countryRows || [];
+        const deviceRows = analyticsFacet?.deviceRows || [];
+        const browserRows = analyticsFacet?.browserRows || [];
+        const totalLogs = Number(analyticsFacet?.totals?.[0]?.count || 0);
 
         const dailyClicks = {};
         for (let i = 6; i >= 0; i -= 1) {

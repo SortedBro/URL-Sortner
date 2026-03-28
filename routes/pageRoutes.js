@@ -7,6 +7,13 @@ const {
     updateProfile,
     updatePassword,
     updateWhiteLabel,
+    rotateApiKey,
+    disableApiKey,
+    updateWebhookSettings,
+    updateWeeklyReportSettings,
+    sendWeeklyReportNow,
+    inviteTeamMember,
+    removeTeamMember,
 } = require('../controllers/settingsControllers');
 
 const router = express.Router();
@@ -30,6 +37,13 @@ router.get('/tools', softAuth, (req, res) => {
 router.get('/settings', auth, getSettings);
 router.post('/settings/profile', auth, updateProfile);
 router.post('/settings/password', auth, updatePassword);
+router.post('/settings/api-access/rotate', auth, rotateApiKey);
+router.post('/settings/api-access/disable', auth, disableApiKey);
+router.post('/settings/webhooks', auth, updateWebhookSettings);
+router.post('/settings/reports/weekly', auth, updateWeeklyReportSettings);
+router.post('/settings/reports/weekly/send-now', auth, sendWeeklyReportNow);
+router.post('/settings/team/invite', auth, inviteTeamMember);
+router.post('/settings/team/remove', auth, removeTeamMember);
 router.post('/settings/white-label', auth, updateWhiteLabel);
 
 router.post('/unlock/:code', unlockProtectedUrl);

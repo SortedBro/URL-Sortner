@@ -159,7 +159,9 @@ exports.handleUserLogin = async (req, res) => {
     const password = String(req.body.password || '');
 
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select(
+            'firstName lastName email password isBanned plan role'
+        );
         if (!user) {
             return renderLoginError(res, email, 'Invalid email or password');
         }
