@@ -8,20 +8,25 @@ const Url = require('../models/urlSchema');
 const User = require('../models/userSchema');
 const { incrementUrlCount } = require('../middleware/planLimit.middleware');
 const { RESERVED_TOP_LEVEL_PATHS } = require('../config/reservedPaths');
+const { appConfig } = require('../config/appConfig');
 
-const redisClient = new redis(process.env.REDIS_URL, {
-    maxRetriesPerRequest: 2,
-    connectTimeout: 5000,
-    lazyConnect: true,
-});
+const redisClient = appConfig.redisUrl
+    ? new redis(appConfig.redisUrl, {
+        maxRetriesPerRequest: 2,
+        connectTimeout: 5000,
+        lazyConnect: true,
+    })
+    : null;
 
 const COMPLEX_CACHE_SENTINEL = '__complex__';
 const UNLOCK_COOKIE_PREFIX = 'unlock_';
 
 const RESERVED_CODES = new Set(RESERVED_TOP_LEVEL_PATHS);
 
-redisClient.on('connect', () => console.log('Redis connected'));
-redisClient.on('error', (err) => console.warn('Redis error (non-fatal):', err.message));
+if (redisClient) {
+    redisClient.on('connect', () => console.log('Redis connected'));
+    redisClient.on('error', (err) => console.warn('Redis error (non-fatal):', err.message));
+}
 
 function unlockCookieName(code) {
     return `${UNLOCK_COOKIE_PREFIX}${code}`;
@@ -62,6 +67,7 @@ function setCreateSuccess(req, shortUrl) {
 }
 
 async function setCacheValue(shortCode, value) {
+    if (!redisClient) return;
     try {
         await redisClient.setex(`link:${shortCode}`, 86400, value);
     } catch (error) {
@@ -291,14 +297,16 @@ exports.redirectUrl = async (req, res) => {
     try {
         const code = req.params.code;
 
-        try {
-            const cached = await redisClient.get(`link:${code}`);
-            if (cached && cached !== COMPLEX_CACHE_SENTINEL) {
-                setImmediate(() => trackClick(code, req).catch(console.error));
-                return res.redirect(cached);
+        if (redisClient) {
+            try {
+                const cached = await redisClient.get(`link:${code}`);
+                if (cached && cached !== COMPLEX_CACHE_SENTINEL) {
+                    setImmediate(() => trackClick(code, req).catch(console.error));
+                    return res.redirect(cached);
+                }
+            } catch (error) {
+                console.warn('Redis get failed, falling back to DB:', error.message);
             }
-        } catch (error) {
-            console.warn('Redis get failed, falling back to DB:', error.message);
         }
 
         const url = await Url.findOne({ shortCode: code });
@@ -392,10 +400,12 @@ exports.deleteUrl = async (req, res) => {
             return res.status(404).render('404');
         }
 
-        try {
-            await redisClient.del(`link:${req.params.code}`);
-        } catch (error) {
-            console.warn('Redis del failed (non-fatal):', error.message);
+        if (redisClient) {
+            try {
+                await redisClient.del(`link:${req.params.code}`);
+            } catch (error) {
+                console.warn('Redis del failed (non-fatal):', error.message);
+            }
         }
 
         await url.deleteOne();

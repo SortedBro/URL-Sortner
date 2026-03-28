@@ -1,32 +1,62 @@
-const User = require('../models/userSchema.js');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const Otp = require('../models/otpSchema.js');
-const { sendOtpEmail, sendWelcomeEmail } = require('../utils/sendEmail.js');
-require('dotenv').config();
+
+const User = require('../models/userSchema');
+const Otp = require('../models/otpSchema');
+const { sendOtpEmail, sendWelcomeEmail } = require('../utils/sendEmail');
+const { issueAuthCookie } = require('../utils/authToken');
+
+const PENDING_SIGNUP_TTL_MS = 15 * 60 * 1000;
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
+function normalizeEmail(value) {
+    return String(value || '').trim().toLowerCase();
+}
+
+function renderSignupError(res, message) {
+    return res.render('signup', {
+        error: message,
+        success: null,
+    });
+}
+
+function renderLoginError(res, email, message) {
+    return res.render('login', {
+        error: message,
+        formData: { email },
+        success: null,
+        shortUrl: null,
+    });
+}
+
 exports.handleUserSignUP = async (req, res) => {
-    const { firstName, lastName, email, password } = req.body;
+    const firstName = String(req.body.firstName || '').trim();
+    const lastName = String(req.body.lastName || '').trim();
+    const email = normalizeEmail(req.body.email);
+    const password = String(req.body.password || '');
 
     try {
-        const exists = await User.findOne({ email });
-        if (exists) {
-            return res.render('signup', {
-                error: 'Email allready registered , Try another email ',
-                success: null,
-            });
+        if (!firstName || !lastName || !email || !password) {
+            return renderSignupError(res, 'All fields are required');
         }
 
-        const hasedPassword = await bcrypt.hash(password, 10);
+        if (password.length < 6) {
+            return renderSignupError(res, 'Password must be at least 6 characters');
+        }
 
-        // Store pending signup server-side to prevent client-side tampering.
+        const exists = await User.findOne({ email }).select('_id');
+        if (exists) {
+            return renderSignupError(res, 'Email already registered, try another email');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Signup data is kept server-side to prevent tampering from query/body edits.
         req.session.pendingSignup = {
             firstName,
             lastName,
             email,
-            password: hasedPassword,
+            password: hashedPassword,
             createdAt: Date.now(),
         };
 
@@ -37,47 +67,53 @@ exports.handleUserSignUP = async (req, res) => {
 
         return res.redirect(`/verify-otp?email=${encodeURIComponent(email)}`);
     } catch (error) {
-        console.log('Error:', error);
-        return res.render('signup', { error: 'Something went wrong', success: null });
+        console.log('Signup error:', error);
+        return renderSignupError(res, 'Something went wrong');
     }
 };
 
 exports.verifyOtp = async (req, res) => {
-    const { email, otp } = req.body;
+    const email = normalizeEmail(req.body.email);
+    const otp = String(req.body.otp || '').trim();
 
     try {
         const otpRecord = await Otp.findOne({ email });
         if (!otpRecord || otpRecord.otp !== otp) {
             return res.render('verify-otp', {
-                error: 'Wrong Otp Or Expired',
+                error: 'Wrong OTP or expired',
                 email,
                 user: null,
             });
         }
 
         const pending = req.session.pendingSignup;
-        if (!pending?.email) {
+        if (!pending?.email || !pending.createdAt) {
             return res.redirect('/signup');
         }
 
-        if (pending.email.toLowerCase() !== String(email).toLowerCase()) {
+        if (Date.now() - Number(pending.createdAt) > PENDING_SIGNUP_TTL_MS) {
+            delete req.session.pendingSignup;
             return res.render('verify-otp', {
-                error: 'Signup session mismatch. Dobara signup karo.',
+                error: 'Signup session expired. Please signup again.',
                 email,
                 user: null,
             });
         }
 
-        // OTP one-time use
+        if (pending.email !== email) {
+            return res.render('verify-otp', {
+                error: 'Signup session mismatch. Please signup again.',
+                email,
+                user: null,
+            });
+        }
+
         await Otp.deleteOne({ email });
 
-        const alreadyUser = await User.findOne({ email: pending.email });
+        const alreadyUser = await User.findOne({ email }).select('_id');
         if (alreadyUser) {
             delete req.session.pendingSignup;
-            return res.render('signup', {
-                error: 'Email allready registered , Try another email ',
-                success: null,
-            });
+            return renderSignupError(res, 'Email already registered, try another email');
         }
 
         const newUser = await User.create({
@@ -93,28 +129,12 @@ exports.verifyOtp = async (req, res) => {
         );
         delete req.session.pendingSignup;
 
-        const refreshToken = jwt.sign(
-            {
-                user: newUser._id,
-                name: newUser.firstName,
-                plan: newUser.plan,
-                role: newUser.role,
-            },
-            process.env.jwt_secret,
-            { expiresIn: '10h' }
-        );
-
-        res.cookie('refreshToken', refreshToken.trim(), {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-        });
-
+        issueAuthCookie(res, newUser);
         return res.redirect('/');
     } catch (error) {
-        console.log(error);
+        console.log('OTP verify error:', error);
         return res.render('verify-otp', {
-            error: 'Something wernt wrong',
+            error: 'Something went wrong',
             email,
             user: null,
         });
@@ -122,53 +142,28 @@ exports.verifyOtp = async (req, res) => {
 };
 
 exports.handleUserLogin = async (req, res) => {
-    const { email, password } = req.body;
+    const email = normalizeEmail(req.body.email);
+    const password = String(req.body.password || '');
 
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.render('login', {
-                error: 'Invalid email or password',
-                formData: { email },
-                success: null,
-                shortUrl: null,
-            });
+            return renderLoginError(res, email, 'Invalid email or password');
         }
 
-        const decodePass = await bcrypt.compare(password, user.password);
-        if (!decodePass) {
-            return res.render('login', {
-                error: 'Invalid email or password',
-                success: null,
-                shortUrl: null,
-            });
+        if (user.isBanned) {
+            return renderLoginError(res, email, 'Account is suspended. Contact support.');
         }
 
-        const refreshToken = jwt.sign(
-            {
-                user: user._id,
-                name: user.firstName,
-                plan: user.plan,
-                role: user.role,
-            },
-            process.env.jwt_secret,
-            { expiresIn: '10h' }
-        );
+        const passwordMatched = await bcrypt.compare(password, user.password);
+        if (!passwordMatched) {
+            return renderLoginError(res, email, 'Invalid email or password');
+        }
 
-        res.cookie('refreshToken', refreshToken.trim(), {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-        });
-
+        issueAuthCookie(res, user);
         return res.redirect('/');
     } catch (error) {
-        console.log('Error:', error);
-        return res.render('login', {
-            error: 'Something went wrong',
-            formData: { email },
-            success: null,
-            shortUrl: null,
-        });
+        console.log('Login error:', error);
+        return renderLoginError(res, email, 'Something went wrong');
     }
 };

@@ -1,5 +1,10 @@
 const { Resend } = require('resend');
-const resend = new Resend(process.env.RESEND_API_KEY);
+const { appConfig } = require('../config/appConfig');
+const resend = new Resend(appConfig.resendApiKey);
+
+if (!appConfig.resendApiKey) {
+    console.warn('RESEND_API_KEY is missing. OTP/Welcome emails will fail until it is configured.');
+}
 
 // ─────────────────────────────────────────
 //  OTP Email

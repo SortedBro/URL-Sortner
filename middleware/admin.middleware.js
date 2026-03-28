@@ -1,24 +1,25 @@
 const User = require('../models/userSchema');
 
-// ✅ Admin middleware — sirf admin access kar sakta hai
+/**
+ * Admin gatekeeper middleware.
+ * Should be used after `auth` middleware so `req.user` is available.
+ */
 const adminAuth = async (req, res, next) => {
     try {
-        if (!req.user) {
+        if (!req.user?.user) {
             return res.redirect('/login');
         }
 
-        const user = await User.findById(req.user.user);
-
+        const user = await User.findById(req.user.user).select('role');
         if (!user || user.role !== 'admin') {
-            return res.status(403).render('404'); // unauthorized
+            return res.status(403).render('404');
         }
 
         req.adminUser = user;
-        next();
-
+        return next();
     } catch (error) {
         console.log('Admin auth error:', error);
-        res.redirect('/login');
+        return res.redirect('/login');
     }
 };
 

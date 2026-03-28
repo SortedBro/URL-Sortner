@@ -1,29 +1,10 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
 const User = require('../models/userSchema');
+const { issueAuthCookie } = require('../utils/authToken');
 
 function buildDisplayName(user) {
     return `${user.firstName || ''}${user.lastName ? ` ${user.lastName}` : ''}`.trim();
-}
-
-function setAuthCookie(res, user) {
-    const refreshToken = jwt.sign(
-        {
-            user: user._id,
-            name: user.firstName,
-            plan: user.plan,
-            role: user.role,
-        },
-        process.env.jwt_secret,
-        { expiresIn: '10h' }
-    );
-
-    res.cookie('refreshToken', refreshToken.trim(), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-    });
 }
 
 exports.getSettings = async (req, res) => {
@@ -97,7 +78,7 @@ exports.updateProfile = async (req, res) => {
             return res.redirect('/settings');
         }
 
-        setAuthCookie(res, user);
+        issueAuthCookie(res, user);
         req.session.success = 'Profile update ho gaya';
         return res.redirect('/settings');
     } catch (error) {

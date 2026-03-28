@@ -1,101 +1,60 @@
+const User = require('../models/userSchema');
+const { REFRESH_COOKIE_NAME, clearAuthCookie, verifyAuthToken } = require('../utils/authToken');
 
-require('dotenv').config()
-const jwt = require('jsonwebtoken')
-
-const User = require('../models/userSchema.js')
-
-
-
-
+/**
+ * Hard-auth middleware.
+ * - Requires a valid auth cookie.
+ * - Loads the user from DB to enforce ban/deleted-user checks.
+ * - Redirects to login for browser routes.
+ */
 exports.auth = async (req, res, next) => {
-
-    const token = req.cookies?.refreshToken;
-    // console.log("auth token middleware", token);
-
-    // Token hai hi nahi
+    const token = req.cookies?.[REFRESH_COOKIE_NAME];
     if (!token) {
         return res.redirect('/login');
     }
 
-    // Token hai — verify karo
     try {
+        const decoded = verifyAuthToken(token);
+        const user = await User.findById(decoded.user).select('isBanned');
 
-        const decoded = jwt.verify(token, process.env.jwt_secret);
-
-        // database check 
-        const user = await User.findById(decoded.user);
-
-        if(!user){
-            res.clearCookie('refreshToken');
-            return res.redirect('/login')
+        if (!user) {
+            clearAuthCookie(res);
+            return res.redirect('/login');
         }
 
-        // auth.middleware.js mein
-if (user.isBanned) {
-    res.clearCookie('refreshToken');
-    return res.redirect('/login?banned=true');
-}
-
-        // if(!user){
-        //     res.clearCookie('refreshToken')
-        //     req.user=null;
-        //     return res.redirect('/login')
-        // }
+        if (user.isBanned) {
+            clearAuthCookie(res);
+            return res.redirect('/login?banned=true');
+        }
 
         req.user = decoded;
-        next(); // ✅ valid token — aage bhejo
-
-
+        return next();
     } catch (error) {
-
-        console.error("Token invalid/expired:", error.message);
-        res.clearCookie("refreshToken"); // kharab token delete karo
-        return res.redirect('/login'); // ✅ login pe bhejo
+        // Token expired/invalid => clear and force fresh login.
+        clearAuthCookie(res);
+        return res.redirect('/login');
     }
+};
 
-}
-
+/**
+ * Soft-auth middleware.
+ * - Never blocks route access.
+ * - If token exists and is valid, attaches `req.user`.
+ * - If invalid token is present, clears it and continues as guest.
+ */
 exports.softAuth = (req, res, next) => {
-    const token = req.cookies?.refreshToken;
-
-    // console.log("=== softAuth chala ===")
-    // console.log("req.cookies:", req.cookies)
-
-
+    const token = req.cookies?.[REFRESH_COOKIE_NAME];
     if (!token) {
         req.user = null;
         return next();
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.jwt_secret);
-        req.user = decoded;
-        next();
-
+        req.user = verifyAuthToken(token);
+        return next();
     } catch (error) {
-        res.clearCookie("refreshToken"); // kharab token delete karo
-
+        clearAuthCookie(res);
         req.user = null;
-        
-        next();
-
+        return next();
     }
-}
-
-// ```
-
-// ---
-
-// ## Visual — Pehle vs Baad
-// ```
-// PEHLE:
-// token aaya
-//     → verify kiya
-//         → error? → sirf log kiya → kuch nahi hua
-//         → sahi? → next() nahi → request hang
-    
-// BAAD:
-// token aaya
-//     → verify kiya
-//         → error? → cookie clear → /login redirect ✅
-//         → sahi? → next() call → page load ✅
+};

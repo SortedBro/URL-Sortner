@@ -7,6 +7,7 @@ const {
     verifyOtp
 } = require('../controllers/userControllers');
 const { handleContact } = require('../controllers/contactControllers');
+const { authRateLimit, contactRateLimit } = require('../middleware/rateLimit.middleware');
 
 // ── Views ──
 router.get('/signup', (req, res) => res.render('signup', { error: null, success: null }));
@@ -22,9 +23,9 @@ router.get('/verify-otp', (req, res) => {
 });
 
 // ── Actions ──
-router.post('/signup',     handleUserSignUP);
-router.post('/login',      handleUserLogin);
-router.post('/verify-otp', verifyOtp);
-router.post('/contact',    handleContact);
+router.post('/signup', authRateLimit, handleUserSignUP);
+router.post('/login', authRateLimit, handleUserLogin);
+router.post('/verify-otp', authRateLimit, verifyOtp);
+router.post('/contact', contactRateLimit, handleContact);
 
 module.exports = router;

@@ -1,10 +1,11 @@
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const User = require('../models/userSchema');
+const { appConfig } = require('../config/appConfig');
 
 const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
+    key_id: appConfig.razorpayKeyId,
+    key_secret: appConfig.razorpayKeySecret,
 });
 
 // Plan prices in paise
@@ -18,6 +19,10 @@ const PLANS = {
         yearly: 299000,
     },
 };
+
+function isRazorpayConfigured() {
+    return Boolean(appConfig.razorpayKeyId && appConfig.razorpayKeySecret);
+}
 
 const getSubscriptionEndDate = (billing, start = new Date()) => {
     const endDate = new Date(start);
@@ -35,15 +40,28 @@ exports.getUpgradePage = (req, res) => {
         return res.redirect('/pricing');
     }
 
+    if (!isRazorpayConfigured()) {
+        return res.status(503).render('upgrade', {
+            user: req.user,
+            plan,
+            razorpayKeyId: '',
+            error: 'Payments are temporarily unavailable. Please try later.',
+        });
+    }
+
     res.render('upgrade', {
         user: req.user,
         plan,
-        razorpayKeyId: process.env.RAZORPAY_KEY_ID,
+        razorpayKeyId: appConfig.razorpayKeyId,
     });
 };
 
 exports.createOrder = async (req, res) => {
     try {
+        if (!isRazorpayConfigured()) {
+            return res.status(503).json({ error: 'Payments are not configured right now' });
+        }
+
         const { plan, billing } = req.body;
 
         if (!PLANS[plan] || !PLANS[plan][billing]) {
@@ -66,7 +84,7 @@ exports.createOrder = async (req, res) => {
             orderId: order.id,
             amount: order.amount,
             currency: order.currency,
-            keyId: process.env.RAZORPAY_KEY_ID,
+            keyId: appConfig.razorpayKeyId,
         });
     } catch (error) {
         console.log('Create order error:', error);
@@ -76,6 +94,10 @@ exports.createOrder = async (req, res) => {
 
 exports.verifyPayment = async (req, res) => {
     try {
+        if (!isRazorpayConfigured()) {
+            return res.status(503).json({ error: 'Payments are not configured right now' });
+        }
+
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
         if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
@@ -84,7 +106,7 @@ exports.verifyPayment = async (req, res) => {
 
         const signedPayload = `${razorpay_order_id}|${razorpay_payment_id}`;
         const expectedSignature = crypto
-            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+            .createHmac('sha256', appConfig.razorpayKeySecret)
             .update(signedPayload)
             .digest('hex');
 
@@ -133,7 +155,11 @@ exports.verifyPayment = async (req, res) => {
 
 exports.webhook = async (req, res) => {
     try {
-        const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+        const webhookSecret = appConfig.razorpayWebhookSecret;
+        if (!webhookSecret) {
+            return res.status(503).json({ error: 'Webhook secret not configured' });
+        }
+
         const signature = req.headers['x-razorpay-signature'];
         const rawBody = req.rawBody || JSON.stringify(req.body);
 

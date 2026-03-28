@@ -1,166 +1,106 @@
-# URL-Sortner
-# 🔗 URL Shortener -https://snaplink.fun/
+# SnapLink (Production-Oriented URL Platform)
 
-A simple and fast **URL Shortener Web Application** built using **Node.js, Express, and MongoDB**.
-It allows users to convert long URLs into short, shareable links.
+SnapLink is a full-stack URL platform built with Node.js, Express, EJS, and MongoDB.
+It supports:
+- short links
+- analytics
+- affiliate + brand workflows
+- wallet + payout system
+- plan upgrades (Razorpay)
+- admin moderation and operations
 
----
+This repository has been hardened for production-style operation with:
+- centralized config validation
+- secure session/cookie defaults
+- auth + anti-abuse rate limiting
+- safe fallback handlers
+- cleaner route architecture and backward-compatible aliases
 
-## 🚀 Features
+## Tech Stack
+- Node.js + Express
+- MongoDB + Mongoose
+- Redis (optional, for sessions + cache)
+- EJS templates
+- Razorpay (plan upgrades)
+- Resend (OTP and welcome emails)
 
-* Generate short URLs from long links
-* Redirect short URL to the original URL
-* Store URLs in MongoDB database
-* Simple REST API
-* Unique short code generation
-* Scalable backend structure
-
----
-
-## 🛠 Tech Stack
-
-**Backend**
-
-* Node.js
-* Express.js
-
-**Database**
-
-* MongoDB
-* Mongoose
-
-**Tools**
-
-* Git & GitHub
-* Postman (for API testing)
-
----
-
-## 📁 Project Structure
-
-```
-url-shortener
-│
-├── models
-│   └── url.js
-│
-├── routes
-│   └── urlRoutes.js
-│
-├── controllers
-│   └── urlController.js
-│
-├── config
-│   └── db.js
-│
-├── server.js
-├── package.json
-└── README.md
-```
-
----
-
-## ⚙️ Installation
-
-Clone the repository
-
-```bash
-git clone https://github.com/yourusername/url-shortener.git
-```
-
-Go to the project folder
-
-```bash
-cd url-shortener
-```
-
-Install dependencies
-
+## Quick Start
+1. Install dependencies:
 ```bash
 npm install
 ```
-
-Start the server
-
+2. Configure `.env` values (see Required Environment Variables below).
+3. Run in development:
+```bash
+npm run dev
+```
+4. Run in production mode:
 ```bash
 npm start
 ```
 
-Server will run on
+## Required Environment Variables
+- `MONGODB_URI`
+- `jwt_secret`
+- `SESSION_SECRET` (required in production, minimum 32 chars)
 
-```
-http://localhost:5000
-```
+## Optional Environment Variables
+- `PORT` (default: `3000`)
+- `NODE_ENV` (`development` or `production`)
+- `APP_URL` (used for absolute short URL generation)
+- `REDIS_URL` (optional session + redirect cache acceleration)
+- `RAZORPAY_KEY_ID`
+- `RAZORPAY_KEY_SECRET`
+- `RAZORPAY_WEBHOOK_SECRET`
+- `RESEND_API_KEY`
 
----
+## Core Architecture (Backend)
+- [`server.js`](./server.js)
+  - App bootstrapping, middleware registration, session setup, route registration, fallback handlers.
+- [`config/appConfig.js`](./config/appConfig.js)
+  - Centralized env parsing + critical config validation.
+- [`middleware/auth.middleware.js`](./middleware/auth.middleware.js)
+  - Hard auth + soft auth behavior.
+- [`utils/authToken.js`](./utils/authToken.js)
+  - Token signing/verification and auth cookie helpers.
 
-## 📡 API Endpoints
+## Route Strategy (Canonical + Backward Compatibility)
+Canonical production routes now exist alongside legacy aliases to avoid breaking old links.
 
-### Create Short URL
+Examples:
+- Affiliate dashboard: `/affiliate/dashboard` (legacy still works via `/a/dashboard`)
+- Affiliate link APIs: `/affiliate/links/...`
+- Brand campaigns: `/brand/campaigns`
+- Wallet: `/affiliate/wallet`
+- Payout requests: `/affiliate/payout-requests`
+- Admin campaigns: `/admin/campaigns`
+- Admin payouts: `/admin/payout-requests`
 
-```
-POST /shorten
-```
+## Security and Production Notes
+- Express `x-powered-by` header disabled.
+- Security headers applied globally.
+- HTTPS redirect enforced in production behind proxy.
+- Auth/contact/shorten endpoints protected by rate limits.
+- Session cookies use `httpOnly`, `sameSite=lax`, and `secure` in production.
+- Startup fails fast if critical config is missing.
 
-Request Body
+## Developer Onboarding Tips
+1. Read [`server.js`](./server.js) first to understand app flow.
+2. Then inspect middleware in this order:
+   - [`middleware/auth.middleware.js`](./middleware/auth.middleware.js)
+   - [`middleware/planLimit.middleware.js`](./middleware/planLimit.middleware.js)
+   - [`middleware/admin.middleware.js`](./middleware/admin.middleware.js)
+3. For business flows:
+   - User/Auth: [`controllers/userControllers.js`](./controllers/userControllers.js)
+   - Short links: [`controllers/urlControllers.js`](./controllers/urlControllers.js)
+   - Affiliate: [`controllers/affiliateControllers.js`](./controllers/affiliateControllers.js)
+   - Wallet/Payout: [`controllers/payoutControllers.js`](./controllers/payoutControllers.js)
+   - Admin: [`controllers/adminController.js`](./controllers/adminController.js)
 
-```json
-{
-  "url": "https://example.com"
-}
-```
+## Scripts
+- `npm run dev` -> nodemon development server
+- `npm start` -> production server
+- `npm run check` -> quick syntax check for `server.js`
 
-Response
-
-```json
-{
-  "shortUrl": "http://localhost:5000/abc123"
-}
-```
-
----
-
-### Redirect URL
-
-```
-GET /:shortId
-```
-
-Redirects to the original URL.
-
-Example
-
-```
-http://localhost:5000/abc123
-```
-
----
-
-## 🧠 How It Works
-
-1. User submits a long URL.
-2. Server generates a unique **short ID**.
-3. URL + short ID are stored in MongoDB.
-4. When the short link is visited, server redirects to the original URL.
-
----
-
-## 📌 Future Improvements
-
-* Click analytics
-* Expiration time for links
-* Custom short URLs
-* User authentication
-* Admin dashboard
-
----
-
-## 👨‍💻 Author
-
-Developed by **[SolLCoder]**
-
----
-
-## ⭐ Support
-
-If you like this project, please **star the repository** ⭐
+## License
+ISC
