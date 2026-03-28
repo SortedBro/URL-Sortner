@@ -3,6 +3,8 @@ const Redis = require('ioredis');
 const { appConfig } = require('../config/appConfig');
 
 const DEFAULT_TTL_SECONDS = 24 * 60 * 60;
+const LOCAL_CACHE_MAX_ENTRIES = 5000;
+const localCacheStore = new Map();
 
 const redisClient = appConfig.redisUrl
     ? new Redis(appConfig.redisUrl, {
@@ -17,15 +19,109 @@ if (redisClient) {
     redisClient.on('error', (error) => console.warn('Redis cache error (non-fatal):', error.message));
 }
 
+function nowInMs() {
+    return Date.now();
+}
+
+function normalizeKey(key) {
+    return key ? String(key) : '';
+}
+
+function pruneLocalCacheIfNeeded() {
+    while (localCacheStore.size > LOCAL_CACHE_MAX_ENTRIES) {
+        const oldestKey = localCacheStore.keys().next().value;
+        if (!oldestKey) break;
+        localCacheStore.delete(oldestKey);
+    }
+}
+
+function setLocalCacheValue(key, value, ttlSeconds = DEFAULT_TTL_SECONDS) {
+    const normalizedKey = normalizeKey(key);
+    if (!normalizedKey) return;
+
+    localCacheStore.set(normalizedKey, {
+        value: String(value),
+        expiresAt: nowInMs() + ((Number(ttlSeconds) || DEFAULT_TTL_SECONDS) * 1000),
+    });
+    pruneLocalCacheIfNeeded();
+}
+
+function getLocalCacheValue(key) {
+    const normalizedKey = normalizeKey(key);
+    if (!normalizedKey) return null;
+
+    const entry = localCacheStore.get(normalizedKey);
+    if (!entry) return null;
+
+    if (entry.expiresAt <= nowInMs()) {
+        localCacheStore.delete(normalizedKey);
+        return null;
+    }
+
+    return entry.value;
+}
+
+function deleteLocalCacheKeys(keys) {
+    const normalizedKeys = (Array.isArray(keys) ? keys : [keys])
+        .map(normalizeKey)
+        .filter(Boolean);
+
+    let deleted = 0;
+    normalizedKeys.forEach((key) => {
+        if (localCacheStore.delete(key)) {
+            deleted += 1;
+        }
+    });
+
+    return deleted;
+}
+
+function globToRegex(pattern) {
+    const escaped = String(pattern)
+        .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+        .replace(/\*/g, '.*');
+    return new RegExp(`^${escaped}$`);
+}
+
+function deleteLocalCacheKeysByPattern(patterns) {
+    const normalizedPatterns = (Array.isArray(patterns) ? patterns : [patterns])
+        .filter(Boolean)
+        .map(globToRegex);
+
+    if (!normalizedPatterns.length) return 0;
+
+    let deleted = 0;
+    for (const key of [...localCacheStore.keys()]) {
+        if (normalizedPatterns.some((pattern) => pattern.test(key))) {
+            localCacheStore.delete(key);
+            deleted += 1;
+        }
+    }
+
+    return deleted;
+}
+
 function isRedisEnabled() {
     return Boolean(redisClient);
 }
 
 async function getCacheValue(key) {
-    if (!redisClient || !key) return null;
+    const normalizedKey = normalizeKey(key);
+    if (!normalizedKey) return null;
+
+    const localValue = getLocalCacheValue(normalizedKey);
+    if (localValue !== null) {
+        return localValue;
+    }
+
+    if (!redisClient) return null;
 
     try {
-        return await redisClient.get(String(key));
+        const value = await redisClient.get(normalizedKey);
+        if (value !== null) {
+            setLocalCacheValue(normalizedKey, value);
+        }
+        return value;
     } catch (error) {
         console.warn('Redis get failed (non-fatal):', error.message);
         return null;
@@ -33,10 +129,14 @@ async function getCacheValue(key) {
 }
 
 async function setCacheValue(key, value, ttlSeconds = DEFAULT_TTL_SECONDS) {
-    if (!redisClient || !key) return false;
+    const normalizedKey = normalizeKey(key);
+    if (!normalizedKey) return false;
+
+    setLocalCacheValue(normalizedKey, value, ttlSeconds);
+    if (!redisClient) return true;
 
     try {
-        await redisClient.setex(String(key), Number(ttlSeconds) || DEFAULT_TTL_SECONDS, String(value));
+        await redisClient.setex(normalizedKey, Number(ttlSeconds) || DEFAULT_TTL_SECONDS, String(value));
         return true;
     } catch (error) {
         console.warn('Redis set failed (non-fatal):', error.message);
@@ -45,16 +145,18 @@ async function setCacheValue(key, value, ttlSeconds = DEFAULT_TTL_SECONDS) {
 }
 
 async function deleteCacheKeys(keys) {
-    if (!redisClient) return 0;
-
     const normalizedKeys = (Array.isArray(keys) ? keys : [keys]).filter(Boolean).map(String);
     if (!normalizedKeys.length) return 0;
 
+    const localDeleted = deleteLocalCacheKeys(normalizedKeys);
+    if (!redisClient) return localDeleted;
+
     try {
-        return await redisClient.del(...normalizedKeys);
+        const redisDeleted = await redisClient.del(...normalizedKeys);
+        return localDeleted + Number(redisDeleted || 0);
     } catch (error) {
         console.warn('Redis delete failed (non-fatal):', error.message);
-        return 0;
+        return localDeleted;
     }
 }
 
@@ -106,13 +208,14 @@ async function findCacheKeys(pattern, count = 100) {
 }
 
 async function deleteCacheKeysByPattern(patterns) {
-    if (!redisClient) return 0;
-
     const normalizedPatterns = (Array.isArray(patterns) ? patterns : [patterns])
         .filter(Boolean)
         .map(String);
 
     if (!normalizedPatterns.length) return 0;
+
+    const localDeleted = deleteLocalCacheKeysByPattern(normalizedPatterns);
+    if (!redisClient) return localDeleted;
 
     try {
         const matchedGroups = await Promise.all(
@@ -120,12 +223,12 @@ async function deleteCacheKeysByPattern(patterns) {
         );
 
         const keys = [...new Set(matchedGroups.flat().filter(Boolean))];
-        if (!keys.length) return 0;
+        if (!keys.length) return localDeleted;
 
-        return await deleteCacheKeys(keys);
+        return localDeleted + (await redisClient.del(...keys));
     } catch (error) {
         console.warn('Redis delete by pattern failed (non-fatal):', error.message);
-        return 0;
+        return localDeleted;
     }
 }
 

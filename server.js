@@ -29,6 +29,7 @@ const apiRoutes = require('./routes/apiRoutes');
 const internalRoutes = require('./routes/internalRoutes');
 const { clearAuthCookie } = require('./utils/authToken');
 const { startClickFlushWorker, flushClickQueueNow } = require('./utils/clickQueue');
+const { cacheAnonymousPage } = require('./utils/pageCache');
 
 const app = express();
 
@@ -92,9 +93,25 @@ async function configureSession(expressApp) {
 function configureGlobalMiddleware(expressApp) {
     expressApp.disable('x-powered-by');
     expressApp.set('view engine', 'ejs');
+    expressApp.set('view cache', appConfig.isProduction);
     expressApp.set('trust proxy', 1);
 
-    expressApp.use(express.static('public'));
+    expressApp.use(
+        express.static('public', {
+            etag: true,
+            lastModified: true,
+            maxAge: appConfig.isProduction ? '7d' : 0,
+            setHeaders: (res, filePath) => {
+                if (!appConfig.isProduction) return;
+
+                if (/\.(?:css|js|svg|png|jpg|jpeg|webp|ico|woff2?)$/i.test(filePath)) {
+                    res.setHeader('Cache-Control', 'public, max-age=604800, stale-while-revalidate=86400');
+                } else {
+                    res.setHeader('Cache-Control', 'public, max-age=3600');
+                }
+            },
+        })
+    );
     configureBodyParsers(expressApp);
     expressApp.use(cookieParser());
     expressApp.use(securityHeaders);
@@ -117,7 +134,11 @@ function configureRouteContext(expressApp) {
 }
 
 function registerCoreRoutes(expressApp) {
-    expressApp.get('/about', (req, res) => res.render('about', { success: null, error: null }));
+    expressApp.get(
+        '/about',
+        cacheAnonymousPage({ ttlSeconds: 120 }),
+        (req, res) => res.render('about', { success: null, error: null })
+    );
 
     expressApp.get('/logout', (req, res) => {
         clearAuthCookie(res);

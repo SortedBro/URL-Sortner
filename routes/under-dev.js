@@ -5,6 +5,7 @@ const { deleteUrl, getAnalytics } = require('../controllers/urlControllers');
 const { auth, softAuth } = require('../middleware/auth.middleware');
 const { legalLinks, legalPages } = require('../config/legalContent');
 const Url = require('../models/urlSchema');
+const { cacheAnonymousPage } = require('../utils/pageCache');
 
 const router = express.Router();
 
@@ -45,15 +46,15 @@ router.get('/qr-codes', auth, async (req, res) => {
     }
 });
 
-router.get('/pricing', softAuth, (req, res) => {
+router.get('/pricing', softAuth, cacheAnonymousPage({ ttlSeconds: 120 }), (req, res) => {
     res.render('pricing', { user: req.user });
 });
 
-router.get('/features', softAuth, (req, res) => {
+router.get('/features', softAuth, cacheAnonymousPage({ ttlSeconds: 120 }), (req, res) => {
     res.render('features', { user: req.user || null });
 });
 
-router.get('/privacy', softAuth, renderLegalPage('privacy'));
-router.get('/terms', softAuth, renderLegalPage('terms'));
+router.get('/privacy', softAuth, cacheAnonymousPage({ ttlSeconds: 300 }), renderLegalPage('privacy'));
+router.get('/terms', softAuth, cacheAnonymousPage({ ttlSeconds: 300 }), renderLegalPage('terms'));
 
 module.exports = router;

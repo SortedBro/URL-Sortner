@@ -2,6 +2,7 @@ const express = require('express');
 
 const { softAuth, auth } = require('../middleware/auth.middleware');
 const { unlockProtectedUrl } = require('../controllers/urlControllers');
+const { cacheAnonymousPage } = require('../utils/pageCache');
 const {
     getSettings,
     updateProfile,
@@ -18,7 +19,7 @@ const {
 
 const router = express.Router();
 
-router.get('/', softAuth, (req, res) => {
+router.get('/', softAuth, cacheAnonymousPage({ ttlSeconds: 60 }), (req, res) => {
     const shortUrl = req.session.shortUrl || null;
     const error = req.session.error || null;
     req.session.shortUrl = null;
@@ -26,7 +27,7 @@ router.get('/', softAuth, (req, res) => {
     res.render('home', { shortUrl, error, user: req.user });
 });
 
-router.get('/tools', softAuth, (req, res) => {
+router.get('/tools', softAuth, cacheAnonymousPage({ ttlSeconds: 60 }), (req, res) => {
     const shortUrl = req.session.shortUrl || null;
     const error = req.session.error || null;
     req.session.shortUrl = null;
