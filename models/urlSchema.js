@@ -29,6 +29,13 @@ const urlSchema = new mongoose.Schema(
             unique: true,
             index: true
         },
+        // Ye fields add karo existing schema mein
+        adEnabled: { type: Boolean, default: false },
+        adTimer: { type: Number, enum: [5, 10, 15, 30], default: 5 },
+        adTitle: { type: String, default: '' },
+        adDescription: { type: String, default: '' },
+        adBannerUrl: { type: String, default: '' }, // optional image
+        adSkipable: { type: Boolean, default: true }, // skip button dikhao ya nahi
 
         // Phase 1 — basic analytics
         clicks: { type: Number, default: 0 },

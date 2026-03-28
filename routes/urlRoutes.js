@@ -13,7 +13,13 @@ router.get("/:code", (req, res, next) => {
         'pricing', 'features', 'privacy', 'terms', 'faq',
         'tools', 'sitemap.xml', 'verify-otp', 'contact',
         'shorten', 'a', 'admin', 'manage', 'brand',
-        'wallet', 'payout', 'panel', 'bulk', 'health'
+        'wallet', 'payout', 'panel', 'bulk', 'health',
+        // ✅ payment + upgrade routes
+        'upgrade', 'payment',
+        // ✅ user pages
+        'settings', 'qr-codes', 'analytics',
+        // ✅ misc
+        'affiliate', 'favicon.ico', 'robots.txt'
     ];
 
     if (reserved.includes(code.toLowerCase())) return next();

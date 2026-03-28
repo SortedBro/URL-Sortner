@@ -25,11 +25,25 @@ console.log("urlcontroller page")
 
 exports.createShortUrl = async (req, res) => {
     try {
-        const { orginalUrl, customAlias } = req.body;
+        const {
+            orginalUrl,
+            customAlias,
+            adEnabled,      // ✅ naya
+            adTimer,        // ✅ naya
+            adTitle,        // ✅ naya
+            adDescription,  // ✅ naya
+            adSkipable      // ✅ naya
 
+
+
+        } = req.body;
+
+        // if (!orginalUrl) {
+        //     req.session.error = "URL daalna zaroori hai";
+        //     return res.redirect('/');
+        // }
         if (!orginalUrl) {
-            req.session.error = "URL daalna zaroori hai";
-            return res.redirect('/');
+            return res.render('home', { error: 'URL daalna zaroori hai', shortUrl: null });
         }
 
         try {
@@ -72,6 +86,13 @@ exports.createShortUrl = async (req, res) => {
             shortCode,
             shortUrl,
             createdBy: userId,
+            //ads 
+            adEnabled: adEnabled === 'on' || adEnabled === true,
+            adTimer: Number(adTimer) || 5,
+            adTitle: adTitle || '',
+            adDescription: adDescription || '',
+            adSkipable: adSkipable !== 'off',
+
             refParam: req.body.refParam || null  // form se aayega
         });
 
@@ -101,98 +122,191 @@ exports.createShortUrl = async (req, res) => {
 //  Redirect URL + Click Track
 // ══════════════════════
 
+// exports.redirectUrl = async (req, res) => {
+//     try {
+//         const code = req.params.code;
+
+//         // ══════════════════════════════════════
+//         // ⚡ STEP 1: Check Redis cache first
+//         // ══════════════════════════════════════
+//         try {
+//             const cachedUrl = await redisClient.get(`link:${code}`);
+//             if (cachedUrl) {
+//                 res.redirect(cachedUrl); // ~5ms — instant!
+
+//                 // Track click async (don't block redirect)
+//                 setImmediate(() => trackClick(code, req).catch(console.error));
+//                 return;
+//             }
+//         } catch (e) {
+//             console.warn('Redis get failed, falling back to DB:', e.message);
+//         }
+
+//         // ══════════════════════════════════════
+//         // 🗄️ STEP 2: Cache miss — hit MongoDB
+//         // Only fetch orginalUrl field — don't load
+//         // entire document with full clickHistory!
+//         // ══════════════════════════════════════
+//         const url = await Url.findOne(
+//             { shortCode: code },
+//             { orginalUrl: 1 }  // ✅ projection — fetch ONLY what we need
+//         );
+
+//         if (!url) {
+//             return res.status(404).render('404');
+//         }
+
+//         // Cache it for next time (24 hours)
+//         try {
+//             await redisClient.setex(`link:${code}`, 86400, url.orginalUrl);
+//         } catch (e) {
+//             console.warn('Redis set failed (non-fatal):', e.message);
+//         }
+
+//         // Send redirect immediately
+//         res.redirect(url.orginalUrl);
+
+//         // Track click async (don't block redirect)
+//         setImmediate(() => trackClick(code, req).catch(console.error));
+
+
+
+
+//         // // ✅ Affiliate tracking ke liye
+//         try {
+//             const url = await Url.findOne({ shortCode: req.params.code });
+
+//             if (!url) return res.status(404).render('404');
+
+//             // ✅ click detail save karo
+//             url.clicks += 1;
+//             url.lastClickedAt = new Date();
+//             url.clickDetails.push({
+//                 ip: req.ip,
+//                 clickedAt: new Date()
+//             });
+//             await url.save();
+//             // ✅ Ad check — enabled hai toh interstitial page dikhao
+//             if (url.adEnabled) {
+//                 return res.render('ad-interstitial', {
+//                     originalUrl: url.orginalUrl,
+//                     adTimer: url.adTimer || 5,
+//                     adTitle: url.adTitle || 'Sponsored',
+//                     adDescription: url.adDescription || '',
+//                     adBannerUrl: url.adBannerUrl || '',
+//                     adSkipable: url.adSkipable,
+//                     shortCode: url.shortCode
+//                 });
+//             }
+
+//             // Ad nahi hai — seedha redirect
+//             // res.redirect(url.originalUrl);
+
+//             // ✅ refParam original URL mein add karo
+//             let redirectTo = url.orginalUrl;
+//             if (url.refParam) {
+//                 // already ? hai URL mein?
+//                 const separator = redirectTo.includes('?') ? '&' : '?';
+//                 redirectTo += `${separator}${url.refParam}`;
+//             }
+
+//             res.redirect(redirectTo);
+
+//         } catch (error) {
+//             console.error(error);
+//             res.status(500).json({ message: "Server error" });
+//         }
+
+
+
+
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ message: "Server Error" });
+//     }
+
+
+//     //
+
+// }
 exports.redirectUrl = async (req, res) => {
     try {
         const code = req.params.code;
-
+ 
         // ══════════════════════════════════════
-        // ⚡ STEP 1: Check Redis cache first
+        // ⚡ STEP 1: Redis cache check
+        // '__ad__' sentinel = ad-enabled link, must load full doc
+        // anything else   = plain URL, redirect immediately
         // ══════════════════════════════════════
         try {
-            const cachedUrl = await redisClient.get(`link:${code}`);
-            if (cachedUrl) {
-                res.redirect(cachedUrl); // ~5ms — instant!
-
-                // Track click async (don't block redirect)
+            const cached = await redisClient.get(`link:${code}`);
+            if (cached && cached !== '__ad__') {
+                // Plain redirect — fast path
                 setImmediate(() => trackClick(code, req).catch(console.error));
-                return;
+                return res.redirect(cached);
             }
+            // cached === '__ad__' or cache miss — fall through to DB
         } catch (e) {
             console.warn('Redis get failed, falling back to DB:', e.message);
         }
-
+ 
         // ══════════════════════════════════════
-        // 🗄️ STEP 2: Cache miss — hit MongoDB
-        // Only fetch orginalUrl field — don't load
-        // entire document with full clickHistory!
+        // 🗄️ STEP 2: Load full doc (needed for ad check + refParam)
         // ══════════════════════════════════════
-        const url = await Url.findOne(
-            { shortCode: code },
-            { orginalUrl: 1 }  // ✅ projection — fetch ONLY what we need
-        );
-
+        const url = await Url.findOne({ shortCode: code });
+ 
         if (!url) {
             return res.status(404).render('404');
         }
-
-        // Cache it for next time (24 hours)
+ 
+        // Update Redis cache with correct strategy
         try {
-            await redisClient.setex(`link:${code}`, 86400, url.orginalUrl);
+            if (url.adEnabled) {
+                await redisClient.setex(`link:${code}`, 86400, '__ad__');
+            } else {
+                await redisClient.setex(`link:${code}`, 86400, url.orginalUrl);
+            }
         } catch (e) {
             console.warn('Redis set failed (non-fatal):', e.message);
         }
-
-        // Send redirect immediately
-        res.redirect(url.orginalUrl);
-
-        // Track click async (don't block redirect)
+ 
+        // Track click async — never blocks the response
         setImmediate(() => trackClick(code, req).catch(console.error));
-
-
-
-
-        // // ✅ Affiliate tracking ke liye
-         try {
-        const url = await Url.findOne({ shortCode: req.params.code });
-
-        if (!url) return res.status(404).render('404');
-
-        // ✅ click detail save karo
-        url.clicks += 1;
-        url.lastClickedAt = new Date();
-        url.clickDetails.push({
-            ip: req.ip,
-            clickedAt: new Date()
-        });
-        await url.save();
-
-        // ✅ refParam original URL mein add karo
-        let redirectTo = url.originalUrl;
+ 
+        // ══════════════════════════════════════
+        // 📢 STEP 3: Ad check — show interstitial if enabled
+        // ══════════════════════════════════════
+        if (url.adEnabled) {
+            return res.render('ad-interstitial', {
+                url: {
+                    orginalUrl:    url.orginalUrl,
+                    adTimer:       url.adTimer || 5,
+                    adTitle:       url.adTitle || 'Sponsored',
+                    adDescription: url.adDescription || '',
+                    adBannerUrl:   url.adBannerUrl || '',
+                    adSkipable:    url.adSkipable,
+                    shortCode:     url.shortCode,
+                }
+            });
+        }
+ 
+        // ══════════════════════════════════════
+        // 🔗 STEP 4: No ad — direct redirect (+ optional refParam)
+        // ══════════════════════════════════════
+        let redirectTo = url.orginalUrl;
         if (url.refParam) {
-            // already ? hai URL mein?
             const separator = redirectTo.includes('?') ? '&' : '?';
             redirectTo += `${separator}${url.refParam}`;
         }
-
-        res.redirect(redirectTo);
-
+ 
+        return res.redirect(redirectTo);
+ 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Server error" });
-    }
-
-
-    
-
-    } catch (error) {
-        console.log(error);
         res.status(500).json({ message: "Server Error" });
     }
-
-
-    //
-
 }
+ 
 
 
 // ══════════════════════

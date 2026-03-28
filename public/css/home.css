@@ -340,6 +340,14 @@ main { flex: 1; }
 .pro-chip:hover {
   opacity: 0.8;
 }
+/* Alias wrapper — needed for PRO chip absolute positioning */
+.alias-wrapper {
+  position: relative;
+}
+.alias-wrapper .alias-input {
+  padding-right: 56px; /* space for PRO chip */
+}
+
 .snap-btn {
   display: flex;
   align-items: center;

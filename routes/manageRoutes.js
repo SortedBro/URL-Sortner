@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/userSchema');
-const Url  = require('../models/urlSchema');
+const Url = require('../models/urlSchema');
+const { auth } = require('../middleware/auth.middleware')
 
 function isLoggedIn(req, res, next) {
   if (req.user && req.user.user) return next();
@@ -15,7 +16,7 @@ router.get('/settings', isLoggedIn, async (req, res) => {
     res.render('settings', {
       user,
       success: req.query.success || null,
-      error:   req.query.error   || null,
+      error: req.query.error || null,
     });
   } catch (err) {
     console.error(err);
@@ -72,4 +73,33 @@ router.get('/qr-codes', isLoggedIn, async (req, res) => {
   }
 });
 
+//ads
+
+router.get('/manage/ad/:code', auth, async (req, res) => {
+  const url = await Url.findOne({
+    shortCode: req.params.code,
+    createdBy: req.user.user
+  });
+  if (!url) return res.status(404).json({ error: 'Nahi mila' });
+  res.render('ad-interstitial', { url });
+});
+
+router.post('/manage/ad/:code', auth, async (req, res) => {
+  const { adEnabled, adTimer, adTitle, adDescription, adSkipable } = req.body;
+  await Url.findOneAndUpdate(
+    { shortCode: req.params.code, createdBy: req.user.user },
+    {
+      adEnabled: adEnabled === 'on',
+      adTimer: Number(adTimer) || 5,
+      adTitle: adTitle || '',
+      adDescription: adDescription || '',
+      adSkipable: adSkipable === 'on',
+    }
+  );
+  res.redirect('/dashboard');
+});
+
+
 module.exports = router;
+
+

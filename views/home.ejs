@@ -223,6 +223,139 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* ── AD SETTINGS PANEL ── */
+    .ad-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0 0;
+    }
+    .ad-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 200, 66, 0.07);
+      border: 1px solid rgba(245, 200, 66, 0.2);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      color: #f5c842;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .ad-toggle-btn:hover { background: rgba(245, 200, 66, 0.13); }
+    .ad-earn-tip {
+      font-size: 11px;
+      color: #55524e;
+      font-family: 'DM Mono', monospace;
+    }
+    .ad-settings-panel {
+      display: none;
+      background: rgba(245, 200, 66, 0.03);
+      border: 1px solid rgba(245, 200, 66, 0.12);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 10px;
+    }
+    .ad-settings-panel.open { display: block; }
+    .ad-switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .ad-switch-info { flex: 1; }
+    .ad-switch-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #edeae2;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .ad-switch-sub {
+      display: block;
+      font-size: 11px;
+      color: #55524e;
+      font-family: 'DM Mono', monospace;
+      margin-top: 2px;
+    }
+    .ad-switch-wrap { position: relative; flex-shrink: 0; }
+    .ad-switch-wrap input[type="checkbox"] { opacity: 0; width: 0; height: 0; position: absolute; }
+    .ad-switch-track {
+      display: block;
+      width: 40px;
+      height: 22px;
+      background: #2a2820;
+      border: 1px solid #3a3830;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: background 0.2s;
+      position: relative;
+    }
+    .ad-switch-track::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 14px; height: 14px;
+      background: #55524e;
+      border-radius: 50%;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .ad-switch-wrap input:checked + .ad-switch-track { background: rgba(245,200,66,0.2); border-color: #f5c842; }
+    .ad-switch-wrap input:checked + .ad-switch-track::after { transform: translateX(18px); background: #f5c842; }
+    .ad-field-row { margin-top: 14px; }
+    .ad-field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #918e87;
+      font-family: 'DM Sans', sans-serif;
+      margin-bottom: 6px;
+    }
+    .ad-optional { font-weight: 400; color: #55524e; }
+    .ad-timer-btns { display: flex; gap: 8px; }
+    .ad-timer-opt {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      cursor: pointer;
+    }
+    .ad-timer-opt input[type="radio"] { display: none; }
+    .ad-timer-opt span {
+      display: inline-block;
+      padding: 5px 14px;
+      background: #1a1814;
+      border: 1px solid #2a2820;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'DM Mono', monospace;
+      color: #55524e;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .ad-timer-opt input:checked + span {
+      background: rgba(245,200,66,0.1);
+      border-color: #f5c842;
+      color: #f5c842;
+    }
+    .ad-text-input {
+      width: 100%;
+      background: #1a1814;
+      border: 1px solid #2a2820;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      color: #edeae2;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .ad-text-input:focus { border-color: rgba(245,200,66,0.4); }
+    .ad-text-input::placeholder { color: #3a3830; }
   </style>
 </head>
 
@@ -289,26 +422,77 @@
           </div>
           <% } %>
 
+            <% const isLoggedIn = typeof user !== 'undefined' && user; %>
+            <% const isFree = isLoggedIn && user.plan === 'free'; %>
             <form action="/shorten" method="POST" class="url-form">
               <div class="input-group">
-                <% const isLoggedIn=typeof user !=='undefined' && user; %>
-                  <% const isFree=isLoggedIn && user.plan==='free' ; %>
-
                     <input type="url" name="orginalUrl" placeholder="https://example.com/bahut-lamba-url..." required
                       class="url-input" />
 
                     <% if (isLoggedIn) { %>
                       <div class="alias-wrapper">
                         <input type="text" name="customAlias" placeholder="Custom alias (optional)" class="alias-input"
-                          <%=isFree ? 'disabled' : '' %> />
+                          <%= isFree ? 'disabled' : '' %> />
                         <% if (isFree) { %>
                           <a href="/pricing" class="pro-chip-link">
                             <span class="pro-chip">PRO</span>
                           </a>
-                          <% } %>
+                        <% } %>
                       </div>
-                      <% } %>
+                    <% } %>
               </div>
+              <!-- AD SETTINGS -->
+              <% if (isLoggedIn) { %>
+              <div class="ad-toggle-row">
+                <button type="button" class="ad-toggle-btn" onclick="toggleAdSettings()" id="adToggleBtn">
+                  <span>💰 Ad Settings</span>
+                  <svg id="adChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <span class="ad-earn-tip">Har click pe earn karo</span>
+              </div>
+              <div class="ad-settings-panel" id="adSettingsPanel">
+                <label class="ad-switch-row">
+                  <div class="ad-switch-info">
+                    <span class="ad-switch-label">Enable Ad Interstitial</span>
+                    <span class="ad-switch-sub">Link click hone par ad page dikhega</span>
+                  </div>
+                  <div class="ad-switch-wrap">
+                    <input type="checkbox" name="adEnabled" id="adEnabled" value="on" onchange="toggleAdFields(this)">
+                    <span class="ad-switch-track"></span>
+                  </div>
+                </label>
+                <div id="adFields" style="display:none">
+                  <div class="ad-field-row">
+                    <label class="ad-field-label">Timer Duration</label>
+                    <div class="ad-timer-btns">
+                      <label class="ad-timer-opt"><input type="radio" name="adTimer" value="5" checked> <span>5s</span></label>
+                      <label class="ad-timer-opt"><input type="radio" name="adTimer" value="10"> <span>10s</span></label>
+                      <label class="ad-timer-opt"><input type="radio" name="adTimer" value="15"> <span>15s</span></label>
+                      <label class="ad-timer-opt"><input type="radio" name="adTimer" value="30"> <span>30s</span></label>
+                    </div>
+                  </div>
+                  <div class="ad-field-row">
+                    <label class="ad-field-label" for="adTitle">Ad Title <span class="ad-optional">(optional)</span></label>
+                    <input type="text" name="adTitle" id="adTitle" class="ad-text-input" placeholder="e.g. Check out this offer!" maxlength="80">
+                  </div>
+                  <div class="ad-field-row">
+                    <label class="ad-field-label" for="adDescription">Ad Description <span class="ad-optional">(optional)</span></label>
+                    <input type="text" name="adDescription" id="adDescription" class="ad-text-input" placeholder="Short description for the ad page" maxlength="160">
+                  </div>
+                  <label class="ad-switch-row" style="margin-top:8px">
+                    <div class="ad-switch-info">
+                      <span class="ad-switch-label">Allow Skip</span>
+                      <span class="ad-switch-sub">User half-time pe skip kar sakta hai</span>
+                    </div>
+                    <div class="ad-switch-wrap">
+                      <input type="checkbox" name="adSkipable" value="on" checked>
+                      <span class="ad-switch-track"></span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              <% } %>
+
               <button type="submit" class="snap-btn">
                 <span>Snap URL</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -573,6 +757,17 @@
         btn.classList.add('copied');
         setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
       });
+    }
+
+    function toggleAdSettings() {
+      const panel = document.getElementById('adSettingsPanel');
+      const chevron = document.getElementById('adChevron');
+      const isOpen = panel.classList.toggle('open');
+      chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+
+    function toggleAdFields(checkbox) {
+      document.getElementById('adFields').style.display = checkbox.checked ? 'block' : 'none';
     }
   </script>
 
