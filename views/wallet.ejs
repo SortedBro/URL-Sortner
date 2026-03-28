@@ -1,61 +1,56 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wallet — SnapLink</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wallet - SnapLink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg:         #080b12;
-      --bg2:        #0e1320;
-      --bg3:        #151c2e;
-      --bg4:        #1c253e;
-      --border:     rgba(52,211,153,0.08);
-      --border2:    rgba(52,211,153,0.18);
-      --accent:     #10b981;
-      --accent2:    #34d399;
-      --accent-glow:rgba(16,185,129,0.12);
-      --purple:     #8b5cf6;
-      --purple-bg:  rgba(139,92,246,0.1);
-      --amber:      #f59e0b;
-      --amber-bg:   rgba(245,158,11,0.1);
-      --red:        #ef4444;
-      --red-bg:     rgba(239,68,68,0.1);
-      --blue:       #3b82f6;
-      --blue-bg:    rgba(59,130,246,0.1);
-      --text:       #e8f5f0;
-      --text2:      #8ba89e;
-      --text3:      #3d5a52;
-      --mono:       'DM Mono', monospace;
-      --display:    'Syne', sans-serif;
-      --body:       'DM Sans', sans-serif;
-      --radius:     16px;
-      --radius-sm:  10px;
-    }
-    [data-theme="light"] {
-      --bg:         #f0faf5;
-      --bg2:        #ffffff;
-      --bg3:        #e6f7f0;
-      --bg4:        #d4f0e4;
-      --border:     rgba(16,185,129,0.12);
-      --border2:    rgba(16,185,129,0.25);
-      --accent:     #059669;
-      --accent2:    #10b981;
-      --accent-glow:rgba(5,150,105,0.08);
-      --text:       #0d2b22;
-      --text2:      #3d6b5a;
-      --text3:      #8ab8a8;
+      --bg: #070b12;
+      --bg2: #0f1622;
+      --bg3: #172131;
+      --bg4: #223047;
+      --border: rgba(52, 211, 153, 0.14);
+      --border-strong: rgba(52, 211, 153, 0.28);
+      --text: #e6f6ef;
+      --text2: #9fb8ad;
+      --muted: #58736b;
+      --accent: #10b981;
+      --accent2: #34d399;
+      --danger: #f87171;
+      --danger-bg: rgba(248, 113, 113, 0.12);
+      --amber: #fbbf24;
+      --amber-bg: rgba(251, 191, 36, 0.12);
+      --blue: #60a5fa;
+      --blue-bg: rgba(96, 165, 250, 0.12);
+      --radius: 14px;
+      --radius-sm: 10px;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [data-theme="light"] {
+      --bg: #f2fbf6;
+      --bg2: #ffffff;
+      --bg3: #edf9f2;
+      --bg4: #dff1e7;
+      --border: rgba(5, 150, 105, 0.12);
+      --border-strong: rgba(5, 150, 105, 0.24);
+      --text: #0d2b22;
+      --text2: #3e6558;
+      --muted: #82a79a;
+      --accent: #059669;
+      --accent2: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--body);
+      font-family: 'DM Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
     }
+
     body::before {
       content: '';
       position: fixed;
@@ -63,635 +58,955 @@
       background-image:
         linear-gradient(var(--border) 1px, transparent 1px),
         linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 44px 44px;
-      pointer-events: none;
-      z-index: 0;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      bottom: -200px;
-      right: -200px;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 65%);
+      background-size: 42px 42px;
+      opacity: 0.45;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* NAV */
     nav {
-      position: sticky; top: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2rem; height: 60px;
-      background: rgba(8,11,18,0.88);
-      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 60px;
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
       border-bottom: 1px solid var(--border);
-    }
-    [data-theme="light"] nav { background: rgba(240,250,245,0.92); }
-    .nav-logo {
-      font-family: var(--display);
-      font-size: 1.1rem; font-weight: 800;
-      color: var(--text); text-decoration: none;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .logo-dot {
-      width: 22px; height: 22px;
-      background: var(--accent); border-radius: 6px;
-      box-shadow: 0 0 14px var(--accent-glow);
-    }
-    .nav-right { display: flex; gap: 8px; align-items: center; }
-    .btn-nav {
-      padding: 6px 14px; border-radius: var(--radius-sm);
-      font-family: var(--body); font-size: 0.8rem; font-weight: 600;
-      cursor: pointer; transition: all 0.2s;
-      border: 1px solid var(--border2);
-      background: transparent; color: var(--text2);
-      text-decoration: none;
-    }
-    .btn-nav:hover { color: var(--text); border-color: var(--accent2); }
-
-    /* MAIN */
-    main {
-      position: relative; z-index: 1;
-      max-width: 1100px; margin: 0 auto;
-      padding: 2.5rem 1.5rem 5rem;
-    }
-
-    /* HEADER */
-    .page-header {
-      margin-bottom: 2rem;
-      animation: fadeUp 0.4s ease both;
-    }
-    .eyebrow {
-      font-family: var(--mono); font-size: 0.7rem;
-      color: var(--accent2); letter-spacing: 0.12em;
-      text-transform: uppercase; margin-bottom: 8px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .eyebrow::before {
-      content: ''; display: inline-block;
-      width: 16px; height: 1px; background: var(--accent2);
-    }
-    .page-header h1 {
-      font-family: var(--display);
-      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
-      font-weight: 800; letter-spacing: -0.04em;
-      color: var(--text); line-height: 1;
-    }
-    .page-header h1 em { font-style: normal; color: var(--accent2); }
-
-    /* WALLET HERO CARD */
-    .wallet-hero {
-      background: var(--bg2);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 2rem 2.4rem;
-      margin-bottom: 1.5rem;
-      display: grid;
-      grid-template-columns: 1fr auto;
+      backdrop-filter: blur(14px);
+      display: flex;
       align-items: center;
-      gap: 2rem;
-      position: relative;
-      overflow: hidden;
-      animation: fadeUp 0.4s 0.05s ease both;
-    }
-    .wallet-hero::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
-    }
-    .wallet-balance-label {
-      font-family: var(--mono); font-size: 0.7rem;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--text3); margin-bottom: 8px;
-    }
-    .wallet-balance-amount {
-      font-family: var(--display);
-      font-size: clamp(2.4rem, 5vw, 3.6rem);
-      font-weight: 800; letter-spacing: -0.04em;
-      color: var(--accent2); line-height: 1;
-    }
-    .wallet-balance-sub {
-      font-family: var(--mono); font-size: 0.75rem;
-      color: var(--text3); margin-top: 6px;
-    }
-    .wallet-meta {
-      display: flex; flex-direction: column;
-      align-items: flex-end; gap: 12px;
-    }
-    .wallet-stat {
-      text-align: right;
-    }
-    .wallet-stat-label {
-      font-size: 0.68rem; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--text3); margin-bottom: 3px;
-    }
-    .wallet-stat-val {
-      font-family: var(--mono); font-size: 1.1rem;
-      font-weight: 500; color: var(--text);
-    }
-    .wallet-stat-val.green { color: var(--accent2); }
-    @media(max-width:600px) {
-      .wallet-hero { grid-template-columns: 1fr; }
-      .wallet-meta { align-items: flex-start; }
-      .wallet-stat { text-align: left; }
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 18px;
     }
 
-    /* STATS ROW */
+    .brand {
+      text-decoration: none;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      background: var(--accent);
+      box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn-nav {
+      text-decoration: none;
+      border: 1px solid var(--border-strong);
+      color: var(--text2);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .btn-nav:hover {
+      color: var(--text);
+      border-color: var(--accent2);
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px 16px 50px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero {
+      background: var(--bg2);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: 22px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 6px;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .balance-line {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .hero-amount {
+      margin-top: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 800;
+      color: var(--accent2);
+      line-height: 1;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      align-content: center;
+    }
+
+    .mini-stat {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .mini-stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 5px;
+    }
+
+    .mini-stat-value {
+      font-size: 16px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text);
+    }
+
     .stats-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem; margin-bottom: 1.5rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
     }
-    @media(max-width:600px) { .stats-row { grid-template-columns: 1fr; } }
-    .stat-card {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1.2rem 1.4rem;
-      animation: fadeUp 0.4s ease both;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-    .stat-card:hover { border-color: var(--border2); transform: translateY(-2px); }
-    .stat-card:nth-child(1){ animation-delay:.1s; }
-    .stat-card:nth-child(2){ animation-delay:.15s; }
-    .stat-card:nth-child(3){ animation-delay:.2s; }
-    .stat-label {
-      font-size: 0.68rem; font-weight: 600;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--text3); margin-bottom: 6px;
-    }
-    .stat-val {
-      font-family: var(--mono); font-size: 1.6rem;
-      font-weight: 500; color: var(--text); line-height: 1;
-    }
-    .stat-val.green  { color: var(--accent2); }
-    .stat-val.purple { color: var(--purple); }
-    .stat-val.amber  { color: var(--amber); }
 
-    /* TWO COLUMN */
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .chart-card,
+    .list-card,
+    .statement-card,
+    .withdraw-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .chart-wrap {
+      min-height: 220px;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      padding: 8px 6px 2px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg3);
+      overflow-x: auto;
+    }
+
+    .chart-col {
+      min-width: 72px;
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+    }
+
+    .chart-bars {
+      width: 100%;
+      height: 150px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .bar {
+      width: 18px;
+      border-radius: 8px 8px 4px 4px;
+      min-height: 2px;
+      transition: height 0.3s ease;
+    }
+
+    .bar.earned { background: var(--accent2); }
+    .bar.paid { background: var(--blue); }
+
+    .bar-label {
+      font-size: 11px;
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .bar-value {
+      font-size: 10px;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .chart-legend {
+      margin-top: 10px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 11px;
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      margin-right: 6px;
+    }
+
+    .dot.earned { background: var(--accent2); }
+    .dot.paid { background: var(--blue); }
+
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem; margin-bottom: 1.5rem;
+      gap: 12px;
     }
-    @media(max-width:700px) { .two-col { grid-template-columns: 1fr; } }
 
-    /* SECTION CARD */
-    .section-card {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: var(--radius); overflow: hidden;
-      animation: fadeUp 0.4s ease both;
-    }
-    .section-card:nth-child(1){ animation-delay:.25s; }
-    .section-card:nth-child(2){ animation-delay:.3s; }
-
-    .section-head {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      padding: 1.1rem 1.4rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .section-title {
-      font-family: var(--display);
-      font-size: 0.9rem; font-weight: 700;
-      color: var(--text);
-    }
-    .section-badge {
-      font-family: var(--mono); font-size: 0.68rem;
-      color: var(--text3); background: var(--bg3);
+    .list-wrap {
       border: 1px solid var(--border);
-      padding: 2px 8px; border-radius: 20px;
+      border-radius: 12px;
+      overflow: hidden;
     }
 
-    /* EARNINGS LIST */
-    .earning-item {
-      display: flex; align-items: center;
+    .list-row {
+      display: flex;
       justify-content: space-between;
-      padding: 12px 1.4rem;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
       border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
     }
-    .earning-item:last-child { border-bottom: none; }
-    .earning-item:hover { background: var(--bg3); }
-    .earning-left { display: flex; flex-direction: column; gap: 3px; }
-    .earning-campaign {
-      font-size: 0.82rem; font-weight: 600;
+
+    .list-row:last-child { border-bottom: none; }
+    .list-row:hover { background: var(--bg3); }
+
+    .row-title {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .row-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .row-amount {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      margin-left: 6px;
+    }
+
+    .pill.pending {
+      color: var(--amber);
+      background: var(--amber-bg);
+      border: 1px solid color-mix(in srgb, var(--amber) 35%, transparent);
+    }
+
+    .pill.paid {
+      color: var(--accent2);
+      background: color-mix(in srgb, var(--accent2) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent2) 35%, transparent);
+    }
+
+    .pill.approved {
+      color: var(--blue);
+      background: var(--blue-bg);
+      border: 1px solid color-mix(in srgb, var(--blue) 35%, transparent);
+    }
+
+    .pill.rejected {
+      color: var(--danger);
+      background: var(--danger-bg);
+      border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+    }
+
+    .statement-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .month-select {
+      border: 1px solid var(--border-strong);
+      background: var(--bg3);
+      color: var(--text);
+      border-radius: 8px;
+      font-size: 12px;
+      padding: 7px 10px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .btn-download {
+      text-decoration: none;
+      border: 1px solid var(--border-strong);
+      color: var(--text2);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 10px;
+    }
+
+    .btn-download:hover {
+      border-color: var(--accent2);
       color: var(--text);
     }
-    .earning-date {
-      font-family: var(--mono); font-size: 0.7rem;
-      color: var(--text3);
-    }
-    .earning-amount {
-      font-family: var(--mono); font-size: 0.95rem;
-      font-weight: 500; color: var(--accent2);
-    }
-    .earning-status {
-      font-size: 0.65rem; font-weight: 600;
-      padding: 2px 7px; border-radius: 20px;
-      margin-left: 8px;
-    }
-    .earning-status.paid {
-      background: var(--accent-glow);
-      color: var(--accent2);
-      border: 1px solid rgba(52,211,153,0.2);
-    }
-    .earning-status.pending {
-      background: var(--amber-bg);
-      color: var(--amber);
-      border: 1px solid rgba(245,158,11,0.2);
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
-    /* PAYOUT HISTORY */
-    .payout-item {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      padding: 12px 1.4rem;
+    .summary-box {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: var(--bg3);
+    }
+
+    .summary-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 4px;
+    }
+
+    .summary-value {
+      font-size: 13px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text);
+    }
+
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: auto;
+      max-height: 300px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+    }
+
+    th, td {
       border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
-    }
-    .payout-item:last-child { border-bottom: none; }
-    .payout-item:hover { background: var(--bg3); }
-    .payout-info { display: flex; flex-direction: column; gap: 3px; }
-    .payout-method {
-      font-size: 0.8rem; font-weight: 600; color: var(--text);
-      display: flex; align-items: center; gap: 6px;
-    }
-    .payout-date {
-      font-family: var(--mono); font-size: 0.7rem; color: var(--text3);
-    }
-    .payout-right { display: flex; align-items: center; gap: 8px; }
-    .payout-amount {
-      font-family: var(--mono); font-size: 0.9rem;
-      font-weight: 500; color: var(--text);
-    }
-    .status-pill {
-      font-size: 0.65rem; font-weight: 600;
-      padding: 2px 8px; border-radius: 20px;
-    }
-    .status-pill.pending  { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
-    .status-pill.approved { background: var(--blue-bg);  color: var(--blue);  border: 1px solid rgba(59,130,246,0.2); }
-    .status-pill.paid     { background: var(--accent-glow); color: var(--accent2); border: 1px solid rgba(52,211,153,0.2); }
-    .status-pill.rejected { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(239,68,68,0.2); }
-
-    /* WITHDRAW CARD */
-    .withdraw-card {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1.6rem;
-      animation: fadeUp 0.4s 0.35s ease both;
-    }
-    .withdraw-title {
-      font-family: var(--display);
-      font-size: 1rem; font-weight: 700;
-      color: var(--text); margin-bottom: 1.4rem;
+      text-align: left;
+      padding: 9px 10px;
+      font-size: 12px;
+      white-space: nowrap;
     }
 
-    /* METHOD TABS */
-    .method-tabs { display: flex; gap: 8px; margin-bottom: 1.2rem; }
+    th {
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: var(--bg3);
+      position: sticky;
+      top: 0;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .amount-credit { color: var(--accent2); font-family: 'DM Mono', monospace; }
+    .amount-debit { color: var(--danger); font-family: 'DM Mono', monospace; }
+    .amount-neutral { color: var(--text2); font-family: 'DM Mono', monospace; }
+
+    .empty {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      padding: 18px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .withdraw-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .form-group { margin-bottom: 10px; }
+
+    .label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 5px;
+      color: var(--text2);
+      font-weight: 600;
+    }
+
+    .label span { color: var(--danger); }
+
+    .input {
+      width: 100%;
+      border: 1px solid var(--border-strong);
+      border-radius: 9px;
+      background: var(--bg3);
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .input:focus {
+      border-color: var(--accent2);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent2) 20%, transparent);
+    }
+
+    .method-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
     .method-tab {
-      flex: 1; padding: 10px;
-      border: 1px solid var(--border2);
-      border-radius: var(--radius-sm);
-      background: transparent; color: var(--text2);
-      font-family: var(--body); font-size: 0.82rem;
-      font-weight: 600; cursor: pointer;
-      transition: all 0.15s; text-align: center;
+      flex: 1;
+      border: 1px solid var(--border-strong);
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text2);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px;
+      cursor: pointer;
     }
+
     .method-tab.active {
-      background: var(--accent-glow);
-      color: var(--accent2);
       border-color: var(--accent2);
+      background: color-mix(in srgb, var(--accent2) 16%, transparent);
+      color: var(--text);
     }
 
-    .form-group { margin-bottom: 1rem; }
-    .form-label {
-      display: block; font-size: 0.75rem;
-      font-weight: 600; color: var(--text2);
-      margin-bottom: 5px; letter-spacing: 0.04em;
-    }
-    .form-label span { color: var(--red); margin-left: 2px; }
-    .form-input {
-      width: 100%; padding: 10px 14px;
-      background: var(--bg3); border: 1px solid var(--border2);
-      border-radius: var(--radius-sm);
-      color: var(--text); font-family: var(--body);
-      font-size: 0.88rem; outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    .form-input::placeholder { color: var(--text3); }
-    .form-input:focus {
-      border-color: var(--accent2);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-    }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-    .btn-withdraw {
-      width: 100%; padding: 12px;
-      background: var(--accent); color: #fff;
-      border: none; border-radius: var(--radius-sm);
-      font-family: var(--body); font-size: 0.9rem;
-      font-weight: 700; cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 20px var(--accent-glow);
+    .btn-submit {
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 11px;
+      cursor: pointer;
       margin-top: 4px;
     }
-    .btn-withdraw:hover {
-      background: var(--accent2);
-      box-shadow: 0 4px 30px rgba(52,211,153,0.3);
-      transform: translateY(-1px);
+
+    .btn-submit:hover { background: var(--accent2); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .form-msg {
+      margin-top: 8px;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      display: none;
     }
-    .btn-withdraw:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .form-msg.show { display: block; }
+    .form-msg.error { color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent); background: var(--danger-bg); }
+    .form-msg.success { color: var(--accent2); border: 1px solid color-mix(in srgb, var(--accent2) 35%, transparent); background: color-mix(in srgb, var(--accent2) 14%, transparent); }
 
     .withdraw-note {
-      font-size: 0.75rem; color: var(--text3);
-      text-align: center; margin-top: 10px;
-      font-family: var(--mono);
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      text-align: center;
     }
 
-    .form-error {
-      margin-top: 8px; padding: 8px 12px;
-      background: var(--red-bg); border: 1px solid rgba(239,68,68,0.2);
-      border-radius: 6px; font-size: 0.8rem;
-      color: var(--red); display: none;
-    }
-    .form-error.show { display: block; }
-    .form-success {
-      margin-top: 8px; padding: 8px 12px;
-      background: var(--accent-glow); border: 1px solid rgba(52,211,153,0.2);
-      border-radius: 6px; font-size: 0.8rem;
-      color: var(--accent2); display: none;
-    }
-    .form-success.show { display: block; }
-
-    /* EMPTY */
-    .empty-row {
-      padding: 2rem; text-align: center;
-      color: var(--text3); font-size: 0.82rem;
-      font-family: var(--mono);
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr; }
+      .two-col { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: 1fr 1fr; }
+      .withdraw-grid { grid-template-columns: 1fr; }
     }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
+    @media (max-width: 640px) {
+      nav {
+        height: auto;
+        min-height: 60px;
+        padding: 10px 12px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      main { padding: 14px 10px 35px; }
+      .hero { padding: 16px; }
+      .summary-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-
-<nav>
-  <a class="nav-logo" href="/"><div class="logo-dot"></div>SnapLink</a>
-  <div class="nav-right">
-    <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
-    <a class="btn-nav" href="/a/dashboard">← Affiliate</a>
-    <a class="btn-nav" href="/logout">Logout</a>
-  </div>
-</nav>
-
-<main>
-
-  <!-- Header -->
-  <div class="page-header">
-    <div class="eyebrow">Affiliate Wallet</div>
-    <h1>Tera <em>Balance</em></h1>
-  </div>
-
-  <!-- Wallet Hero -->
-  <div class="wallet-hero">
-    <div>
-      <div class="wallet-balance-label">Available Balance</div>
-      <div class="wallet-balance-amount">₹<%= wallet.balance.toFixed(2) %></div>
-      <div class="wallet-balance-sub">Withdraw ke liye available</div>
+  <nav>
+    <a class="brand" href="/">
+      <span class="brand-dot"></span>
+      SnapLink
+    </a>
+    <div class="nav-actions">
+      <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">Light</button>
+      <a class="btn-nav" href="/a/dashboard">Affiliate</a>
+      <a class="btn-nav" href="/logout">Logout</a>
     </div>
-    <div class="wallet-meta">
-      <div class="wallet-stat">
-        <div class="wallet-stat-label">Total Earned</div>
-        <div class="wallet-stat-val green">₹<%= wallet.totalEarned.toFixed(2) %></div>
-      </div>
-      <div class="wallet-stat">
-        <div class="wallet-stat-label">Total Paid</div>
-        <div class="wallet-stat-val">₹<%= wallet.totalPaid.toFixed(2) %></div>
-      </div>
-    </div>
-  </div>
+  </nav>
 
-  <!-- Stats -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-label">Earnings This Month</div>
-      <div class="stat-val green"><%= earnings.length %></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Pending Payouts</div>
-      <div class="stat-val amber">
-        <%= payouts.filter(p => p.status === 'pending').length %>
+  <main>
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Affiliate Wallet</div>
+        <h1>Available Balance</h1>
+        <div class="hero-amount">Rs <%= Number(wallet.balance || 0).toFixed(2) %></div>
+        <div class="balance-line">Statement month: <%= statementMonthLabel %></div>
       </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Completed Payouts</div>
-      <div class="stat-val purple">
-        <%= payouts.filter(p => p.status === 'paid').length %>
-      </div>
-    </div>
-  </div>
-
-  <!-- Earnings + Payouts -->
-  <div class="two-col">
-
-    <!-- Recent Earnings -->
-    <div class="section-card">
-      <div class="section-head">
-        <span class="section-title">Recent Earnings</span>
-        <span class="section-badge"><%= earnings.length %> transactions</span>
-      </div>
-      <% if (earnings.length === 0) { %>
-        <div class="empty-row">Koi earning nahi abhi tak</div>
-      <% } else { %>
-        <% earnings.forEach(e => { %>
-        <div class="earning-item">
-          <div class="earning-left">
-            <span class="earning-campaign"><%= e.campaign?.title || 'Unknown Campaign' %></span>
-            <span class="earning-date"><%= new Date(e.earnedAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'2-digit'}) %></span>
-          </div>
-          <div style="display:flex; align-items:center;">
-            <span class="earning-amount">+₹<%= e.amount.toFixed(2) %></span>
-            <span class="earning-status <%= e.status %>"><%= e.status %></span>
-          </div>
+      <div class="hero-stats">
+        <div class="mini-stat">
+          <div class="mini-stat-label">Total Earned</div>
+          <div class="mini-stat-value">Rs <%= Number(wallet.totalEarned || 0).toFixed(2) %></div>
         </div>
-        <% }) %>
-      <% } %>
-    </div>
-
-    <!-- Payout History -->
-    <div class="section-card">
-      <div class="section-head">
-        <span class="section-title">Payout History</span>
-        <span class="section-badge"><%= payouts.length %> requests</span>
-      </div>
-      <% if (payouts.length === 0) { %>
-        <div class="empty-row">Koi payout request nahi abhi</div>
-      <% } else { %>
-        <% payouts.forEach(p => { %>
-        <div class="payout-item">
-          <div class="payout-info">
-            <span class="payout-method">
-              <%= p.method === 'upi' ? '📱 UPI' : '🏦 Bank' %>
-              <span style="font-family:var(--mono); font-size:0.72rem; color:var(--text3);">
-                <%= p.method === 'upi' ? p.upiId : p.bankDetails?.accountNumber?.slice(-4).padStart(8,'*') %>
-              </span>
-            </span>
-            <span class="payout-date"><%= new Date(p.requestedAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'2-digit'}) %></span>
-          </div>
-          <div class="payout-right">
-            <span class="payout-amount">₹<%= p.amount.toFixed(2) %></span>
-            <span class="status-pill <%= p.status %>"><%= p.status %></span>
-          </div>
+        <div class="mini-stat">
+          <div class="mini-stat-label">Total Paid</div>
+          <div class="mini-stat-value">Rs <%= Number(wallet.totalPaid || 0).toFixed(2) %></div>
         </div>
-        <% }) %>
-      <% } %>
-    </div>
+      </div>
+    </section>
 
-  </div>
+    <section class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Earnings This Month</div>
+        <div class="stat-value"><%= counters.earningsThisMonth %></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending Payouts</div>
+        <div class="stat-value"><%= counters.pendingPayouts %></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Paid This Month</div>
+        <div class="stat-value"><%= counters.paidThisMonth %></div>
+      </div>
+    </section>
 
-  <!-- Withdraw Form -->
-  <div class="withdraw-card">
-    <div class="withdraw-title">Withdraw Request</div>
+    <section class="chart-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Monthly Wallet Chart</div>
+          <div class="card-sub">Last 6 months earned vs paid</div>
+        </div>
+      </div>
+      <div class="chart-wrap" id="monthly-chart"></div>
+      <div class="chart-legend">
+        <span><span class="dot earned"></span>Earned</span>
+        <span><span class="dot paid"></span>Paid</span>
+      </div>
+    </section>
 
-    <div class="method-tabs">
-      <button class="method-tab active" id="tab-upi" onclick="switchMethod('upi')">📱 UPI</button>
-      <button class="method-tab" id="tab-bank" onclick="switchMethod('bank')">🏦 Bank Transfer</button>
-    </div>
+    <section class="two-col">
+      <article class="list-card">
+        <div class="card-head">
+          <div class="card-title">Recent Earnings</div>
+          <div class="card-sub"><%= earnings.length %> records</div>
+        </div>
+        <div class="list-wrap">
+          <% if (earnings.length === 0) { %>
+            <div class="empty">No earnings yet</div>
+          <% } else { %>
+            <% earnings.forEach((e) => { %>
+              <div class="list-row">
+                <div>
+                  <div class="row-title"><%= e.campaign?.title || 'Unknown campaign' %></div>
+                  <div class="row-sub"><%= new Date(e.earnedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: '2-digit' }) %></div>
+                </div>
+                <div class="row-amount">
+                  +Rs <%= Number(e.amount || 0).toFixed(2) %>
+                  <span class="pill <%= e.status === 'paid' ? 'paid' : 'pending' %>"><%= e.status %></span>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+      </article>
 
-    <div class="form-group">
-      <label class="form-label">Amount <span>*</span></label>
-      <input class="form-input" type="number" id="amount"
-             placeholder="Minimum ₹100"
-             min="100" max="<%= wallet.balance %>"/>
-    </div>
+      <article class="list-card">
+        <div class="card-head">
+          <div class="card-title">Payout Requests</div>
+          <div class="card-sub"><%= payouts.length %> records</div>
+        </div>
+        <div class="list-wrap">
+          <% if (payouts.length === 0) { %>
+            <div class="empty">No payouts yet</div>
+          <% } else { %>
+            <% payouts.forEach((p) => { %>
+              <div class="list-row">
+                <div>
+                  <div class="row-title"><%= p.method === 'upi' ? 'UPI' : 'Bank' %></div>
+                  <div class="row-sub">
+                    <%= new Date(p.requestedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: '2-digit' }) %>
+                  </div>
+                </div>
+                <div class="row-amount">
+                  Rs <%= Number(p.amount || 0).toFixed(2) %>
+                  <span class="pill <%= p.status %>"><%= p.status %></span>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+      </article>
+    </section>
 
-    <!-- UPI Fields -->
-    <div id="upi-fields">
+    <section class="statement-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Ledger Statement</div>
+          <div class="card-sub"><%= statementMonthLabel %></div>
+        </div>
+        <div class="statement-controls">
+          <select class="month-select" id="statement-month" onchange="changeStatementMonth(this.value)">
+            <% monthOptions.forEach((option) => { %>
+              <option value="<%= option.key %>" <%= option.key === statementMonth ? 'selected' : '' %>><%= option.label %></option>
+            <% }) %>
+          </select>
+          <a class="btn-download" href="/wallet/statement?month=<%= statementMonth %>">Download CSV</a>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-box">
+          <div class="summary-label">Opening</div>
+          <div class="summary-value">Rs <%= Number(statementSummary.opening || 0).toFixed(2) %></div>
+        </div>
+        <div class="summary-box">
+          <div class="summary-label">Credits</div>
+          <div class="summary-value">Rs <%= Number(statementSummary.credit || 0).toFixed(2) %></div>
+        </div>
+        <div class="summary-box">
+          <div class="summary-label">Debits</div>
+          <div class="summary-value">Rs <%= Number(statementSummary.debit || 0).toFixed(2) %></div>
+        </div>
+        <div class="summary-box">
+          <div class="summary-label">Closing</div>
+          <div class="summary-value">Rs <%= Number(statementSummary.closing || 0).toFixed(2) %></div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <% if (!statementRows || statementRows.length === 0) { %>
+          <div class="empty">No ledger transactions in this month</div>
+        <% } else { %>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Balance</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% statementRows.forEach((row) => { %>
+                <tr>
+                  <td><%= new Date(row.date).toLocaleString('en-IN') %></td>
+                  <td><%= row.type %></td>
+                  <td>
+                    <% if (row.direction === 'credit') { %>
+                      <span class="amount-credit">+Rs <%= Number(row.amount || 0).toFixed(2) %></span>
+                    <% } else if (row.direction === 'debit') { %>
+                      <span class="amount-debit">-Rs <%= Number(row.amount || 0).toFixed(2) %></span>
+                    <% } else { %>
+                      <span class="amount-neutral">Rs <%= Number(row.amount || 0).toFixed(2) %></span>
+                    <% } %>
+                  </td>
+                  <td class="amount-neutral">Rs <%= Number(row.balanceAfter || 0).toFixed(2) %></td>
+                  <td><%= row.note || '-' %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="withdraw-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Withdraw Request</div>
+          <div class="card-sub">Minimum payout Rs 100</div>
+        </div>
+      </div>
+
+      <div class="method-tabs">
+        <button class="method-tab active" id="tab-upi" onclick="switchMethod('upi')">UPI</button>
+        <button class="method-tab" id="tab-bank" onclick="switchMethod('bank')">Bank</button>
+      </div>
+
       <div class="form-group">
-        <label class="form-label">UPI ID <span>*</span></label>
-        <input class="form-input" type="text" id="upiId" placeholder="name@upi"/>
+        <label class="label">Amount <span>*</span></label>
+        <input class="input" type="number" id="amount" min="100" max="<%= Number(wallet.balance || 0) %>" placeholder="Enter amount" />
       </div>
-    </div>
 
-    <!-- Bank Fields -->
-    <div id="bank-fields" style="display:none;">
-      <div class="form-group">
-        <label class="form-label">Account Holder Name <span>*</span></label>
-        <input class="form-input" type="text" id="bankName" placeholder="Poora naam"/>
-      </div>
-      <div class="form-row">
+      <div id="upi-fields">
         <div class="form-group">
-          <label class="form-label">Account Number <span>*</span></label>
-          <input class="form-input" type="text" id="accountNumber" placeholder="Account number"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">IFSC Code <span>*</span></label>
-          <input class="form-input" type="text" id="ifsc" placeholder="SBIN0001234"/>
+          <label class="label">UPI ID <span>*</span></label>
+          <input class="input" type="text" id="upiId" placeholder="name@upi" />
         </div>
       </div>
-    </div>
 
-    <div class="form-error" id="withdraw-error"></div>
-    <div class="form-success" id="withdraw-success"></div>
+      <div id="bank-fields" style="display:none;">
+        <div class="form-group">
+          <label class="label">Account Holder <span>*</span></label>
+          <input class="input" type="text" id="bankName" placeholder="Full name" />
+        </div>
+        <div class="withdraw-grid">
+          <div class="form-group">
+            <label class="label">Account Number <span>*</span></label>
+            <input class="input" type="text" id="accountNumber" placeholder="Account number" />
+          </div>
+          <div class="form-group">
+            <label class="label">IFSC <span>*</span></label>
+            <input class="input" type="text" id="ifsc" placeholder="ABCD0123456" />
+          </div>
+        </div>
+      </div>
 
-    <button class="btn-withdraw" onclick="submitWithdraw()" id="withdraw-btn">
-      Request Withdrawal
-    </button>
-    <div class="withdraw-note">
-      Min ₹100 · Processing: 2-3 business days · Balance: ₹<%= wallet.balance.toFixed(2) %>
-    </div>
-  </div>
+      <div class="form-msg error" id="withdraw-error"></div>
+      <div class="form-msg success" id="withdraw-success"></div>
 
-</main>
+      <button class="btn-submit" id="withdraw-btn" onclick="submitWithdraw()">Request Withdrawal</button>
+      <div class="withdraw-note">Balance available: Rs <%= Number(wallet.balance || 0).toFixed(2) %></div>
+    </section>
+  </main>
 
-<script>
-  // Theme
-  function toggleTheme() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.getElementById('theme-btn').textContent = isDark ? '☾ Dark' : '☀ Light';
-    localStorage.setItem('snaplink-theme', isDark ? 'light' : 'dark');
-  }
-  const saved = localStorage.getItem('snaplink-theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', saved);
-  document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀ Light' : '☾ Dark';
+  <script>
+    const monthlySeries = <%- JSON.stringify(monthlySeries || []) %>;
+    const themeBtn = document.getElementById('theme-btn');
 
-  // Method switch
-  let currentMethod = 'upi';
-  function switchMethod(method) {
-    currentMethod = method;
-    document.getElementById('upi-fields').style.display  = method === 'upi'  ? 'block' : 'none';
-    document.getElementById('bank-fields').style.display = method === 'bank' ? 'block' : 'none';
-    document.getElementById('tab-upi').classList.toggle('active',  method === 'upi');
-    document.getElementById('tab-bank').classList.toggle('active', method === 'bank');
-  }
-
-  // Submit
-  async function submitWithdraw() {
-    const btn     = document.getElementById('withdraw-btn');
-    const errEl   = document.getElementById('withdraw-error');
-    const succEl  = document.getElementById('withdraw-success');
-    const amount  = document.getElementById('amount').value;
-
-    errEl.classList.remove('show');
-    succEl.classList.remove('show');
-
-    if (!amount || amount < 100) {
-      errEl.textContent = 'Minimum ₹100 withdraw kar sakte ho';
-      errEl.classList.add('show');
-      return;
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeBtn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+      localStorage.setItem('snaplink-theme', theme);
     }
 
-    const body = { amount: Number(amount), method: currentMethod };
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    }
 
-    if (currentMethod === 'upi') {
-      body.upiId = document.getElementById('upiId').value;
-      if (!body.upiId) { errEl.textContent = 'UPI ID daalo'; errEl.classList.add('show'); return; }
-    } else {
-      body.name          = document.getElementById('bankName').value;
-      body.accountNumber = document.getElementById('accountNumber').value;
-      body.ifsc          = document.getElementById('ifsc').value;
-      if (!body.name || !body.accountNumber || !body.ifsc) {
-        errEl.textContent = 'Saari bank details daalo';
-        errEl.classList.add('show');
+    setTheme(localStorage.getItem('snaplink-theme') || 'dark');
+
+    function renderMonthlyChart() {
+      const wrap = document.getElementById('monthly-chart');
+      if (!monthlySeries.length) {
+        wrap.innerHTML = '<div class="empty" style="width:100%;">No monthly data yet</div>';
         return;
       }
+
+      const max = Math.max(
+        ...monthlySeries.map((item) => Number(item.earned || 0)),
+        ...monthlySeries.map((item) => Number(item.paid || 0)),
+        1
+      );
+
+      wrap.innerHTML = monthlySeries
+        .map((item) => {
+          const earned = Number(item.earned || 0);
+          const paid = Number(item.paid || 0);
+          const earnedH = Math.max(2, Math.round((earned / max) * 140));
+          const paidH = Math.max(2, Math.round((paid / max) * 140));
+          return `
+            <div class="chart-col">
+              <div class="chart-bars">
+                <div class="bar earned" style="height:${earnedH}px" title="Earned Rs ${earned.toFixed(2)}"></div>
+                <div class="bar paid" style="height:${paidH}px" title="Paid Rs ${paid.toFixed(2)}"></div>
+              </div>
+              <div class="bar-label">${item.label}</div>
+              <div class="bar-value">E ${earned.toFixed(0)} / P ${paid.toFixed(0)}</div>
+            </div>
+          `;
+        })
+        .join('');
     }
 
-    btn.disabled = true;
-    btn.textContent = 'Submitting...';
+    renderMonthlyChart();
 
-    try {
-      const res  = await fetch('/payout/request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      const data = await res.json();
+    function changeStatementMonth(monthKey) {
+      const target = `/wallet?month=${encodeURIComponent(monthKey)}`;
+      window.location.href = target;
+    }
 
-      if (data.success) {
-        succEl.textContent = `✅ ₹${amount} ka payout request submit ho gaya! 2-3 din mein process hoga.`;
-        succEl.classList.add('show');
-        btn.textContent = 'Request Submitted!';
-        setTimeout(() => window.location.reload(), 2000);
-      } else {
-        errEl.textContent = data.error || 'Kuch gadbad hui';
-        errEl.classList.add('show');
-        btn.disabled = false;
-        btn.textContent = 'Request Withdrawal';
+    let currentMethod = 'upi';
+    function switchMethod(method) {
+      currentMethod = method;
+      document.getElementById('upi-fields').style.display = method === 'upi' ? 'block' : 'none';
+      document.getElementById('bank-fields').style.display = method === 'bank' ? 'block' : 'none';
+      document.getElementById('tab-upi').classList.toggle('active', method === 'upi');
+      document.getElementById('tab-bank').classList.toggle('active', method === 'bank');
+    }
+
+    async function submitWithdraw() {
+      const amount = Number(document.getElementById('amount').value);
+      const errorBox = document.getElementById('withdraw-error');
+      const successBox = document.getElementById('withdraw-success');
+      const button = document.getElementById('withdraw-btn');
+
+      errorBox.classList.remove('show');
+      successBox.classList.remove('show');
+
+      if (!amount || amount < 100) {
+        errorBox.textContent = 'Minimum payout Rs 100 hai';
+        errorBox.classList.add('show');
+        return;
       }
-    } catch (err) {
-      errEl.textContent = 'Server se connect nahi ho pa raha';
-      errEl.classList.add('show');
-      btn.disabled = false;
-      btn.textContent = 'Request Withdrawal';
-    }
-  }
-</script>
 
+      const payload = { amount, method: currentMethod };
+      if (currentMethod === 'upi') {
+        payload.upiId = document.getElementById('upiId').value.trim();
+        if (!payload.upiId) {
+          errorBox.textContent = 'UPI ID required hai';
+          errorBox.classList.add('show');
+          return;
+        }
+      } else {
+        payload.name = document.getElementById('bankName').value.trim();
+        payload.accountNumber = document.getElementById('accountNumber').value.trim();
+        payload.ifsc = document.getElementById('ifsc').value.trim();
+        if (!payload.name || !payload.accountNumber || !payload.ifsc) {
+          errorBox.textContent = 'Saari bank details required hain';
+          errorBox.classList.add('show');
+          return;
+        }
+      }
+
+      button.disabled = true;
+      button.textContent = 'Submitting...';
+
+      try {
+        const response = await fetch('/payout/request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          successBox.textContent = `Payout request submitted: Rs ${amount.toFixed(2)}`;
+          successBox.classList.add('show');
+          setTimeout(() => window.location.reload(), 1500);
+          return;
+        }
+
+        errorBox.textContent = data.error || 'Request failed';
+        errorBox.classList.add('show');
+      } catch (error) {
+        errorBox.textContent = 'Server unreachable';
+        errorBox.classList.add('show');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Request Withdrawal';
+      }
+    }
+  </script>
 </body>
 </html>

@@ -810,3 +810,47 @@ main { flex: 1; }
   .footer-inner { flex-direction: column; gap: 2rem; }
   .footer-links { gap: 2rem; }
 }
+
+@media (max-width: 560px) {
+  .navbar {
+    height: auto;
+    min-height: 60px;
+    padding: 10px 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .nav-right {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .nav-user {
+    order: 3;
+  }
+
+  .features-strip {
+    justify-content: flex-start;
+    padding: 12px 10px;
+  }
+
+  .feature-item {
+    width: calc(50% - 4px);
+    padding: 6px 0;
+  }
+
+  .compare-section,
+  .why-section,
+  .how-section,
+  .cta-section {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .compare-table th,
+  .compare-table td {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}

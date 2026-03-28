@@ -105,6 +105,24 @@
       body { grid-template-columns:1fr; }
       .sidebar { display:none; }
       .qr-grid { grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); }
+      .main { padding:16px 12px; }
+      .topbar { padding:12px; }
+    }
+
+    @media (max-width:560px) {
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .btn-dl-all {
+        width: 100%;
+      }
+
+      .qr-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>

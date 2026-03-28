@@ -7,6 +7,7 @@ const BrandCampaign = require('../models/brandCampaignSchema');
 const ClickLog = require('../models/clickLogSchema');
 const Earning = require('../models/earningSchema');
 const Wallet = require('../models/walletSchema');
+const WalletTransaction = require('../models/walletTransactionSchema');
 
 function getBaseUrl(req) {
     const configured = process.env.APP_URL ? String(process.env.APP_URL).replace(/\/$/, '') : '';
@@ -172,7 +173,7 @@ exports.trackAndRedirect = async (req, res) => {
                     }
 
                     if (canCredit) {
-                        await Earning.create({
+                        const earning = await Earning.create({
                             affiliate: link.createdBy,
                             campaign: link.campaign._id,
                             affiliateLink: link._id,
@@ -181,7 +182,7 @@ exports.trackAndRedirect = async (req, res) => {
                             status: 'pending',
                         });
 
-                        await Wallet.findOneAndUpdate(
+                        const wallet = await Wallet.findOneAndUpdate(
                             { user: link.createdBy },
                             {
                                 $setOnInsert: { user: link.createdBy },
@@ -192,6 +193,24 @@ exports.trackAndRedirect = async (req, res) => {
                             },
                             { upsert: true, new: true }
                         );
+
+                        if (wallet) {
+                            await WalletTransaction.create({
+                                user: link.createdBy,
+                                type: 'earning_credit',
+                                direction: 'credit',
+                                amount: commissionAmount,
+                                balanceAfter: Number(wallet.balance || 0),
+                                referenceModel: 'Earning',
+                                referenceId: earning._id,
+                                note: `Campaign earning credit for ${link.shortCode}`,
+                                metadata: {
+                                    campaignId: link.campaign._id,
+                                    affiliateLinkId: link._id,
+                                    clickIp: ip,
+                                },
+                            });
+                        }
                     }
                 }
             }

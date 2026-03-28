@@ -4,6 +4,7 @@ const { auth } = require('../middleware/auth.middleware');
 const { adminAuth } = require('../middleware/admin.middleware');
 const {
     getWallet,
+    downloadWalletStatement,
     requestPayout,
     adminGetPayouts,
     adminApprovePayout,
@@ -13,6 +14,7 @@ const {
 
 // Affiliate routes
 router.get('/wallet',          auth, getWallet);
+router.get('/wallet/statement', auth, downloadWalletStatement);
 router.post('/payout/request', auth, requestPayout);
 
 // Admin routes

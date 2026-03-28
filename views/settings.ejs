@@ -52,6 +52,9 @@
     .topbar { background:var(--bg2); border-bottom:1px solid var(--border); padding:14px 28px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
     .topbar h1 { font-size:17px; font-weight:700; }
     .topbar p { font-size:11px; color:var(--text3); margin-top:1px; }
+    .topbar-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .topbar-btn { text-decoration:none; font-size:11px; font-weight:600; color:var(--text2); border:1px solid var(--border2); border-radius:8px; padding:6px 10px; }
+    .topbar-btn:hover { color:var(--text); border-color:var(--accent); }
 
     /* MAIN */
     .main { padding:24px 28px; display:flex; flex-direction:column; gap:20px; max-width:680px; }
@@ -96,6 +99,10 @@
       body { grid-template-columns:1fr; }
       .sidebar { display:none; }
       .form-row { grid-template-columns:1fr; }
+      .topbar { padding:12px 14px; }
+      .main { padding:16px 14px; }
+      .plan-info-card { flex-direction:column; align-items:flex-start; }
+      .danger-card { flex-direction:column; align-items:flex-start; }
     }
   </style>
 </head>
@@ -150,6 +157,11 @@
     <div>
       <h1>Settings</h1>
       <p>Account aur security manage karo</p>
+    </div>
+    <div class="topbar-right">
+      <button class="theme-toggle" id="themeBtnTop" onclick="toggleTheme()">Theme</button>
+      <a href="/dashboard" class="topbar-btn">Dashboard</a>
+      <a href="/logout" class="topbar-btn">Logout</a>
     </div>
   </header>
 
@@ -285,13 +297,17 @@
 <script>
 const saved = localStorage.getItem('theme') || 'dark';
 document.documentElement.setAttribute('data-theme', saved);
-document.getElementById('themeBtn').textContent = saved === 'dark' ? '🌙' : '☀️';
+const sidebarThemeBtn = document.getElementById('themeBtn');
+const topThemeBtn = document.getElementById('themeBtnTop');
+if (sidebarThemeBtn) sidebarThemeBtn.textContent = saved === 'dark' ? '🌙' : '☀️';
+if (topThemeBtn) topThemeBtn.textContent = saved === 'dark' ? '🌙' : '☀️';
 function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const next = isDark ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('theme', next);
-  document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
+  if (sidebarThemeBtn) sidebarThemeBtn.textContent = next === 'dark' ? '🌙' : '☀️';
+  if (topThemeBtn) topThemeBtn.textContent = next === 'dark' ? '🌙' : '☀️';
 }
 </script>
 </body>

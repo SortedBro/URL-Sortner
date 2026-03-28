@@ -394,6 +394,34 @@
       border-color: var(--accent);
     }
     .period-btn:hover:not(.active) { color: var(--text2); border-color: var(--border2); }
+
+    @media (max-width: 900px) {
+      nav {
+        height: auto;
+        min-height: 58px;
+        padding: 10px 14px;
+        flex-wrap: wrap;
+      }
+
+      .nav-left,
+      .nav-right {
+        width: 100%;
+      }
+
+      .nav-right {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding: 14px 10px 36px;
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>

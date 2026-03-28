@@ -15,12 +15,15 @@ const earningSchema = new mongoose.Schema({
     },
     amount:          { type: Number, required: true }, // kitna mila
     commissionType:  { type: String, enum: ['fixed', 'percentage'] },
+    settledAmount:   { type: Number, default: 0 }, // payout allocations ka running total
     status: {
         type: String,
-        enum: ['pending', 'paid'],
+        enum: ['pending', 'partial', 'paid'],
         default: 'pending'
     },
     earnedAt: { type: Date, default: Date.now }
 }, { timestamps: true });
+
+earningSchema.index({ affiliate: 1, status: 1, earnedAt: 1 });
 
 module.exports = mongoose.model('Earning', earningSchema);

@@ -392,6 +392,11 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 12px;
+      min-width: 560px;
+    }
+
+    .table-x {
+      overflow-x: auto;
     }
 
     .mini-table th {
@@ -521,6 +526,31 @@
       color: var(--red);
       font-size: 10px;
       font-family: 'DM Mono', monospace;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .topbar {
+        height: auto;
+        padding: 10px 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .page {
+        padding: 16px 12px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -661,6 +691,7 @@
             <span class="card-title">Recent Users</span>
             <a href="/admin/users" class="card-link">Sab dekho →</a>
           </div>
+          <div class="table-x">
           <table class="mini-table">
             <thead>
               <tr>
@@ -690,9 +721,10 @@
                     <%= new Date(u.createdAt).toLocaleDateString('en-IN', {day:'numeric', month:'short'}) %>
                   </td>
                 </tr>
-                <% }) %>
+              <% }) %>
             </tbody>
           </table>
+          </div>
         </div>
 
         <!-- Revenue breakdown + System health -->
@@ -776,6 +808,7 @@
           <span class="card-title">🔗 Recent URLs</span>
           <a href="/admin/urls" class="card-link">Sab dekho →</a>
         </div>
+        <div class="table-x">
         <table class="mini-table">
           <thead>
             <tr>
@@ -808,6 +841,7 @@
               <% }) %>
           </tbody>
         </table>
+        </div>
       </div>
 
     </div>
@@ -828,7 +862,7 @@
     }
 
     // User growth chart
-    const growthData = <% - JSON.stringify(userGrowth) %>;
+    const growthData = <%- JSON.stringify(userGrowth) %>;
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const ctx = document.getElementById('userGrowthChart').getContext('2d');
     new Chart(ctx, {

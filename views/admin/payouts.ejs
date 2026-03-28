@@ -194,7 +194,8 @@
       padding: 2px 8px; border-radius: 20px;
     }
 
-    table { width: 100%; border-collapse: collapse; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 860px; }
     thead th {
       padding: 10px 14px; text-align: left;
       font-size: 0.66rem; font-weight: 700;
@@ -304,6 +305,29 @@
       color: var(--text3); font-family: var(--mono); font-size: 0.82rem;
     }
 
+    @media (max-width: 980px) {
+      nav {
+        height: auto;
+        min-height: 58px;
+        padding: 10px 14px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .nav-links {
+        width: 100%;
+        order: 3;
+        overflow-x: auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      main { padding: 16px 10px 40px; }
+      .stats-row { grid-template-columns: 1fr; }
+      .filter-tabs { flex-wrap: wrap; }
+      .table-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+    }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -375,6 +399,7 @@
     <% if (payouts.length === 0) { %>
       <div class="empty-state">Koi payout request nahi abhi</div>
     <% } else { %>
+    <div class="table-scroll">
     <table>
       <thead>
         <tr>
@@ -431,6 +456,7 @@
         <% }) %>
       </tbody>
     </table>
+    </div>
     <% } %>
   </div>
 

@@ -359,6 +359,11 @@
       border-collapse: collapse;
       font-size: 13px;
     }
+    .compare-table-wrap {
+      overflow-x: auto;
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+    }
     .compare-table th {
       font-family: 'Syne', sans-serif;
       font-size: 13px;
@@ -383,6 +388,31 @@
     .compare-table .check { color: var(--green); font-size: 16px; }
     .compare-table .cross { color: var(--muted); font-size: 16px; }
     .compare-table .highlight-col { color: var(--accent); font-weight: 600; }
+
+    @media (max-width: 640px) {
+      .pricing-hero {
+        padding: 3.5rem 1rem 2rem;
+      }
+
+      .plans-section,
+      .compare-section,
+      .faq-section {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .billing-toggle {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .compare-table th,
+      .compare-table td {
+        padding: 10px 12px;
+        white-space: nowrap;
+      }
+    }
 
   </style>
 </head>
@@ -524,72 +554,74 @@
     <!-- ═══ COMPARISON TABLE ═══ -->
     <div class="compare-section">
       <h2 class="compare-title">Plans <span>compare karo</span></h2>
-      <table class="compare-table">
-        <thead>
-          <tr>
-            <th>Feature</th>
-            <th>Free</th>
-            <th class="highlight">Pro</th>
-            <th>Business</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>URLs per month</td>
-            <td>10</td>
-            <td class="highlight-col">Unlimited</td>
-            <td>Unlimited</td>
-          </tr>
-          <tr>
-            <td>Click analytics</td>
-            <td>Basic</td>
-            <td class="highlight-col">Full</td>
-            <td>Full + Export</td>
-          </tr>
-          <tr>
-            <td>Custom alias</td>
-            <td><span class="cross">✕</span></td>
-            <td><span class="check">✓</span></td>
-            <td><span class="check">✓</span></td>
-          </tr>
-          <tr>
-            <td>QR Code</td>
-            <td><span class="check">✓</span></td>
-            <td><span class="check">✓</span></td>
-            <td><span class="check">✓</span></td>
-          </tr>
-          <tr>
-            <td>Password protection</td>
-            <td><span class="cross">✕</span></td>
-            <td><span class="check">✓</span></td>
-            <td><span class="check">✓</span></td>
-          </tr>
-          <tr>
-            <td>Link expiry</td>
-            <td><span class="cross">✕</span></td>
-            <td><span class="check">✓</span></td>
-            <td><span class="check">✓</span></td>
-          </tr>
-          <tr>
-            <td>API access</td>
-            <td><span class="cross">✕</span></td>
-            <td><span class="check">✓</span></td>
-            <td><span class="check">✓</span></td>
-          </tr>
-          <tr>
-            <td>Team members</td>
-            <td><span class="cross">✕</span></td>
-            <td><span class="cross">✕</span></td>
-            <td>5 seats</td>
-          </tr>
-          <tr>
-            <td>Custom domain</td>
-            <td><span class="cross">✕</span></td>
-            <td><span class="cross">✕</span></td>
-            <td><span class="check">✓</span></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Free</th>
+              <th class="highlight">Pro</th>
+              <th>Business</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>URLs per month</td>
+              <td>10</td>
+              <td class="highlight-col">Unlimited</td>
+              <td>Unlimited</td>
+            </tr>
+            <tr>
+              <td>Click analytics</td>
+              <td>Basic</td>
+              <td class="highlight-col">Full</td>
+              <td>Full + Export</td>
+            </tr>
+            <tr>
+              <td>Custom alias</td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td>QR Code</td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td>Password protection</td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td>Link expiry</td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td>API access</td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td>Team members</td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="cross">✕</span></td>
+              <td>5 seats</td>
+            </tr>
+            <tr>
+              <td>Custom domain</td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="cross">✕</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- ═══ FAQ ═══ -->
