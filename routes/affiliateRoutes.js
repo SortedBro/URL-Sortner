@@ -1,29 +1,20 @@
 const express = require('express');
-const router = express.Router();
+
 const { auth } = require('../middleware/auth.middleware');
-const { createLink, trackAndRedirect, getDashboard, getLinkAnalytics, deleteLink } = require('../controllers/affiliateControllers');
+const {
+    createLink,
+    trackAndRedirect,
+    getDashboard,
+    getLinkAnalytics,
+    deleteLink,
+} = require('../controllers/affiliateControllers');
 
-router.post('/create', auth, createLink);
+const router = express.Router();
+
 router.get('/dashboard', auth, getDashboard);
-router.get('/:code', trackAndRedirect);
-router.get('/analytics/:code', auth, getLinkAnalytics); // ✅ naya
+router.get('/analytics/:code', auth, getLinkAnalytics);
+router.post('/create', auth, createLink);
 router.post('/delete/:code', auth, deleteLink);
-
-
-
+router.get('/:code', trackAndRedirect);
 
 module.exports = router;
-// ```
-
-// ---
-
-// ## Test Karo
-
-// **Step 1 — Link pe click karo:**
-// ```
-// GET http://localhost:3000/a/G4MjCP6
-// ```
-
-// **Step 2 — Analytics dekho:**
-// ```
-// GET http://localhost:3000/a/analytics/G4MjCP6

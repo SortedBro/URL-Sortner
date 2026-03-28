@@ -145,7 +145,7 @@ ${urls}
     app.use('/', bulkroutes);
     app.use('/', adminRoutes);      // ✅ sirf ek baar
 
-    app.use('/a',      checkPlanLimit, affiliateRoutes);
+    app.use('/a',      affiliateRoutes);
     app.use('/brand',  brandRoutes);
     app.post('/shorten', checkPlanLimit, createShortUrl);
 

@@ -833,8 +833,7 @@
     <div class="nav-links">
       <a class="nav-link" href="/dashboard">URLs</a>
       <a class="nav-link active" href="/a/dashboard">Affiliate</a>
-
-      <a class="nav-link active" href="/brand/dashboard">Brand</a>
+      <a class="nav-link" href="/brand/dashboard">Brand</a>
       <a class="nav-link" href="/wallet">💰 Wallet</a>
 
     </div>
@@ -874,9 +873,9 @@
         </span>
       </div>
       <div class="stat-tile">
-        <span class="stat-tile-label">Avg Clicks</span>
-        <span class="stat-tile-val">
-          <%= stats.totalLinks> 0 ? Math.round(stats.totalClicks / stats.totalLinks) : 0 %>
+        <span class="stat-tile-label">Pending Earn</span>
+        <span class="stat-tile-val green">
+          ₹<%= (stats.pendingEarnings || 0).toFixed(0) %>
         </span>
       </div>
     </div>
@@ -920,7 +919,7 @@
                   </span>
                 </div>
                 <div class="card-urls">
-                  <a class="card-short" href="/<%= link.shortCode %>" target="_blank">
+                  <a class="card-short" href="/a/<%= link.shortCode %>" target="_blank">
                     /a/<%= link.shortCode %>
                   </a>
                   <span class="card-arrow">→</span>
@@ -933,6 +932,9 @@
                     <%= new Date(link.createdAt).toLocaleDateString('en-IN', {day:'numeric', month:'short',
                       year:'2-digit'}) %>
                   </span>
+                  <% if (link.campaign) { %>
+                    <span class="meta-chip">Campaign: <%= link.campaign.title %></span>
+                  <% } %>
                   <% if (link.refParam) { %>
                     <span class="meta-chip ref">?<%= link.refParam %></span>
                     <% } %>
@@ -977,6 +979,23 @@
         <div class="form-group">
           <label class="form-label">Campaign Title <span>*</span></label>
           <input class="form-input" type="text" id="title" placeholder="e.g. Amazon Shoes Summer Sale" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Brand Campaign (optional)</label>
+          <select class="form-input" id="campaignId" onchange="onCampaignChange()">
+            <option value="">Personal affiliate link</option>
+            <% if (typeof campaigns !== 'undefined' && campaigns.length) { %>
+              <% campaigns.forEach((campaign) => { %>
+                <option
+                  value="<%= campaign._id %>"
+                  data-url="<%= campaign.targetUrl %>"
+                  data-ref="<%= campaign.refParam || '' %>">
+                  <%= campaign.title %> <% if (campaign.brandName) { %>• <%= campaign.brandName %><% } %>
+                </option>
+              <% }) %>
+            <% } %>
+          </select>
+          <div class="form-hint">Campaign select karoge to target URL auto-fill ho jayega.</div>
         </div>
         <div class="form-group">
           <label class="form-label">Original URL <span>*</span></label>
@@ -1028,9 +1047,31 @@
       document.getElementById('modal').classList.remove('open');
       document.getElementById('campaign-form').reset();
       document.getElementById('form-error').classList.remove('show');
+      document.getElementById('originalUrl').disabled = false;
     }
     function handleOverlayClick(e) {
       if (e.target === document.getElementById('modal')) closeModal();
+    }
+
+    function onCampaignChange() {
+      const campaignSelect = document.getElementById('campaignId');
+      const originalUrlInput = document.getElementById('originalUrl');
+      const refParamInput = document.getElementById('refParam');
+      const selectedOption = campaignSelect.options[campaignSelect.selectedIndex];
+
+      if (!campaignSelect.value) {
+        originalUrlInput.disabled = false;
+        return;
+      }
+
+      const campaignUrl = selectedOption.getAttribute('data-url') || '';
+      const campaignRef = selectedOption.getAttribute('data-ref') || '';
+      originalUrlInput.value = campaignUrl;
+      originalUrlInput.disabled = true;
+
+      if (!refParamInput.value.trim() && campaignRef) {
+        refParamInput.value = campaignRef;
+      }
     }
 
     // ── SUBMIT ──
@@ -1050,6 +1091,7 @@
           body: JSON.stringify({
             title: document.getElementById('title').value,
             originalUrl: document.getElementById('originalUrl').value,
+            campaignId: document.getElementById('campaignId').value || null,
             refParam: document.getElementById('refParam').value || null,
           })
         });
