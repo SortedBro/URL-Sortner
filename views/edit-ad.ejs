@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Ad — <%= url.shortCode %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:         #07080f;
+      --bg2:        #0d0f1c;
+      --bg3:        #131625;
+      --border:     rgba(251,191,36,0.08);
+      --border2:    rgba(251,191,36,0.2);
+      --accent:     #f59e0b;
+      --accent2:    #fbbf24;
+      --accent-glow:rgba(245,158,11,0.12);
+      --green:      #34d399;
+      --green-bg:   rgba(52,211,153,0.08);
+      --red:        #f87171;
+      --red-bg:     rgba(248,113,113,0.08);
+      --text:       #f0eeff;
+      --text2:      #9b96b8;
+      --text3:      #4d4870;
+      --mono:       'DM Mono', monospace;
+      --display:    'Syne', sans-serif;
+      --body:       'DM Sans', sans-serif;
+      --radius:     16px;
+      --radius-sm:  10px;
+    }
+    [data-theme="light"] {
+      --bg: #fffbf0; --bg2: #ffffff; --bg3: #fef3c7;
+      --border: rgba(245,158,11,0.1); --border2: rgba(245,158,11,0.25);
+      --text: #1a1200; --text2: #6b5a00; --text3: #c4a835;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--body);
+      background: var(--bg); color: var(--text);
+      min-height: 100vh;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none; z-index: 0;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem; height: 58px;
+      background: rgba(7,8,15,0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    [data-theme="light"] nav { background: rgba(255,251,240,0.92); }
+
+    .nav-logo {
+      font-family: var(--display); font-size: 1.1rem;
+      font-weight: 800; color: var(--text);
+      text-decoration: none; display: flex;
+      align-items: center; gap: 8px;
+    }
+    .logo-dot {
+      width: 20px; height: 20px;
+      background: var(--accent); border-radius: 6px;
+      box-shadow: 0 0 14px var(--accent-glow);
+    }
+    .nav-right { display: flex; gap: 8px; align-items: center; }
+    .btn-nav {
+      padding: 6px 14px; border-radius: var(--radius-sm);
+      font-family: var(--body); font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; border: 1px solid var(--border2);
+      background: transparent; color: var(--text2);
+      text-decoration: none; transition: all 0.2s;
+    }
+    .btn-nav:hover { color: var(--text); border-color: var(--accent); }
+
+    main {
+      position: relative; z-index: 1;
+      max-width: 680px; margin: 0 auto;
+      padding: 2.5rem 1.5rem 5rem;
+    }
+
+    .page-header { margin-bottom: 2rem; animation: fadeUp 0.4s ease both; }
+    .eyebrow {
+      font-family: var(--mono); font-size: 0.68rem;
+      color: var(--accent2); letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .eyebrow::before {
+      content: ''; width: 14px; height: 1px;
+      background: var(--accent2); display: inline-block;
+    }
+    .page-header h1 {
+      font-family: var(--display);
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800; letter-spacing: -0.04em;
+    }
+    .page-header h1 em { font-style: normal; color: var(--accent2); }
+
+    /* URL Info Card */
+    .url-info {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem 1.4rem;
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem;
+      animation: fadeUp 0.4s 0.05s ease both;
+    }
+    .url-info-left { min-width: 0; }
+    .url-short {
+      font-family: var(--mono); font-size: 0.9rem;
+      font-weight: 500; color: var(--accent2);
+      margin-bottom: 4px;
+    }
+    .url-original {
+      font-family: var(--mono); font-size: 0.72rem;
+      color: var(--text3); white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+      max-width: 380px;
+    }
+    .url-clicks {
+      font-family: var(--mono); font-size: 0.78rem;
+      color: var(--text3); flex-shrink: 0;
+      text-align: right;
+    }
+    .clicks-num {
+      font-size: 1.4rem; font-weight: 500;
+      color: var(--text); line-height: 1;
+    }
+
+    /* Form Card */
+    .form-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      animation: fadeUp 0.4s 0.1s ease both;
+    }
+
+    .form-section {
+      padding: 1.4rem 1.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-section:last-child { border-bottom: none; }
+
+    .section-label {
+      font-family: var(--display); font-size: 0.88rem;
+      font-weight: 700; color: var(--text);
+      margin-bottom: 4px;
+    }
+    .section-desc {
+      font-size: 0.78rem; color: var(--text3);
+      margin-bottom: 1rem;
+    }
+
+    /* Toggle Switch */
+    .toggle-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    .toggle-info { flex: 1; }
+    .toggle-title {
+      font-size: 0.88rem; font-weight: 600;
+      color: var(--text); margin-bottom: 2px;
+    }
+    .toggle-sub { font-size: 0.75rem; color: var(--text3); }
+
+    .toggle-wrap {
+      position: relative; flex-shrink: 0;
+    }
+    .toggle-input {
+      position: absolute; opacity: 0;
+      width: 0; height: 0;
+    }
+    .toggle-track {
+      display: block; width: 44px; height: 24px;
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 12px; cursor: pointer;
+      transition: all 0.25s; position: relative;
+    }
+    .toggle-input:checked + .toggle-track {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    .toggle-track::after {
+      content: ''; position: absolute;
+      width: 18px; height: 18px;
+      background: #fff; border-radius: 50%;
+      top: 2px; left: 2px;
+      transition: transform 0.25s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    .toggle-input:checked + .toggle-track::after {
+      transform: translateX(20px);
+    }
+
+    /* Timer Buttons */
+    .timer-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .timer-btn {
+      padding: 10px 0; border-radius: var(--radius-sm);
+      border: 1px solid var(--border2);
+      background: transparent; color: var(--text2);
+      font-family: var(--mono); font-size: 0.85rem;
+      font-weight: 500; cursor: pointer;
+      transition: all 0.15s; text-align: center;
+    }
+    .timer-btn:hover { border-color: var(--accent); color: var(--accent2); }
+    .timer-btn.active {
+      background: var(--accent-glow);
+      border-color: var(--accent2);
+      color: var(--accent2);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    /* Text inputs */
+    .form-label {
+      display: block; font-size: 0.75rem; font-weight: 600;
+      color: var(--text2); margin-bottom: 6px; letter-spacing: 0.04em;
+    }
+    .form-label .opt {
+      color: var(--text3); font-weight: 400; margin-left: 4px;
+    }
+    .form-input {
+      width: 100%; padding: 10px 14px;
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text); font-family: var(--body);
+      font-size: 0.88rem; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      margin-bottom: 12px;
+    }
+    .form-input::placeholder { color: var(--text3); }
+    .form-input:focus {
+      border-color: var(--accent2);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    textarea.form-input { resize: none; }
+
+    /* Preview box */
+    .preview-box {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 1rem;
+      margin-top: 8px; font-size: 0.8rem; color: var(--text3);
+      display: none;
+    }
+    .preview-box.show { display: block; }
+    .preview-title {
+      font-weight: 600; color: var(--text2);
+      margin-bottom: 2px; font-size: 0.85rem;
+    }
+
+    /* Submit */
+    .form-actions {
+      padding: 1.4rem 1.6rem;
+      display: flex; gap: 10px;
+      border-top: 1px solid var(--border);
+      background: var(--bg3);
+    }
+    .btn-save {
+      flex: 1; padding: 12px;
+      background: var(--accent); color: #000;
+      border: none; border-radius: var(--radius-sm);
+      font-family: var(--body); font-size: 0.9rem;
+      font-weight: 700; cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .btn-save:hover {
+      background: var(--accent2);
+      box-shadow: 0 6px 24px rgba(251,191,36,0.35);
+      transform: translateY(-1px);
+    }
+    .btn-cancel {
+      padding: 12px 20px;
+      background: transparent; color: var(--text2);
+      border: 1px solid var(--border2); border-radius: var(--radius-sm);
+      font-family: var(--body); font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: all 0.15s; display: inline-flex;
+      align-items: center;
+    }
+    .btn-cancel:hover { color: var(--text); border-color: var(--text2); }
+
+    .save-msg {
+      padding: 8px 12px; border-radius: 8px;
+      font-size: 0.8rem; margin-bottom: 10px;
+      display: none;
+    }
+    .save-msg.success {
+      background: var(--green-bg); color: var(--green);
+      border: 1px solid rgba(52,211,153,0.2);
+      display: block;
+    }
+    .save-msg.error {
+      background: var(--red-bg); color: var(--red);
+      border: 1px solid rgba(248,113,113,0.2);
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/"><div class="logo-dot"></div>SnapLink</a>
+  <div class="nav-right">
+    <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
+    <a class="btn-nav" href="/dashboard">← Dashboard</a>
+  </div>
+</nav>
+
+<main>
+
+  <div class="page-header">
+    <div class="eyebrow">Ad Settings</div>
+    <h1>Edit <em>/<%= url.shortCode %></em></h1>
+  </div>
+
+  <!-- URL Info -->
+  <div class="url-info">
+    <div class="url-info-left">
+      <div class="url-short">snaplink.fun/<%= url.shortCode %></div>
+      <div class="url-original"><%= url.originalUrl %></div>
+    </div>
+    <div class="url-clicks">
+      <div class="clicks-num"><%= url.clicks || 0 %></div>
+      <div style="font-size:0.65rem; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em;">clicks</div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form id="ad-form">
+    <div class="form-card">
+
+      <!-- Enable Ad Toggle -->
+      <div class="form-section">
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <div class="toggle-title">Enable Ad Interstitial</div>
+            <div class="toggle-sub">Link click hone par redirect se pehle ad dikhega</div>
+          </div>
+          <label class="toggle-wrap">
+            <input class="toggle-input" type="checkbox" id="adEnabled"
+                   <%= url.adEnabled ? 'checked' : '' %>
+                   onchange="toggleAdSettings()"/>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Ad Settings — hidden jab disabled -->
+      <div id="ad-settings">
+
+        <!-- Timer -->
+        <div class="form-section">
+          <div class="section-label">Timer Duration</div>
+          <div class="section-desc">Kitne seconds baad user redirect hoga</div>
+          <div class="timer-grid">
+            <% [5, 10, 15, 30].forEach(t => { %>
+            <button type="button"
+                    class="timer-btn <%= (url.adTimer || 5) === t ? 'active' : '' %>"
+                    data-val="<%= t %>"
+                    onclick="selectTimer(this)">
+              <%= t %>s
+            </button>
+            <% }) %>
+          </div>
+          <input type="hidden" id="adTimer" value="<%= url.adTimer || 5 %>"/>
+        </div>
+
+        <!-- Ad Content -->
+        <div class="form-section">
+          <div class="section-label">Ad Content</div>
+          <div class="section-desc">Jo user ad page pe dekhega</div>
+
+          <label class="form-label">Ad Title <span class="opt">(optional)</span></label>
+          <input class="form-input" type="text" id="adTitle"
+                 value="<%= url.adTitle || '' %>"
+                 placeholder="e.g. Check out this amazing offer!"
+                 oninput="updatePreview()"/>
+
+          <label class="form-label">Ad Description <span class="opt">(optional)</span></label>
+          <textarea class="form-input" id="adDescription"
+                    rows="3"
+                    placeholder="Short message jo user dekhega..."
+                    oninput="updatePreview()"><%= url.adDescription || '' %></textarea>
+
+          <!-- Live Preview -->
+          <div class="preview-box" id="preview-box">
+            <div class="preview-title" id="preview-title">—</div>
+            <div style="font-size:0.78rem; color:var(--text3); margin-top:3px;" id="preview-desc">—</div>
+          </div>
+        </div>
+
+        <!-- Allow Skip -->
+        <div class="form-section">
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-title">Allow Skip</div>
+              <div class="toggle-sub">User half-time ke baad ad skip kar sakta hai</div>
+            </div>
+            <label class="toggle-wrap">
+              <input class="toggle-input" type="checkbox" id="adSkipable"
+                     <%= (url.adSkipable !== false) ? 'checked' : '' %>/>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Actions -->
+      <div id="save-msg-wrap" style="padding: 0 1.6rem;"></div>
+      <div class="form-actions">
+        <button class="btn-save" type="button" onclick="saveSettings()">
+          Save Ad Settings
+        </button>
+        <a class="btn-cancel" href="/dashboard">Cancel</a>
+      </div>
+
+    </div>
+  </form>
+
+</main>
+
+<script>
+  // Theme
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('theme-btn').textContent = isDark ? '☾ Dark' : '☀ Light';
+    localStorage.setItem('snaplink-theme', isDark ? 'light' : 'dark');
+  }
+  const saved = localStorage.getItem('snaplink-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀ Light' : '☾ Dark';
+
+  // Toggle ad settings visibility
+  function toggleAdSettings() {
+    const enabled = document.getElementById('adEnabled').checked;
+    document.getElementById('ad-settings').style.opacity  = enabled ? '1' : '0.4';
+    document.getElementById('ad-settings').style.pointerEvents = enabled ? 'all' : 'none';
+  }
+  toggleAdSettings(); // init
+
+  // Timer select
+  function selectTimer(btn) {
+    document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('adTimer').value = btn.dataset.val;
+  }
+
+  // Live preview
+  function updatePreview() {
+    const title = document.getElementById('adTitle').value;
+    const desc  = document.getElementById('adDescription').value;
+    const box   = document.getElementById('preview-box');
+
+    if (title || desc) {
+      box.classList.add('show');
+      document.getElementById('preview-title').textContent = title || 'Sponsored Content';
+      document.getElementById('preview-desc').textContent  = desc  || 'Ad description yahan aayega';
+    } else {
+      box.classList.remove('show');
+    }
+  }
+  updatePreview(); // init
+
+  // Save
+  async function saveSettings() {
+    const msgWrap = document.getElementById('save-msg-wrap');
+    msgWrap.innerHTML = '';
+
+    const body = {
+      adEnabled:     document.getElementById('adEnabled').checked,
+      adTimer:       Number(document.getElementById('adTimer').value),
+      adTitle:       document.getElementById('adTitle').value,
+      adDescription: document.getElementById('adDescription').value,
+      adSkipable:    document.getElementById('adSkipable').checked,
+    };
+
+    try {
+      const res  = await fetch('/manage/ad/<%= url.shortCode %>', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(body)
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        msgWrap.innerHTML = '<div class="save-msg success">✅ Ad settings save ho gayi!</div>';
+        setTimeout(() => msgWrap.innerHTML = '', 3000);
+      } else {
+        msgWrap.innerHTML = `<div class="save-msg error">❌ ${data.error || 'Kuch gadbad hui'}</div>`;
+      }
+    } catch (err) {
+      msgWrap.innerHTML = '<div class="save-msg error">❌ Server se connect nahi ho pa raha</div>';
+    }
+  }
+</script>
+
+</body>
+</html>

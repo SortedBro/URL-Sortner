@@ -5,8 +5,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ad — SnapLink</title>
-    <!-- Monetag Popunder — fires on page load, earns per impression -->
-    <script>(function(s){s.dataset.zone='10796446',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+    <!-- ✅ Monetag Popunder -->
+    <script>(function (s) { s.dataset.zone = '10796169', s.src = 'https://al5sm.com/tag.min.js' })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
@@ -34,7 +36,6 @@
             position: relative;
         }
 
-        /* Animated background */
         .bg-grid {
             position: fixed;
             inset: 0;
@@ -94,7 +95,6 @@
             }
         }
 
-        /* MAIN CARD */
         .ad-card {
             position: relative;
             z-index: 1;
@@ -105,9 +105,7 @@
             max-width: 480px;
             width: 100%;
             backdrop-filter: blur(20px);
-            box-shadow:
-                0 0 0 1px rgba(99, 102, 241, 0.08),
-                0 40px 80px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.08), 0 40px 80px rgba(0, 0, 0, 0.5);
             animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
@@ -123,7 +121,6 @@
             }
         }
 
-        /* Top bar */
         .card-topbar {
             display: flex;
             align-items: center;
@@ -183,7 +180,6 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
-        /* Banner image */
         .ad-banner-wrap {
             width: 100%;
             border-radius: 14px;
@@ -199,7 +195,6 @@
             object-fit: cover;
         }
 
-        /* Content */
         .ad-content {
             margin-bottom: 1.8rem;
         }
@@ -220,7 +215,6 @@
             line-height: 1.65;
         }
 
-        /* TIMER SECTION */
         .timer-section {
             display: flex;
             align-items: center;
@@ -301,7 +295,6 @@
             font-family: 'DM Mono', monospace;
         }
 
-        /* Progress bar */
         .progress-bar-wrap {
             margin-top: 8px;
             height: 3px;
@@ -318,7 +311,6 @@
             transition: width 1s linear;
         }
 
-        /* BUTTONS */
         .btn-continue {
             display: block;
             width: 100%;
@@ -399,7 +391,6 @@
             border-color: rgba(255, 255, 255, 0.14);
         }
 
-        /* Destination preview */
         .destination-preview {
             display: flex;
             align-items: center;
@@ -442,27 +433,23 @@
 </head>
 
 <body>
-
     <div class="bg-grid"></div>
     <div class="bg-glow-1"></div>
     <div class="bg-glow-2"></div>
 
     <div class="ad-card">
 
-        <!-- Top bar -->
         <div class="card-topbar">
             <span class="ad-badge">Sponsored</span>
             <a class="snaplink-brand" href="/">SnapLink</a>
         </div>
 
-        <!-- Banner -->
         <% if (url.adBannerUrl) { %>
             <div class="ad-banner-wrap">
                 <img class="ad-banner" src="<%= url.adBannerUrl %>" alt="Ad Banner" />
             </div>
             <% } %>
 
-                <!-- Ad Content -->
                 <div class="ad-content">
                     <div class="ad-title">
                         <%= url.adTitle || 'Sponsored Content' %>
@@ -474,7 +461,6 @@
                         <% } %>
                 </div>
 
-                <!-- Timer -->
                 <div class="timer-section">
                     <div class="timer-ring">
                         <svg class="timer-svg" viewBox="0 0 64 64">
@@ -489,7 +475,7 @@
                         </svg>
                         <div class="timer-text">
                             <span class="timer-num" id="timer-num">
-                                <%= url.adTimer %>
+                                <%= adTimer %>
                             </span>
                             <span class="timer-s">sec</span>
                         </div>
@@ -503,23 +489,21 @@
                     </div>
                 </div>
 
-                <!-- Continue Button -->
-                <a class="btn-continue disabled" id="continue-btn" href="<%= url.orginalUrl %>">
+                <!-- ✅ originalUrl — sahi variable name -->
+                <a class="btn-continue disabled" id="continue-btn" href="<%= url.originalUrl %>">
                     Continue to Destination →
                 </a>
 
-                <!-- Skip Button -->
                 <% if (url.adSkipable) { %>
                     <button class="btn-skip" id="skip-btn" onclick="skipNow()">
                         Skip Ad
                     </button>
                     <% } %>
 
-                        <!-- Destination preview -->
                         <div class="destination-preview">
                             <div class="dest-icon">🔗</div>
                             <span class="dest-url">
-                                <%= url.orginalUrl %>
+                                <%= url.originalUrl %>
                             </span>
                             <span class="dest-label">destination</span>
                         </div>
@@ -527,10 +511,11 @@
     </div>
 
     <script>
+        // ✅ Sahi variable names — controller se jo pass kiya
         const TOTAL = <%= url.adTimer %>;
         const SKIPABLE = <%= url.adSkipable ? 'true' : 'false' %>;
-        const TARGET = "<%= url.orginalUrl %>";
-        const CIRCUM = 2 * Math.PI * 28; // 175.93
+        const TARGET = '<%= url.originalUrl.replace(/' / g, "\\'") %> ';
+        const CIRCUM = 2 * Math.PI * 28;
 
         let timeLeft = TOTAL;
 
@@ -542,25 +527,18 @@
         const continueBtn = document.getElementById('continue-btn');
         const skipBtn = document.getElementById('skip-btn');
 
-        // Init ring
         ringEl.style.strokeDasharray = CIRCUM;
         ringEl.style.strokeDashoffset = 0;
 
         const tick = setInterval(() => {
             timeLeft--;
 
-            // Ring animation
             const pct = timeLeft / TOTAL;
             const offset = CIRCUM * (1 - pct);
             ringEl.style.strokeDashoffset = offset;
-
-            // Progress bar
             progressEl.style.width = (pct * 100) + '%';
-
-            // Number
             numEl.textContent = timeLeft;
 
-            // Messages
             if (timeLeft <= 3) {
                 msgEl.textContent = 'Almost done!';
                 subEl.textContent = timeLeft + ' second bacha...';
@@ -569,23 +547,18 @@
                 subEl.textContent = timeLeft + ' seconds remaining';
             }
 
-            // Show skip button at half time
             if (SKIPABLE && skipBtn && timeLeft <= Math.floor(TOTAL / 2)) {
                 skipBtn.classList.add('visible');
             }
 
             if (timeLeft <= 0) {
                 clearInterval(tick);
-
-                // Enable button
                 continueBtn.classList.remove('disabled');
                 numEl.textContent = '✓';
                 msgEl.textContent = 'Ready!';
                 subEl.textContent = 'Continue button active ho gaya';
                 progressEl.style.width = '0%';
                 ringEl.style.stroke = '#34d399';
-
-                // Auto redirect after 1s
                 setTimeout(() => { window.location.href = TARGET; }, 800);
             }
         }, 1000);
@@ -595,7 +568,6 @@
             window.location.href = TARGET;
         }
     </script>
-
 </body>
 
 </html>
