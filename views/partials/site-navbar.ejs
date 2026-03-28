@@ -9,6 +9,11 @@ const navLinks = [
     { key: 'about', href: '/about', label: 'About' },
     { key: 'faq', href: '/faq', label: 'FAQ' },
 ];
+const displayUserName = typeof user !== 'undefined' && user
+    ? (user.name || [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.email || 'User')
+    : 'User';
+const displayUserShortName = displayUserName.split(/\s+/)[0];
+const displayUserInitial = displayUserName.charAt(0).toUpperCase();
 %>
 <nav class="<%= navbarClassName %>">
   <a href="/" class="nav-logo">
@@ -26,9 +31,10 @@ const navLinks = [
     <button class="theme-btn" id="themeBtn" type="button" onclick="toggleTheme()">Theme</button>
     <% if (typeof user !== 'undefined' && user) { %>
       <div class="nav-user">
-        <div class="nav-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
-        <span class="nav-username"><%= user.name %></span>
+        <div class="nav-avatar"><%= displayUserInitial %></div>
+        <span class="nav-username"><%= displayUserShortName %></span>
       </div>
+      <a href="/affiliate/wallet" class="nav-link">Earnings</a>
       <a href="/dashboard" class="nav-link">Dashboard</a>
       <a href="/logout" class="nav-btn-outline">Logout</a>
     <% } else { %>

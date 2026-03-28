@@ -13,6 +13,10 @@
   <%- include('../partials/seo-head', { seo }) %>
 </head>
 <body class="app-shell-page">
+  <%
+    const userDisplayName = user ? (user.name || [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.email || 'User') : 'User';
+    const userDisplayInitial = userDisplayName.charAt(0).toUpperCase();
+  %>
 
   <!-- ═══ SIDEBAR ═══ -->
   <aside class="sidebar">
@@ -30,9 +34,9 @@
     </nav>
     <div class="sidebar-bottom">
       <div class="sidebar-user">
-        <div class="s-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+        <div class="s-avatar"><%= userDisplayInitial %></div>
         <div>
-          <div class="s-name"><%= user.name %></div>
+          <div class="s-name"><%= userDisplayName %></div>
           <div class="s-role">Administrator</div>
         </div>
       </div>

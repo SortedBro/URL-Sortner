@@ -74,6 +74,8 @@ window.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('cPick')) updColor('#FAC775');
   if (document.getElementById('passLen')) genPass();
   if (document.getElementById('emojiCats')) initEmoji();
+  if (document.getElementById('caseInput')) updateCaseOutputs();
+  if (document.getElementById('uuidList')) generateUuids();
 
   if (document.getElementById('invDate')) {
     const today = new Date().toISOString().split('T')[0];
@@ -416,7 +418,128 @@ function countWords() {
   document.getElementById('wRead').textContent = w < 1 ? '0 min' : mins < 1 ? '<1 min' : mins + ' min';
 }
 
-/* ════ 11. Password Generator ════ */
+/* Utility micro tools */
+function syncCodecPreview() {
+  const input = document.getElementById('codecInput');
+  const output = document.getElementById('codecOutput');
+  if (!input || !output || output.value) return;
+  output.value = '';
+}
+
+function transformCodec(mode) {
+  const input = document.getElementById('codecInput');
+  const output = document.getElementById('codecOutput');
+  if (!input || !output) return;
+
+  const value = input.value.trim();
+  if (!value) {
+    output.value = '';
+    return;
+  }
+
+  try {
+    output.value = mode === 'encode' ? encodeURIComponent(value) : decodeURIComponent(value);
+  } catch {
+    output.value = 'Unable to process this text. Check the input and try again.';
+  }
+}
+
+function swapCodecFields() {
+  const input = document.getElementById('codecInput');
+  const output = document.getElementById('codecOutput');
+  if (!input || !output) return;
+  const temp = input.value;
+  input.value = output.value;
+  output.value = temp;
+}
+
+function clearCodecFields() {
+  const input = document.getElementById('codecInput');
+  const output = document.getElementById('codecOutput');
+  if (input) input.value = '';
+  if (output) output.value = '';
+}
+
+function splitWordsForCase(text) {
+  return String(text || '')
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .replace(/[^\w\s]+/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function toTitleCase(text) {
+  return splitWordsForCase(text)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+function toCamelCase(text) {
+  const words = splitWordsForCase(text);
+  if (!words.length) return '';
+  return words
+    .map((word, index) => index === 0
+      ? word.toLowerCase()
+      : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('');
+}
+
+function toSeparatedCase(text, separator) {
+  return splitWordsForCase(text).map((word) => word.toLowerCase()).join(separator);
+}
+
+function updateCaseOutputs() {
+  const input = document.getElementById('caseInput');
+  if (!input) return;
+
+  const raw = input.value.trim();
+  document.getElementById('caseUpper').textContent = raw ? raw.toUpperCase() : '-';
+  document.getElementById('caseLower').textContent = raw ? raw.toLowerCase() : '-';
+  document.getElementById('caseTitle').textContent = raw ? toTitleCase(raw) : '-';
+  document.getElementById('caseCamel').textContent = raw ? toCamelCase(raw) : '-';
+  document.getElementById('caseKebab').textContent = raw ? toSeparatedCase(raw, '-') : '-';
+  document.getElementById('caseSnake').textContent = raw ? toSeparatedCase(raw, '_') : '-';
+}
+
+function fillCaseSample() {
+  const input = document.getElementById('caseInput');
+  if (!input) return;
+  input.value = 'snaplink affiliate wallet growth system';
+  updateCaseOutputs();
+}
+
+function createUuid() {
+  if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+    return window.crypto.randomUUID();
+  }
+
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (character) => {
+    const random = Math.random() * 16 | 0;
+    const value = character === 'x' ? random : (random & 0x3 | 0x8);
+    return value.toString(16);
+  });
+}
+
+function generateUuids() {
+  const count = Math.max(1, Math.min(10, parseInt(document.getElementById('uuidCount')?.value || '3', 10)));
+  const prefix = String(document.getElementById('uuidPrefix')?.value || '').trim();
+  const list = document.getElementById('uuidList');
+  if (!list) return;
+
+  const values = Array.from({ length: count }, () => `${prefix}${createUuid()}`);
+  list.innerHTML = values
+    .map((value, index) => `<div class="hrow"><span>ID ${index + 1}</span><code>${value}</code><button onclick="copyText('${value}',this)">Copy</button></div>`)
+    .join('');
+}
+
+function copyAllUuids(button) {
+  const values = [...document.querySelectorAll('#uuidList code')]
+    .map((element) => element.textContent)
+    .filter(Boolean);
+  copyText(values.join('\n'), button);
+}
 function genPass() {
   let chars = '';
   if (document.getElementById('passUpper').checked) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -761,180 +884,8 @@ function printInvoice() {
 
 
 /* ════ Age Calculator ════ */
-function calcAge() {
-  const dob = new Date(document.getElementById('ageDob').value);
-  const on  = new Date(document.getElementById('ageOn').value || new Date());
-  if (!document.getElementById('ageDob').value) return;
-  if (isNaN(dob)) return;
+/* Additional productivity and utility tools */
 
-  let years  = on.getFullYear() - dob.getFullYear();
-  let months = on.getMonth()    - dob.getMonth();
-  let days   = on.getDate()     - dob.getDate();
-
-  if (days < 0) { months--; const prev = new Date(on.getFullYear(), on.getMonth(), 0); days += prev.getDate(); }
-  if (months < 0) { years--; months += 12; }
-
-  const totalDays   = Math.floor((on - dob) / 86400000);
-  const totalWeeks  = Math.floor(totalDays / 7);
-  const totalMonths = years * 12 + months;
-  const nextBday    = new Date(on.getFullYear(), dob.getMonth(), dob.getDate());
-  if (nextBday < on) nextBday.setFullYear(on.getFullYear() + 1);
-  const daysToNext  = Math.ceil((nextBday - on) / 86400000);
-
-  document.getElementById('ageResult').innerHTML = `
-    <div class="age-cards">
-      <div class="age-card main"><div class="age-big">${years}</div><div class="age-unit">Years</div></div>
-      <div class="age-card"><div class="age-big">${months}</div><div class="age-unit">Months</div></div>
-      <div class="age-card"><div class="age-big">${days}</div><div class="age-unit">Days</div></div>
-    </div>
-    <div class="age-extras">
-      <div class="age-extra-row"><span>Total Days</span><strong>${totalDays.toLocaleString('en-IN')}</strong></div>
-      <div class="age-extra-row"><span>Total Weeks</span><strong>${totalWeeks.toLocaleString('en-IN')}</strong></div>
-      <div class="age-extra-row"><span>Total Months</span><strong>${totalMonths.toLocaleString('en-IN')}</strong></div>
-      <div class="age-extra-row accent"><span>Next Birthday In</span><strong>${daysToNext} days</strong></div>
-    </div>`;
-}
-document.addEventListener('DOMContentLoaded', () => {
-  if (document.getElementById('ageOn')) {
-    document.getElementById('ageOn').value = new Date().toISOString().split('T')[0];
-  }
-});
-
-/* ════ Unit Converter ════ */
-const unitData = {
-  length: {
-    units: ['Meter','Kilometer','Centimeter','Millimeter','Mile','Yard','Foot','Inch','Nautical Mile'],
-    base: 'Meter',
-    toBase: {Meter:1,Kilometer:1000,Centimeter:0.01,Millimeter:0.001,Mile:1609.344,Yard:0.9144,Foot:0.3048,Inch:0.0254,'Nautical Mile':1852},
-  },
-  weight: {
-    units: ['Kilogram','Gram','Milligram','Pound','Ounce','Ton','Quintal'],
-    base: 'Kilogram',
-    toBase: {Kilogram:1,Gram:0.001,Milligram:0.000001,Pound:0.453592,Ounce:0.0283495,Ton:1000,Quintal:100},
-  },
-  temp: {
-    units: ['Celsius','Fahrenheit','Kelvin'],
-    base: 'Celsius',
-    toBase: null, // special handling
-  },
-  area: {
-    units: ['Square Meter','Square Kilometer','Square Foot','Acre','Hectare','Square Mile','Square Yard'],
-    base: 'Square Meter',
-    toBase: {'Square Meter':1,'Square Kilometer':1e6,'Square Foot':0.092903,'Acre':4046.86,'Hectare':10000,'Square Mile':2.59e6,'Square Yard':0.836127},
-  },
-  speed: {
-    units: ['m/s','km/h','mph','knot','ft/s'],
-    base: 'm/s',
-    toBase: {'m/s':1,'km/h':0.277778,'mph':0.44704,'knot':0.514444,'ft/s':0.3048},
-  },
-  data: {
-    units: ['Byte','Kilobyte','Megabyte','Gigabyte','Terabyte','Bit'],
-    base: 'Byte',
-    toBase: {Byte:1,Kilobyte:1024,Megabyte:1048576,Gigabyte:1073741824,Terabyte:1099511627776,Bit:0.125},
-  },
-};
-
-function unitCatChange() {
-  const cat = document.getElementById('unitCat').value;
-  const data = unitData[cat];
-  const fromSel = document.getElementById('unitFrom');
-  const toSel   = document.getElementById('unitTo');
-  fromSel.innerHTML = data.units.map(u => `<option>${u}</option>`).join('');
-  toSel.innerHTML   = data.units.map(u => `<option>${u}</option>`).join('');
-  if (data.units[1]) toSel.value = data.units[1];
-  convertUnit();
-}
-
-function convertUnit() {
-  const cat   = document.getElementById('unitCat').value;
-  const from  = document.getElementById('unitFrom').value;
-  const to    = document.getElementById('unitTo').value;
-  const val   = parseFloat(document.getElementById('unitVal').value);
-  if (isNaN(val)) { document.getElementById('unitResult').textContent = '—'; return; }
-
-  let result;
-  if (cat === 'temp') {
-    let celsius = from === 'Celsius' ? val : from === 'Fahrenheit' ? (val-32)*5/9 : val - 273.15;
-    result = to === 'Celsius' ? celsius : to === 'Fahrenheit' ? celsius*9/5+32 : celsius + 273.15;
-  } else {
-    const data = unitData[cat];
-    result = (val * data.toBase[from]) / data.toBase[to];
-  }
-
-  const fmt = result > 1e9 ? result.toExponential(4) : result % 1 === 0 ? result.toLocaleString('en-IN') : parseFloat(result.toFixed(6)).toLocaleString('en-IN');
-  document.getElementById('unitResult').textContent = fmt;
-  document.getElementById('unitResultLabel').textContent = `${val} ${from} = ${fmt} ${to}`;
-  document.getElementById('unitFormula').textContent = from === to ? 'Same unit!' : '';
-}
-document.addEventListener('DOMContentLoaded', () => { if(document.getElementById('unitCat')) unitCatChange(); });
-
-/* ════ Gradient Generator ════ */
-const gradPresetsList = [
-  {name:'Sunset',   stops:['#f97316','#ec4899']},
-  {name:'Ocean',    stops:['#0ea5e9','#6366f1']},
-  {name:'Forest',   stops:['#22c55e','#0ea5e9']},
-  {name:'Fire',     stops:['#ef4444','#f97316','#facc15']},
-  {name:'Purple',   stops:['#8b5cf6','#ec4899']},
-  {name:'Gold',     stops:['#FAC775','#e0aa55']},
-  {name:'Night',    stops:['#1e1b4b','#312e81','#4338ca']},
-  {name:'Peach',    stops:['#fda4af','#fb923c']},
-];
-
-let gradStops = [{color:'#FAC775',pos:0},{color:'#e0aa55',pos:100}];
-
-function initGrad() {
-  renderGradStops();
-  const pg = document.getElementById('gradPresets');
-  if (!pg) return;
-  gradPresetsList.forEach(p => {
-    const btn = document.createElement('button');
-    btn.className = 'grad-preset-swatch';
-    btn.style.background = `linear-gradient(135deg, ${p.stops.join(',')})`;
-    btn.title = p.name;
-    btn.onclick = () => { gradStops = p.stops.map((c,i) => ({color:c, pos: Math.round(i/(p.stops.length-1)*100)})); renderGradStops(); buildGrad(); };
-    pg.appendChild(btn);
-  });
-  buildGrad();
-}
-
-function renderGradStops() {
-  const wrap = document.getElementById('gradStops');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-  gradStops.forEach((s,i) => {
-    const row = document.createElement('div'); row.className = 'grad-stop-row';
-    row.innerHTML = `<input type="color" value="${s.color}" onchange="gradStops[${i}].color=this.value;buildGrad()" class="grad-color-inp"><input type="number" value="${s.pos}" min="0" max="100" onchange="gradStops[${i}].pos=parseInt(this.value);buildGrad()" class="tinput" style="width:70px"><button class="tbtn-xs secondary" onclick="gradStops.splice(${i},1);renderGradStops();buildGrad()">✕</button>`;
-    wrap.appendChild(row);
-  });
-}
-
-function addGradStop() {
-  gradStops.push({color:'#ffffff',pos:50});
-  gradStops.sort((a,b)=>a.pos-b.pos);
-  renderGradStops(); buildGrad();
-}
-
-function buildGrad() {
-  const type  = document.getElementById('gradType').value;
-  const angle = document.getElementById('gradAngle').value;
-  const stops = [...gradStops].sort((a,b)=>a.pos-b.pos).map(s=>`${s.color} ${s.pos}%`).join(', ');
-  document.getElementById('gradAngleField').style.display = type === 'linear' ? 'block' : 'none';
-
-  let css;
-  if (type === 'linear')      css = `linear-gradient(${angle}deg, ${stops})`;
-  else if (type === 'radial') css = `radial-gradient(circle, ${stops})`;
-  else                        css = `conic-gradient(from ${angle}deg, ${stops})`;
-
-  const box = document.getElementById('gradPreviewBox');
-  if (box) box.style.background = css;
-  const cssOut = document.getElementById('gradCSS');
-  if (cssOut) cssOut.value = `background: ${css};`;
-}
-document.addEventListener('DOMContentLoaded', () => { if(document.getElementById('gradStops')) initGrad(); });
-
-
-
-/* ════ Number to Words ════ */
 const ones = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
 const tens = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
 const hindiOnes = ['','एक','दो','तीन','चार','पाँच','छह','सात','आठ','नौ','दस','ग्यारह','बारह','तेरह','चौदह','पंद्रह','सोलह','सत्रह','अठारह','उन्नीस'];

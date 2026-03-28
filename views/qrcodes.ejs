@@ -14,6 +14,11 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
 <body class="app-shell-page">
+<%
+  const userDisplayName = user ? (user.name || [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.email || 'User') : 'User';
+  const userDisplayShortName = userDisplayName.split(/\s+/)[0];
+  const userDisplayInitial = userDisplayName.charAt(0).toUpperCase();
+%>
 
 <aside class="sidebar">
   <a class="sidebar-logo" href="/">
@@ -30,6 +35,10 @@
   </a>
   <div class="sidebar-sep"></div>
   <div class="sidebar-section">Manage</div>
+  <a class="nav-item" href="/analytics">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Analytics
+  </a>
   <a class="nav-item active" href="/qr-codes">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="5"/><rect x="16" y="3" width="5" height="5"/><rect x="3" y="16" width="5" height="5"/><path d="M21 16h-3v3M21 21h-1M16 16h1"/></svg>
     QR Codes
@@ -45,9 +54,9 @@
     </div>
     <div class="plan-card">
       <div class="plan-card-top">
-        <div class="plan-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+        <div class="plan-avatar"><%= userDisplayInitial %></div>
         <div>
-          <div class="plan-username"><%= user.name.split(' ')[0] %></div>
+          <div class="plan-username"><%= userDisplayShortName %></div>
           <div class="plan-label"><%= user.plan === 'free' ? 'FREE PLAN' : user.plan === 'pro' ? 'PRO' : 'BUSINESS' %></div>
         </div>
       </div>

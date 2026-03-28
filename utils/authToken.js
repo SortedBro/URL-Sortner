@@ -8,9 +8,10 @@ const REFRESH_TOKEN_TTL = '10h';
  * Builds the token payload expected across the app.
  */
 function buildAuthPayload(userDoc) {
+    const fullName = [userDoc.firstName, userDoc.lastName].filter(Boolean).join(' ').trim();
     return {
         user: userDoc._id,
-        name: userDoc.firstName,
+        name: fullName || userDoc.firstName || 'User',
         plan: userDoc.plan,
         role: userDoc.role,
     };

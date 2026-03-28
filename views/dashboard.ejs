@@ -16,6 +16,11 @@
 </head>
 
 <body class="app-shell-page">
+  <%
+    const userDisplayName = user ? (user.name || [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.email || 'User') : 'User';
+    const userDisplayShortName = userDisplayName.split(/\s+/)[0];
+    const userDisplayInitial = userDisplayName.charAt(0).toUpperCase();
+  %>
 
   <!-- ═══════ SIDEBAR ═══════ -->
   <aside class="sidebar">
@@ -80,6 +85,29 @@
       Settings
     </a>
 
+    <div class="sidebar-sep"></div>
+    <div class="sidebar-section">Growth</div>
+    <a class="nav-item" href="/affiliate/dashboard">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 17l6-6 4 4 8-8" />
+        <path d="M14 7h7v7" />
+      </svg>
+      Affiliate
+    </a>
+    <a class="nav-item" href="/affiliate/wallet">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="6" width="20" height="12" rx="2" />
+        <path d="M16 12h.01" />
+      </svg>
+      Wallet
+    </a>
+    <a class="nav-item" href="/brand/campaigns">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2l8 4v6c0 5-3.5 9.5-8 10-4.5-.5-8-5-8-10V6l8-4z" />
+      </svg>
+      Brand
+    </a>
+
     <div class="sidebar-bottom">
       <div class="theme-row">
         <span>Theme</span>
@@ -90,11 +118,11 @@
         <div class="plan-card">
           <div class="plan-card-top">
             <div class="plan-avatar">
-              <%= user.name.charAt(0).toUpperCase() %>
+              <%= userDisplayInitial %>
             </div>
             <div class="plan-name-wrap">
               <div class="plan-username">
-                <%= user.name.split(' ')[0] %></div>
+                <%= userDisplayShortName %></div>
             <div class="plan-label">
               <%= user.plan === 'free' ? 'FREE PLAN' : user.plan==='pro' ? 'PRO' : 'BUSINESS' %>
               </div>
@@ -127,7 +155,7 @@
   <header class="topbar">
     <div class="topbar-left">
       <h1>Hey, <span>
-          <%= typeof user !=='undefined' ? user.name.split(' ')[0] : ' there' %>
+          <%= typeof user !=='undefined' ? userDisplayShortName : ' there' %>
         </span></h1>
       <p>Tumhare saare links aur unki analytics ek jagah</p>
     </div>

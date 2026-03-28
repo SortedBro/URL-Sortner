@@ -16,20 +16,15 @@
           { '@type': 'ListItem', position: 2, name: 'Image Compressor' },
           { '@type': 'ListItem', position: 3, name: 'UTM Builder' },
           { '@type': 'ListItem', position: 4, name: 'JSON Formatter' },
-          { '@type': 'ListItem', position: 5, name: 'Password Generator' }
+          { '@type': 'ListItem', position: 5, name: 'Password Generator' },
+          { '@type': 'ListItem', position: 6, name: 'URL Encode / Decode' },
+          { '@type': 'ListItem', position: 7, name: 'Text Case Converter' },
+          { '@type': 'ListItem', position: 8, name: 'UUID Generator' }
         ]
       }
     };
   %>
   <%- include('partials/seo-head', { seo }) %>
-  <script>
-    window.openTool = function(id, btn) {
-      document.addEventListener('DOMContentLoaded', function() {
-        if (window._toolsReady) window.openTool(id, btn);
-        else window.addEventListener('toolsReady', () => window.openTool(id, btn));
-      });
-    };
-  </script>
 </head>
 <body class="site-page tools-page">
 <%- include('partials/site-navbar', { currentPage: 'tools' }) %>
@@ -79,6 +74,9 @@
         <button class="tnav-card" onclick="openTool('b64')"><span class="tnav-icon">B64</span><span class="tnav-label">Base64</span></button>
         <button class="tnav-card" onclick="openTool('color')"><span class="tnav-icon">CLR</span><span class="tnav-label">Color Picker</span></button>
         <button class="tnav-card" onclick="openTool('word')"><span class="tnav-icon">TXT</span><span class="tnav-label">Word Counter</span></button>
+        <button class="tnav-card" onclick="openTool('codec')"><span class="tnav-icon">URL</span><span class="tnav-label">Encode / Decode</span></button>
+        <button class="tnav-card" onclick="openTool('case')"><span class="tnav-icon">Aa</span><span class="tnav-label">Case Converter</span></button>
+        <button class="tnav-card" onclick="openTool('uuid')"><span class="tnav-icon">ID</span><span class="tnav-label">UUID Generator</span></button>
         <button class="tnav-card" onclick="openTool('pass')"><span class="tnav-icon">KEY</span><span class="tnav-label">Password Generator</span></button>
         <button class="tnav-card" onclick="openTool('fake')"><span class="tnav-icon">ID</span><span class="tnav-label">Fake Data</span></button>
         <button class="tnav-card" onclick="openTool('md')"><span class="tnav-icon">MD</span><span class="tnav-label">Markdown Editor</span></button>
@@ -94,6 +92,7 @@
         <button class="tnav-card" onclick="openTool('grad')"><span class="tnav-icon">CSS</span><span class="tnav-label">CSS Gradient</span></button>
         <button class="tnav-card" onclick="openTool('age')"><span class="tnav-icon">AGE</span><span class="tnav-label">Age Calculator</span></button>
       </div>
+    </div>
   </section>
 
   <!-- Tool tabs -->
@@ -114,6 +113,9 @@
       <button class="ttab" id="ttab-b64"   onclick="openTool('b64',this)">Base64</button>
       <button class="ttab" id="ttab-color" onclick="openTool('color',this)">Color</button>
       <button class="ttab" id="ttab-word"  onclick="openTool('word',this)">Word Count</button>
+      <button class="ttab" id="ttab-codec" onclick="openTool('codec',this)">URL Codec</button>
+      <button class="ttab" id="ttab-case"  onclick="openTool('case',this)">Case</button>
+      <button class="ttab" id="ttab-uuid"  onclick="openTool('uuid',this)">UUID</button>
 
       <button class="ttab" id="ttab-num"    onclick="openTool('num',this)">Num to Words</button>
       <button class="ttab" id="ttab-aspect" onclick="openTool('aspect',this)">Aspect</button>
@@ -635,6 +637,111 @@
           <div class="wstat accent"><div class="wsnum" id="wRead">0 min</div><div class="wslabel">Reading Time</div></div>
           <div class="wstat"><div class="wsnum" id="wLines">0</div><div class="wslabel">Lines</div></div>
           <div class="wstat"><div class="wsnum" id="wUniq">0</div><div class="wslabel">Unique Words</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tpanel" id="tp-codec">
+      <div class="tpanel-header">
+        <div>
+          <h2>URL Encode / Decode</h2>
+          <p>Tracking URLs, query params, aur encoded strings ko quickly clean ya convert karo.</p>
+        </div>
+      </div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield">
+            <label>Input</label>
+            <textarea id="codecInput" class="tcode" placeholder="Paste encoded ya normal URL/text..." style="min-height:240px" oninput="syncCodecPreview()"></textarea>
+          </div>
+          <div class="tactions">
+            <button class="tbtn primary" onclick="transformCodec('encode')">Encode</button>
+            <button class="tbtn secondary" onclick="transformCodec('decode')">Decode</button>
+            <button class="tbtn secondary" onclick="swapCodecFields()">Swap</button>
+            <button class="tbtn secondary" onclick="clearCodecFields()">Clear</button>
+          </div>
+        </div>
+        <div class="tpreview-col">
+          <div class="tfield">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <label style="margin:0">Result</label>
+              <button class="tbtn-xs" onclick="copyText(document.getElementById('codecOutput').value,this)">Copy</button>
+            </div>
+            <textarea id="codecOutput" class="tcode" readonly placeholder="Encoded ya decoded result yahan dikhega..." style="min-height:240px"></textarea>
+          </div>
+          <div class="utm-guide">
+            <h4>Quick use cases</h4>
+            <div class="ug-row"><b>UTM</b><span>Spaces aur special characters ko safe query string me convert karo.</span></div>
+            <div class="ug-row"><b>Decode</b><span>%20, %2F, aur query values ko readable text me wapas lao.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tpanel" id="tp-case">
+      <div class="tpanel-header">
+        <div>
+          <h2>Text Case Converter</h2>
+          <p>Headlines, slugs, usernames, aur content formatting ke liye text ko instantly reshape karo.</p>
+        </div>
+      </div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield">
+            <label>Source Text</label>
+            <textarea id="caseInput" class="tcode" placeholder="Paste heading, paragraph, ya raw text..." style="min-height:280px" oninput="updateCaseOutputs()"></textarea>
+          </div>
+          <div class="tactions">
+            <button class="tbtn primary" onclick="fillCaseSample()">Use Sample</button>
+            <button class="tbtn secondary" onclick="document.getElementById('caseInput').value='';updateCaseOutputs()">Clear</button>
+          </div>
+        </div>
+        <div class="tpreview-col">
+          <div class="hash-results-list">
+            <div class="hrow"><span>UPPER</span><code id="caseUpper">-</code><button onclick="copyText(document.getElementById('caseUpper').textContent,this)">Copy</button></div>
+            <div class="hrow"><span>lower</span><code id="caseLower">-</code><button onclick="copyText(document.getElementById('caseLower').textContent,this)">Copy</button></div>
+            <div class="hrow"><span>Title</span><code id="caseTitle">-</code><button onclick="copyText(document.getElementById('caseTitle').textContent,this)">Copy</button></div>
+            <div class="hrow"><span>camel</span><code id="caseCamel">-</code><button onclick="copyText(document.getElementById('caseCamel').textContent,this)">Copy</button></div>
+            <div class="hrow"><span>kebab</span><code id="caseKebab">-</code><button onclick="copyText(document.getElementById('caseKebab').textContent,this)">Copy</button></div>
+            <div class="hrow"><span>snake</span><code id="caseSnake">-</code><button onclick="copyText(document.getElementById('caseSnake').textContent,this)">Copy</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tpanel" id="tp-uuid">
+      <div class="tpanel-header">
+        <div>
+          <h2>UUID Generator</h2>
+          <p>Testing, IDs, tokens, aur dummy references ke liye clean unique IDs generate karo.</p>
+        </div>
+      </div>
+      <div class="tpanel-body">
+        <div class="tform-col">
+          <div class="tfield-row">
+            <div class="tfield">
+              <label>How many?</label>
+              <select id="uuidCount" class="tinput">
+                <option value="1">1</option>
+                <option value="3" selected>3</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <div class="tfield">
+              <label>Prefix (optional)</label>
+              <input type="text" id="uuidPrefix" class="tinput" placeholder="snap_" maxlength="20" />
+            </div>
+          </div>
+          <div class="tactions">
+            <button class="tbtn primary" onclick="generateUuids()">Generate UUIDs</button>
+            <button class="tbtn secondary" onclick="copyAllUuids(this)">Copy All</button>
+          </div>
+        </div>
+        <div class="tpreview-col">
+          <div class="hash-results-list" id="uuidList">
+            <div class="hrow"><span>UUID</span><code>Click generate to create IDs</code><button disabled>Copy</button></div>
+          </div>
         </div>
       </div>
     </div>

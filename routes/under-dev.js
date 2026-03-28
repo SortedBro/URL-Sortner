@@ -34,6 +34,23 @@ function renderLegalPage(pageKey) {
 }
 
 router.get('/dashboard', auth, getDashboard);
+router.get('/analytics', auth, async (req, res) => {
+    try {
+        const topUrl = await Url.findOne({ createdBy: req.user.user })
+            .sort({ clicks: -1, createdAt: -1 })
+            .select('shortCode')
+            .lean();
+
+        if (!topUrl?.shortCode) {
+            return res.redirect('/dashboard');
+        }
+
+        return res.redirect(`/analytics/${topUrl.shortCode}`);
+    } catch (error) {
+        console.log(error);
+        return res.redirect('/dashboard');
+    }
+});
 router.get('/analytics/:code', auth, getAnalytics);
 router.post('/delete/:code', auth, deleteUrl);
 router.get('/qr-codes', auth, async (req, res) => {

@@ -13,6 +13,13 @@
   <%- include('partials/seo-head', { seo }) %>
 </head>
 <body class="workspace-page">
+  <%
+    const safeStatementMonthLabel = typeof statementMonthLabel !== 'undefined' ? statementMonthLabel : 'Current month';
+    const safeStatementMonth = typeof statementMonth !== 'undefined' ? statementMonth : '';
+    const safeMonthOptions = Array.isArray(monthOptions) ? monthOptions : [];
+    const safeStatementSummary = typeof statementSummary !== 'undefined' && statementSummary ? statementSummary : {};
+    const safeStatementRows = Array.isArray(statementRows) ? statementRows : [];
+  %>
   <nav class="workspace-nav">
     <a class="brand" href="/">
       <span class="brand-dot"></span>
@@ -20,7 +27,9 @@
     </a>
     <div class="nav-actions">
       <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">Theme</button>
+      <a class="btn-nav" href="/dashboard">Dashboard</a>
       <a class="btn-nav" href="/affiliate/dashboard">Affiliate</a>
+      <a class="btn-nav" href="/brand/campaigns">Brand</a>
       <a class="btn-nav" href="/logout">Logout</a>
     </div>
   </nav>
@@ -31,7 +40,7 @@
         <div class="eyebrow">Affiliate Wallet</div>
         <h1>Available Balance</h1>
         <div class="hero-amount">Rs <%= Number(wallet.balance || 0).toFixed(2) %></div>
-        <div class="balance-line">Statement month: <%= statementMonthLabel %></div>
+        <div class="balance-line">Statement month: <%= safeStatementMonthLabel %></div>
       </div>
       <div class="hero-stats">
         <div class="mini-stat">
@@ -132,39 +141,39 @@
       <div class="card-head">
         <div>
           <div class="card-title">Ledger Statement</div>
-          <div class="card-sub"><%= statementMonthLabel %></div>
+          <div class="card-sub"><%= safeStatementMonthLabel %></div>
         </div>
         <div class="statement-controls">
           <select class="month-select" id="statement-month" onchange="changeStatementMonth(this.value)">
-            <% monthOptions.forEach((option) => { %>
-              <option value="<%= option.key %>" <%= option.key === statementMonth ? 'selected' : '' %>><%= option.label %></option>
+            <% safeMonthOptions.forEach((option) => { %>
+              <option value="<%= option.key %>" <%= option.key === safeStatementMonth ? 'selected' : '' %>><%= option.label %></option>
             <% }) %>
           </select>
-          <a class="btn-download" href="/affiliate/wallet/statements?month=<%= statementMonth %>">Download CSV</a>
+          <a class="btn-download" href="/affiliate/wallet/statements?month=<%= safeStatementMonth %>">Download CSV</a>
         </div>
       </div>
 
       <div class="summary-grid">
         <div class="summary-box">
           <div class="summary-label">Opening</div>
-          <div class="summary-value">Rs <%= Number(statementSummary.opening || 0).toFixed(2) %></div>
+          <div class="summary-value">Rs <%= Number(safeStatementSummary.opening || 0).toFixed(2) %></div>
         </div>
         <div class="summary-box">
           <div class="summary-label">Credits</div>
-          <div class="summary-value">Rs <%= Number(statementSummary.credit || 0).toFixed(2) %></div>
+          <div class="summary-value">Rs <%= Number(safeStatementSummary.credit || 0).toFixed(2) %></div>
         </div>
         <div class="summary-box">
           <div class="summary-label">Debits</div>
-          <div class="summary-value">Rs <%= Number(statementSummary.debit || 0).toFixed(2) %></div>
+          <div class="summary-value">Rs <%= Number(safeStatementSummary.debit || 0).toFixed(2) %></div>
         </div>
         <div class="summary-box">
           <div class="summary-label">Closing</div>
-          <div class="summary-value">Rs <%= Number(statementSummary.closing || 0).toFixed(2) %></div>
+          <div class="summary-value">Rs <%= Number(safeStatementSummary.closing || 0).toFixed(2) %></div>
         </div>
       </div>
 
       <div class="table-wrap">
-        <% if (!statementRows || statementRows.length === 0) { %>
+        <% if (!safeStatementRows || safeStatementRows.length === 0) { %>
           <div class="empty">No ledger transactions in this month</div>
         <% } else { %>
           <table>
@@ -178,7 +187,7 @@
               </tr>
             </thead>
             <tbody>
-              <% statementRows.forEach((row) => { %>
+              <% safeStatementRows.forEach((row) => { %>
                 <tr>
                   <td><%= new Date(row.date).toLocaleString('en-IN') %></td>
                   <td><%= row.type %></td>
