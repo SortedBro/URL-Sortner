@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
@@ -32,6 +30,7 @@ const { startClickFlushWorker, flushClickQueueNow } = require('./utils/clickQueu
 const { cacheAnonymousPage } = require('./utils/pageCache');
 
 const app = express();
+let hasBootstrapped = false;
 
 /**
  * Parses request body for regular routes and preserves raw webhook body for signature validation.
@@ -134,6 +133,22 @@ function configureRouteContext(expressApp) {
 }
 
 function registerCoreRoutes(expressApp) {
+    expressApp.get('/healthz', (req, res) => {
+        return res.status(200).json({
+            ok: true,
+            pid: process.pid,
+            uptimeSeconds: Math.round(process.uptime()),
+        });
+    });
+
+    expressApp.get('/readyz', (req, res) => {
+        const isReady = Boolean(expressApp.locals.isReady);
+        return res.status(isReady ? 200 : 503).json({
+            ok: isReady,
+            pid: process.pid,
+        });
+    });
+
     expressApp.get(
         '/about',
         cacheAnonymousPage({ ttlSeconds: 120 }),
@@ -215,6 +230,13 @@ function registerFallbackHandlers(expressApp) {
 }
 
 async function startServer() {
+    if (hasBootstrapped) {
+        return app;
+    }
+
+    hasBootstrapped = true;
+    app.locals.isReady = false;
+
     validateCriticalConfig();
     await connectDB();
 
@@ -238,13 +260,24 @@ async function startServer() {
         });
     });
 
-    app.listen(appConfig.port, () => {
-        console.log(`Server is running at ${appConfig.port}`);
-        console.log(`http://localhost:${appConfig.port}/`);
+    return new Promise((resolve) => {
+        const httpServer = app.listen(appConfig.port, () => {
+            app.locals.isReady = true;
+            console.log(`Server is running at ${appConfig.port}`);
+            console.log(`http://localhost:${appConfig.port}/`);
+            resolve(httpServer);
+        });
     });
 }
 
-startServer().catch((error) => {
-    console.error('Server bootstrap failed:', error);
-    process.exit(1);
-});
+if (require.main === module) {
+    startServer().catch((error) => {
+        console.error('Server bootstrap failed:', error);
+        process.exit(1);
+    });
+}
+
+module.exports = {
+    app,
+    startServer,
+};
