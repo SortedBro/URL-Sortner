@@ -6,6 +6,7 @@ const { sendOtpEmail, sendWelcomeEmail } = require('../utils/sendEmail');
 const { issueAuthCookie } = require('../utils/authToken');
 
 const PENDING_SIGNUP_TTL_MS = 15 * 60 * 1000;
+const OTP_LENGTH = 6;
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -29,7 +30,7 @@ function renderLoginError(res, email, message) {
     });
 }
 
-exports.handleUserSignUP = async (req, res) => {
+const handleUserSignup = async (req, res) => {
     const firstName = String(req.body.firstName || '').trim();
     const lastName = String(req.body.lastName || '').trim();
     const email = normalizeEmail(req.body.email);
@@ -72,11 +73,23 @@ exports.handleUserSignUP = async (req, res) => {
     }
 };
 
+exports.handleUserSignup = handleUserSignup;
+// Backward-compatible export for existing route imports.
+exports.handleUserSignUP = handleUserSignup;
+
 exports.verifyOtp = async (req, res) => {
     const email = normalizeEmail(req.body.email);
     const otp = String(req.body.otp || '').trim();
 
     try {
+        if (otp.length !== OTP_LENGTH || !/^\d{6}$/.test(otp)) {
+            return res.render('verify-otp', {
+                error: 'OTP format invalid hai',
+                email,
+                user: null,
+            });
+        }
+
         const otpRecord = await Otp.findOne({ email });
         if (!otpRecord || otpRecord.otp !== otp) {
             return res.render('verify-otp', {

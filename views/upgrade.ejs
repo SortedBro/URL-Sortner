@@ -5,180 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Upgrade — SnapLink</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/css/home.css"/>
-  <style>
-    .upgrade-wrap {
-      max-width: 480px;
-      margin: 4rem auto;
-      padding: 0 1.5rem;
-    }
-    .upgrade-card {
-      background: var(--card);
-      border: 0.5px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
-      animation: fadeUp 0.5s ease both;
-    }
-    .upgrade-card.pro-card  { border-color: var(--accent); }
-    .upgrade-card.biz-card  { border-color: #7EB8F7; }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--text2);
-      text-decoration: none;
-      margin-bottom: 1.5rem;
-      font-family: 'DM Mono', monospace;
-    }
-    .back-link:hover { color: var(--accent); }
-
-    .upgrade-plan-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 6px;
-    }
-    .upgrade-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.8rem;
-      font-weight: 800;
-      letter-spacing: -1px;
-      margin-bottom: 1.5rem;
-    }
-
-    /* Billing toggle */
-    .billing-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 1.5rem;
-    }
-    .billing-opt {
-      flex: 1;
-      padding: 10px;
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 12px;
-      font-family: 'DM Mono', monospace;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-      color: var(--text2);
-    }
-    .billing-opt.active {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--card);
-    }
-    .billing-opt .save {
-      display: block;
-      font-size: 10px;
-      color: var(--green);
-      margin-top: 2px;
-    }
-
-    /* Price display */
-    .price-display {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      padding: 1.5rem;
-      background: var(--surface);
-      border-radius: 10px;
-      border: 0.5px solid var(--border);
-    }
-    .price-big {
-      font-family: 'Syne', sans-serif;
-      font-size: 3rem;
-      font-weight: 800;
-      letter-spacing: -2px;
-      color: var(--accent);
-    }
-    .price-sub {
-      font-size: 12px;
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      margin-top: 4px;
-    }
-
-    /* Features */
-    .upgrade-features {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 1.5rem;
-    }
-    .upgrade-features li {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--text2);
-    }
-    .upgrade-features li span:first-child {
-      color: var(--green);
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    /* Pay button */
-    .pay-btn {
-      width: 100%;
-      padding: 14px;
-      background: var(--accent);
-      color: #1a1a18;
-      font-size: 14px;
-      font-weight: 700;
-      font-family: 'Syne', sans-serif;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .pay-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }
-    .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    .secure-note {
-      text-align: center;
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 10px;
-      font-family: 'DM Mono', monospace;
-    }
-
-    .success-box {
-      display: none;
-      text-align: center;
-      padding: 2rem;
-    }
-    .success-box .success-icon { font-size: 3rem; margin-bottom: 1rem; }
-    .success-box h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-    .success-box p { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; }
-    .success-box a {
-      display: inline-block;
-      padding: 10px 24px;
-      background: var(--accent);
-      color: #1a1a18;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 700;
-      font-family: 'Syne', sans-serif;
-    }
-  </style>
+  <link rel="stylesheet" href="/css/pages/home.css"/>
+  <link rel="stylesheet" href="/css/pages/generated/upgrade.inline.css" />
 </head>
 <body>
 
@@ -268,18 +96,9 @@
   <!-- Razorpay SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
+  <script src="/js/shared/theme.js"></script>
   <script>
     // Theme
-    const saved = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', saved);
-    document.getElementById('themeBtn').textContent = saved === 'dark' ? '🌙' : '☀️';
-    function toggleTheme() {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const next = isDark ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
-    }
 
     // Plan data
     const plan = '<%= plan %>';
@@ -369,3 +188,7 @@
 
 </body>
 </html>
+
+
+
+

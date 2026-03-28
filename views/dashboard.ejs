@@ -11,7 +11,7 @@
     rel="stylesheet" />
   <link rel="icon" type="image/png" href="/favicon.png" />
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/pages/dashboard.css">
 </head>
 
 <body>
@@ -522,17 +522,8 @@
     </div>
   </div>
 
+  <script src="/js/shared/theme.js"></script>
   <script>
-    const saved = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', saved);
-    document.getElementById('themeBtn').textContent = saved === 'dark' ? '🌙' : '☀️';
-    function toggleTheme() {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const next = isDark ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
-    }
 
     function showTab(name, btn) {
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -621,3 +612,6 @@
 </body>
 
 </html>
+
+
+

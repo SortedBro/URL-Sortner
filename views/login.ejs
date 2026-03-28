@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Log In — SnapLink</title>
-  <link rel="stylesheet" href="/css/login.css">
+  <link rel="stylesheet" href="/css/pages/login.css">
   <link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
@@ -108,19 +108,8 @@
 
   </main>
 
+  <script src="/js/shared/theme.js"></script>
   <script>
-    // Theme
-    const saved = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', saved);
-    document.getElementById('themeBtn').textContent = saved === 'dark' ? '🌙' : '☀️';
-    function toggleTheme() {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const next = isDark ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
-    }
-
     // Eye toggle
     const togglePass = document.getElementById('togglePass');
     const passInput  = document.getElementById('password');
@@ -133,3 +122,6 @@
 
 </body>
 </html>
+
+
+

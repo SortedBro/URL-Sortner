@@ -10,8 +10,8 @@
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap"
         rel="stylesheet">
     <link rel="icon" type="image/png" href="/favicon.png">
-    <link rel="stylesheet" href="/css/home.css">
-    <link rel="stylesheet" href="/css/about.css">
+    <link rel="stylesheet" href="/css/pages/home.css">
+    <link rel="stylesheet" href="/css/pages/about.css">
     
 </head>
 
@@ -241,19 +241,12 @@
     <!-- ═══ FOOTER ═══ -->
     <%- include('partials/footer') %>
 
-        <script>
-            const saved = localStorage.getItem('theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', saved);
-            document.getElementById('themeBtn').textContent = saved === 'dark' ? '🌙' : '☀️';
-            function toggleTheme() {
-                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-                const next = isDark ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', next);
-                localStorage.setItem('theme', next);
-                document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
-            }
+        <script src="/js/shared/theme.js"></script>
+  <script>
         </script>
 
 </body>
 
 </html>
+
+

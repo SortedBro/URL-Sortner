@@ -2,28 +2,28 @@ const express = require('express');
 const router = express.Router();
 
 const {
-    handleUserSignUP,
+    handleUserSignup,
     handleUserLogin,
-    verifyOtp
+    verifyOtp,
 } = require('../controllers/userControllers');
 const { handleContact } = require('../controllers/contactControllers');
 const { authRateLimit, contactRateLimit } = require('../middleware/rateLimit.middleware');
 
-// ── Views ──
+// Views
 router.get('/signup', (req, res) => res.render('signup', { error: null, success: null }));
-router.get('/login',  (req, res) => res.render('login',  { error: null, success: null }));
+router.get('/login', (req, res) => res.render('login', { error: null, success: null }));
 
-// ── OTP ──
+// OTP
 router.get('/verify-otp', (req, res) => {
     res.render('verify-otp', {
         error: null,
         email: req.query.email,
-        user:  null
+        user: null,
     });
 });
 
-// ── Actions ──
-router.post('/signup', authRateLimit, handleUserSignUP);
+// Actions
+router.post('/signup', authRateLimit, handleUserSignup);
 router.post('/login', authRateLimit, handleUserLogin);
 router.post('/verify-otp', authRateLimit, verifyOtp);
 router.post('/contact', contactRateLimit, handleContact);

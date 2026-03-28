@@ -22,7 +22,11 @@ const appConfig = Object.freeze({
     razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
     razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
     razorpayWebhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || '',
-    resendApiKey: process.env.RESEND_API_KEY || '',
+    resendApiKey:
+        process.env.RESEND_API_KEY ||
+        process.env.RESEND_KEY ||
+        process.env.RESEND_KEY_ID ||
+        '',
 });
 
 /**
