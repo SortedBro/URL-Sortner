@@ -243,13 +243,13 @@
           <% if (c.status === 'pending') { %>
             <label class="note-label">Admin Note (optional)</label>
             <textarea class="note-area" id="note-<%= c._id %>" placeholder="Reason ya feedback..."></textarea>
-            <form action="/admin/approve/<%= c._id %>" method="POST" id="approve-<%= c._id %>">
+            <form action="/admin/campaigns/<%= c._id %>/approve" method="POST" id="approve-<%= c._id %>">
               <input type="hidden" name="note" id="approve-note-<%= c._id %>"/>
               <button class="btn-approve" type="button" onclick="submitAction('approve', '<%= c._id %>')">
                 ✅ Approve
               </button>
             </form>
-            <form action="/admin/reject/<%= c._id %>" method="POST" id="reject-<%= c._id %>">
+            <form action="/admin/campaigns/<%= c._id %>/reject" method="POST" id="reject-<%= c._id %>">
               <input type="hidden" name="note" id="reject-note-<%= c._id %>"/>
               <button class="btn-reject" type="button" onclick="submitAction('reject', '<%= c._id %>')">
                 ❌ Reject

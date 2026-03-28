@@ -7,6 +7,7 @@ const UAParser = require('ua-parser-js');
 const Url = require('../models/urlSchema');
 const User = require('../models/userSchema');
 const { incrementUrlCount } = require('../middleware/planLimit.middleware');
+const { RESERVED_TOP_LEVEL_PATHS } = require('../config/reservedPaths');
 
 const redisClient = new redis(process.env.REDIS_URL, {
     maxRetriesPerRequest: 2,
@@ -17,36 +18,7 @@ const redisClient = new redis(process.env.REDIS_URL, {
 const COMPLEX_CACHE_SENTINEL = '__complex__';
 const UNLOCK_COOKIE_PREFIX = 'unlock_';
 
-const RESERVED_CODES = new Set([
-    'signup',
-    'login',
-    'logout',
-    'about',
-    'dashboard',
-    'pricing',
-    'features',
-    'privacy',
-    'terms',
-    'faq',
-    'tools',
-    'sitemap.xml',
-    'verify-otp',
-    'contact',
-    'shorten',
-    'a',
-    'admin',
-    'manage',
-    'wallet',
-    'payout',
-    'panel',
-    'bulk',
-    'health',
-    'brand',
-    'sitemap',
-    'settings',
-    'unlock',
-    'qr-codes',
-]);
+const RESERVED_CODES = new Set(RESERVED_TOP_LEVEL_PATHS);
 
 redisClient.on('connect', () => console.log('Redis connected'));
 redisClient.on('error', (err) => console.warn('Redis error (non-fatal):', err.message));

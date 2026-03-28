@@ -917,9 +917,9 @@
     </a>
     <div class="nav-links">
       <a class="nav-link" href="/dashboard">URLs</a>
-      <a class="nav-link active" href="/a/dashboard">Affiliate</a>
-      <a class="nav-link" href="/brand/dashboard">Brand</a>
-      <a class="nav-link" href="/wallet">💰 Wallet</a>
+      <a class="nav-link active" href="/affiliate/dashboard">Affiliate</a>
+      <a class="nav-link" href="/brand/campaigns">Brand</a>
+      <a class="nav-link" href="/affiliate/wallet">💰 Wallet</a>
 
     </div>
     <div class="nav-right">
@@ -1064,10 +1064,10 @@
                   <button class="btn-action copy" onclick="copyUrl('<%= link.shortUrl %>', this)">
                     Copy
                   </button>
-                  <a class="btn-action" href="/a/analytics/<%= link.shortCode %>">
+                  <a class="btn-action" href="/affiliate/links/<%= link.shortCode %>/analytics">
                     Analytics →
                   </a>
-                  <form action="/a/delete/<%= link.shortCode %>" method="POST" style="margin:0">
+                  <form action="/affiliate/links/<%= link.shortCode %>/delete" method="POST" style="margin:0">
                     <button class="btn-action danger" type="submit" onclick="return confirm('Delete karo?')">✕</button>
                   </form>
                 </div>
@@ -1197,7 +1197,7 @@
       errEl.classList.remove('show');
 
       try {
-        const res = await fetch('/a/create', {
+        const res = await fetch('/affiliate/links', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

@@ -14,13 +14,16 @@ const {
 router.get('/admin', auth, adminAuth, (req, res) => res.redirect('/admin/dashboard'));
 router.get('/admin/dashboard', auth, adminAuth, adminCtrl.getDashboard);
 
-// Campaign panel
-router.get('/admin/panel', auth, adminAuth, getAdminPanel);
-router.post('/admin/approve/:id', auth, adminAuth, approveCampaign);
-router.post('/admin/reject/:id', auth, adminAuth, rejectCampaign);
+// Canonical campaign routes
+router.get('/admin/campaigns', auth, adminAuth, getAdminPanel);
+router.post('/admin/campaigns/:id/approve', auth, adminAuth, approveCampaign);
+router.post('/admin/campaigns/:id/reject', auth, adminAuth, rejectCampaign);
 
 // Backward-compatible aliases
-router.get('/panel', auth, adminAuth, (req, res) => res.redirect('/admin/panel'));
+router.get('/admin/panel', auth, adminAuth, (req, res) => res.redirect('/admin/campaigns'));
+router.post('/admin/approve/:id', auth, adminAuth, approveCampaign);
+router.post('/admin/reject/:id', auth, adminAuth, rejectCampaign);
+router.get('/panel', auth, adminAuth, (req, res) => res.redirect('/admin/campaigns'));
 router.post('/approve/:id', auth, adminAuth, approveCampaign);
 router.post('/reject/:id', auth, adminAuth, rejectCampaign);
 

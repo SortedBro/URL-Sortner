@@ -339,7 +339,7 @@ exports.deleteLink = async (req, res) => {
         });
 
         if (!deletedLink) {
-            return res.redirect('/a/dashboard');
+            return res.redirect('/affiliate/dashboard');
         }
 
         await ClickLog.deleteMany({ link: deletedLink._id });
@@ -354,7 +354,7 @@ exports.deleteLink = async (req, res) => {
             });
         }
 
-        return res.redirect('/a/dashboard');
+        return res.redirect('/affiliate/dashboard');
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Server error' });

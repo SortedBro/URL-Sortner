@@ -45,6 +45,12 @@ app.set('view engine', 'ejs');
 app.set('trust proxy', 1)
 
 const startServer = async () => {
+    const sessionSecret = process.env.SESSION_SECRET;
+    const isProduction = process.env.NODE_ENV === 'production';
+    if (isProduction && (!sessionSecret || sessionSecret.length < 32)) {
+        throw new Error('SESSION_SECRET must be set to at least 32 characters in production');
+    }
+    const resolvedSessionSecret = sessionSecret || 'snaplink_dev_secret_2026';
 
     // ══════════════════════════════════════
     // ⚡ STEP 1: Sirf redirect route — kuch nahi
@@ -61,11 +67,11 @@ const startServer = async () => {
         console.log('Redis session store connected ✅');
         app.use(session({
             store: new RedisStore({ client: sessionRedisClient }),
-            secret: process.env.SESSION_SECRET || 'snaplink_secret_2026',
+            secret: resolvedSessionSecret,
             resave: false,
             saveUninitialized: false,
             cookie: {
-                secure: process.env.NODE_ENV === 'production',
+                secure: isProduction,
                 sameSite: 'lax',
                 httpOnly: true,
                 maxAge: 5 * 60 * 60 * 1000
@@ -74,11 +80,11 @@ const startServer = async () => {
     } else {
         console.log('Redis nahi mila — memory session use ho raha hai');
         app.use(session({
-            secret: process.env.SESSION_SECRET || 'snaplink_secret_2026',
+            secret: resolvedSessionSecret,
             resave: false,
             saveUninitialized: false,
             cookie: {
-                secure: false,
+                secure: isProduction,
                 sameSite: 'lax',
                 httpOnly: true,
                 maxAge: 5 * 60 * 60 * 1000
@@ -145,6 +151,7 @@ ${urls}
     app.use('/', bulkroutes);
     app.use('/', adminRoutes);      // ✅ sirf ek baar
 
+    app.use('/affiliate', affiliateRoutes);
     app.use('/a',      affiliateRoutes);
     app.use('/brand',  brandRoutes);
     app.post('/shorten', checkPlanLimit, createShortUrl);

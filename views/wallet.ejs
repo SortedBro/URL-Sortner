@@ -648,7 +648,7 @@
     </a>
     <div class="nav-actions">
       <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">Light</button>
-      <a class="btn-nav" href="/a/dashboard">Affiliate</a>
+      <a class="btn-nav" href="/affiliate/dashboard">Affiliate</a>
       <a class="btn-nav" href="/logout">Logout</a>
     </div>
   </nav>
@@ -768,7 +768,7 @@
               <option value="<%= option.key %>" <%= option.key === statementMonth ? 'selected' : '' %>><%= option.label %></option>
             <% }) %>
           </select>
-          <a class="btn-download" href="/wallet/statement?month=<%= statementMonth %>">Download CSV</a>
+          <a class="btn-download" href="/affiliate/wallet/statements?month=<%= statementMonth %>">Download CSV</a>
         </div>
       </div>
 
@@ -932,7 +932,7 @@
     renderMonthlyChart();
 
     function changeStatementMonth(monthKey) {
-      const target = `/wallet?month=${encodeURIComponent(monthKey)}`;
+      const target = `/affiliate/wallet?month=${encodeURIComponent(monthKey)}`;
       window.location.href = target;
     }
 
@@ -983,7 +983,7 @@
       button.textContent = 'Submitting...';
 
       try {
-        const response = await fetch('/payout/request', {
+        const response = await fetch('/affiliate/payout-requests', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),

@@ -265,7 +265,7 @@ exports.approveCampaign = async (req, res) => {
         campaign.adminNote = req.body.note || '';
         await campaign.save();
 
-        res.redirect('/admin/panel');
+        res.redirect('/admin/campaigns');
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });
@@ -282,7 +282,7 @@ exports.rejectCampaign = async (req, res) => {
         campaign.adminNote = req.body.note || 'Admin ne reject kiya';
         await campaign.save();
 
-        res.redirect('/admin/panel');
+        res.redirect('/admin/campaigns');
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });

@@ -220,8 +220,8 @@
   </a>
   <div class="nav-links">
     <a class="nav-link" href="/dashboard">URLs</a>
-    <a class="nav-link" href="/a/dashboard">Affiliate</a>
-    <a class="nav-link active" href="/brand/dashboard">Brand</a>
+    <a class="nav-link" href="/affiliate/dashboard">Affiliate</a>
+    <a class="nav-link active" href="/brand/campaigns">Brand</a>
   </div>
   <div class="nav-right">
     <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
@@ -303,7 +303,7 @@
         </div>
         <div class="card-right">
           <% if (c.status === 'pending') { %>
-            <form action="/brand/delete/<%= c._id %>" method="POST" style="margin:0">
+            <form action="/brand/campaigns/<%= c._id %>/delete" method="POST" style="margin:0">
               <button class="btn-action danger" type="submit" onclick="return confirm('Campaign delete karo?')">✕ Delete</button>
             </form>
           <% } %>
@@ -426,7 +426,7 @@
     btn.disabled = true; btn.textContent = 'Submitting...';
 
     try {
-      const res  = await fetch('/brand/submit', {
+      const res  = await fetch('/brand/campaigns', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

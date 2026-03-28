@@ -7,7 +7,15 @@ const {
     deleteCampaign
 } = require('../controllers/brandControllers');
 
-router.get('/dashboard', auth, getBrandDashboard);
+router.get('/', auth, (req, res) => res.redirect('/brand/campaigns'));
+
+// Canonical production routes
+router.get('/campaigns', auth, getBrandDashboard);
+router.post('/campaigns', auth, submitCampaign);
+router.post('/campaigns/:id/delete', auth, deleteCampaign);
+
+// Backward-compatible aliases
+router.get('/dashboard', auth, (req, res) => res.redirect('/brand/campaigns'));
 router.post('/submit', auth, submitCampaign);
 router.post('/delete/:id', auth, deleteCampaign);
 

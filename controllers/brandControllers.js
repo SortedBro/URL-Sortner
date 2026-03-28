@@ -64,7 +64,7 @@ exports.deleteCampaign = async (req, res) => {
         }
 
         await campaign.deleteOne();
-        res.redirect('/brand/dashboard');
+        res.redirect('/brand/campaigns');
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });

@@ -343,8 +343,8 @@
   <div class="nav-links">
     <a class="nav-link" href="/admin/dashboard">Dashboard</a>
     <a class="nav-link" href="/admin/users">Users</a>
-    <a class="nav-link" href="/admin/panel">Campaigns</a>
-    <a class="nav-link active" href="/admin/payouts">Payouts</a>
+    <a class="nav-link" href="/admin/campaigns">Campaigns</a>
+    <a class="nav-link active" href="/admin/payout-requests">Payouts</a>
   </div>
   <div class="nav-right">
     <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
@@ -520,9 +520,9 @@
   async function submitAction() {
     const note = document.getElementById('modal-note').value;
     const urls = {
-      approve: `/admin/payouts/${currentId}/approve`,
-      paid:    `/admin/payouts/${currentId}/paid`,
-      reject:  `/admin/payouts/${currentId}/reject`,
+      approve: `/admin/payout-requests/${currentId}/approve`,
+      paid:    `/admin/payout-requests/${currentId}/mark-paid`,
+      reject:  `/admin/payout-requests/${currentId}/reject`,
     };
 
     try {
