@@ -114,6 +114,20 @@ function setCreateSuccess(req, shortUrl) {
     if (req.session) req.session.shortUrl = shortUrl;
 }
 
+function sendShortLinkRedirect(res, destination) {
+    if (!destination) {
+        return res.status(500).json({ message: 'Redirect target missing' });
+    }
+
+    // Use a minimal redirect response instead of Express's HTML body wrapper so
+    // short-link requests spend fewer bytes and less time in user-land code.
+    res.status(302);
+    res.setHeader('Location', String(destination));
+    res.setHeader('Cache-Control', 'no-store, private');
+    res.setHeader('Content-Length', '0');
+    return res.end();
+}
+
 function buildClickContext(req) {
     const ip = (req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '').trim();
     const geo = geoip.lookup(ip) || {};
@@ -462,7 +476,7 @@ exports.redirectUrl = async (req, res) => {
         const cachedUrl = await getCachedRedirectUrl(requestedCode);
         if (cachedUrl?.isLegacySimpleCache) {
             setImmediate(() => trackClickByCode(requestedCode, req).catch(console.error));
-            return res.redirect(cachedUrl.orginalUrl);
+            return sendShortLinkRedirect(res, cachedUrl.orginalUrl);
         }
 
         if (cachedUrl) {
@@ -504,7 +518,7 @@ exports.redirectUrl = async (req, res) => {
                 cachedRedirect += `${separator}${cachedUrl.refParam}`;
             }
 
-            return res.redirect(cachedRedirect);
+            return sendShortLinkRedirect(res, cachedRedirect);
         }
 
         const url = await findUrlByShortCode(requestedCode, {}, {
@@ -555,7 +569,7 @@ exports.redirectUrl = async (req, res) => {
             redirectTo += `${separator}${url.refParam}`;
         }
 
-        return res.redirect(redirectTo);
+        return sendShortLinkRedirect(res, redirectTo);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Server Error' });
