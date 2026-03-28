@@ -32,7 +32,13 @@ const app = express();
 connectDB();
 
 app.use(express.static("public"))
-app.use(express.json())
+app.use(express.json({
+    verify: (req, res, buf) => {
+        if (req.originalUrl && req.originalUrl.startsWith('/payment/webhook')) {
+            req.rawBody = buf.toString('utf8');
+        }
+    }
+}))
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.set('view engine', 'ejs');
@@ -102,7 +108,11 @@ const startServer = async () => {
     // ✅ STEP 4: Saare routes
     // ══════════════════════════════════════
     app.get('/about',   (req, res) => res.render('about', { success: null, error: null }));
-    app.get('/logout',  (req, res) => { res.clearCookie('token'); res.redirect('/'); });
+    app.get('/logout', (req, res) => {
+        res.clearCookie('refreshToken');
+        if (!req.session) return res.redirect('/');
+        req.session.destroy(() => res.redirect('/'));
+    });
     app.get('/sitemap.xml', (req, res) => {
         const pages = [
             'https://snaplink.fun/',
@@ -144,7 +154,5 @@ ${urls}
         console.log(`http://localhost:${port}/`);
     });
 };
-
-startServer();
 
 startServer();

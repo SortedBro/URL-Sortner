@@ -39,7 +39,8 @@ const checkPlanLimit = async (req, res, next) => {
             // Session mein error save karo
             req.session.error = `Free plan mein sirf ${FREE_LIMIT} URLs/month bana sakte ho. Pro plan upgrade karo!`;
             req.session.showUpgrade = true; // upgrade modal dikhane ke liye
-            return res.redirect('/');
+            const returnPath = req.body?.returnTo === 'dashboard' ? '/dashboard' : '/';
+            return res.redirect(returnPath);
         }
 
         // ✅ Count badhao — URL banana allow karo

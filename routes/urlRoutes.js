@@ -8,7 +8,7 @@ const reserved = [
     'pricing', 'features', 'privacy', 'terms', 'faq',
     'tools', 'sitemap.xml', 'verify-otp', 'contact',
     'shorten', 'a', 'admin', 'manage', 'manage/ad',
-    'wallet', 'payout', 'panel', 'bulk', 'health',
+    'wallet', 'payout', 'panel', 'bulk', 'health', 'settings', 'unlock', 'qr-codes',
     'brand', 'sitemap'
 ];
 

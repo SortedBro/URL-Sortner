@@ -230,6 +230,46 @@
       </form>
     </div>
 
+    <!-- White Label -->
+    <div class="settings-card">
+      <div class="card-header">
+        <h2>White Label</h2>
+        <p>Apna brand domain aur branding settings manage karo</p>
+      </div>
+      <% if (user.plan !== 'business') { %>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--text2)">White-label sirf Business plan me available hai.</p>
+          <a href="/pricing" class="btn-manage">Upgrade to Business</a>
+        </div>
+      <% } else { %>
+        <form action="/settings/white-label" method="POST">
+          <div class="card-body">
+            <div class="form-group">
+              <label style="display:flex;align-items:center;gap:10px">
+                <input type="checkbox" name="enabled" <%= user.whiteLabel && user.whiteLabel.enabled ? 'checked' : '' %> />
+                Enable white-label links
+              </label>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Custom Domain</label>
+                <input type="text" name="customDomain" class="form-input" placeholder="links.yourbrand.com" value="<%= user.whiteLabel?.customDomain || '' %>"/>
+              </div>
+              <div class="form-group">
+                <label>Brand Name</label>
+                <input type="text" name="brandName" class="form-input" placeholder="Your Brand" value="<%= user.whiteLabel?.brandName || '' %>"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Logo URL (optional)</label>
+              <input type="url" name="logoUrl" class="form-input" placeholder="https://example.com/logo.png" value="<%= user.whiteLabel?.logoUrl || '' %>"/>
+            </div>
+            <button type="submit" class="save-btn">Save White Label</button>
+          </div>
+        </form>
+      <% } %>
+    </div>
+
     <!-- Danger Zone -->
     <div class="danger-card">
       <div>

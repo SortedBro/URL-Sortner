@@ -475,7 +475,7 @@
                         </svg>
                         <div class="timer-text">
                             <span class="timer-num" id="timer-num">
-                                <%= adTimer %>
+                                <%= url.adTimer || 5 %>
                             </span>
                             <span class="timer-s">sec</span>
                         </div>
@@ -490,7 +490,7 @@
                 </div>
 
                 <!-- ✅ originalUrl — sahi variable name -->
-                <a class="btn-continue disabled" id="continue-btn" href="<%= url.originalUrl %>">
+                <a class="btn-continue disabled" id="continue-btn" href="<%= url.orginalUrl %>">
                     Continue to Destination →
                 </a>
 
@@ -503,7 +503,7 @@
                         <div class="destination-preview">
                             <div class="dest-icon">🔗</div>
                             <span class="dest-url">
-                                <%= url.originalUrl %>
+                                <%= url.orginalUrl %>
                             </span>
                             <span class="dest-label">destination</span>
                         </div>
@@ -512,9 +512,9 @@
 
     <script>
         // ✅ Sahi variable names — controller se jo pass kiya
-        const TOTAL = <%= url.adTimer %>;
+        const TOTAL = <%= url.adTimer || 5 %>;
         const SKIPABLE = <%= url.adSkipable ? 'true' : 'false' %>;
-        const TARGET = '<%= url.originalUrl.replace(/' / g, "\\'") %> ';
+        const TARGET = <%- JSON.stringify(url.orginalUrl) %>;
         const CIRCUM = 2 * Math.PI * 28;
 
         let timeLeft = TOTAL;

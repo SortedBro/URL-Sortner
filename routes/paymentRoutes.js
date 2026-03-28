@@ -19,6 +19,6 @@ router.post('/payment/verify', auth, verifyPayment);
 
 // ✅ Webhook — Razorpay se aata hai (login nahi chahiye)
 // raw body chahiye signature verify ke liye
-router.post('/payment/webhook', express.raw({ type: 'application/json' }), webhook);
+router.post('/payment/webhook', webhook);
 
 module.exports = router;

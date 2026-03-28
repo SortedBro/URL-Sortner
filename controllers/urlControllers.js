@@ -1,317 +1,386 @@
-const Url = require('../models/urlSchema')
-const { nanoid } = require('nanoid')
-const UAParser = require('ua-parser-js');
+const bcrypt = require('bcrypt');
+const redis = require('ioredis');
 const geoip = require('geoip-lite');
+const { nanoid } = require('nanoid');
+const UAParser = require('ua-parser-js');
+
+const Url = require('../models/urlSchema');
+const User = require('../models/userSchema');
 const { incrementUrlCount } = require('../middleware/planLimit.middleware');
 
-// ══════════════════════
-//  Redis Setup
-// ══════════════════════
-const redis = require('ioredis');
 const redisClient = new redis(process.env.REDIS_URL, {
     maxRetriesPerRequest: 2,
     connectTimeout: 5000,
     lazyConnect: true,
 });
 
-redisClient.on('connect', () => console.log('✅ Redis connected'));
-redisClient.on('error', (err) => console.warn('⚠️ Redis error (non-fatal):', err.message));
+const COMPLEX_CACHE_SENTINEL = '__complex__';
+const UNLOCK_COOKIE_PREFIX = 'unlock_';
 
-console.log("urlcontroller page")
+const RESERVED_CODES = new Set([
+    'signup',
+    'login',
+    'logout',
+    'about',
+    'dashboard',
+    'pricing',
+    'features',
+    'privacy',
+    'terms',
+    'faq',
+    'tools',
+    'sitemap.xml',
+    'verify-otp',
+    'contact',
+    'shorten',
+    'a',
+    'admin',
+    'manage',
+    'wallet',
+    'payout',
+    'panel',
+    'bulk',
+    'health',
+    'brand',
+    'sitemap',
+    'settings',
+    'unlock',
+    'qr-codes',
+]);
 
-// ══════════════════════
-//  Create Short URL
-// ══════════════════════
+redisClient.on('connect', () => console.log('Redis connected'));
+redisClient.on('error', (err) => console.warn('Redis error (non-fatal):', err.message));
+
+function unlockCookieName(code) {
+    return `${UNLOCK_COOKIE_PREFIX}${code}`;
+}
+
+function normalizeDomain(input = '') {
+    if (!input) return '';
+    return String(input)
+        .trim()
+        .toLowerCase()
+        .replace(/^https?:\/\//, '')
+        .replace(/\/.*/, '');
+}
+
+function isValidDomain(domain) {
+    if (!domain) return false;
+    return /^(?=.{3,253}$)(?!-)(?:[a-z0-9-]{1,63}\.)+[a-z]{2,63}$/.test(domain);
+}
+
+function requiresComplexHandling(url) {
+    return Boolean(url.adEnabled || url.hasPassword || url.expiresAt || url.refParam);
+}
+
+function isExpired(url) {
+    return Boolean(url.expiresAt && new Date(url.expiresAt).getTime() <= Date.now());
+}
+
+function getCreateReturnPath(req) {
+    return req.body.returnTo === 'dashboard' ? '/dashboard' : '/';
+}
+
+function setCreateError(req, message) {
+    if (req.session) req.session.error = message;
+}
+
+function setCreateSuccess(req, shortUrl) {
+    if (req.session) req.session.shortUrl = shortUrl;
+}
+
+async function setCacheValue(shortCode, value) {
+    try {
+        await redisClient.setex(`link:${shortCode}`, 86400, value);
+    } catch (error) {
+        console.warn('Redis set failed (non-fatal):', error.message);
+    }
+}
 
 exports.createShortUrl = async (req, res) => {
+    const returnPath = getCreateReturnPath(req);
+
     try {
         const {
             orginalUrl,
-            customAlias,
-            adEnabled,      // ✅ naya
-            adTimer,        // ✅ naya
-            adTitle,        // ✅ naya
-            adDescription,  // ✅ naya
-            adSkipable      // ✅ naya
-
-
-
+            customAlias: rawCustomAlias,
+            password: rawPassword,
+            expiresAt: rawExpiresAt,
+            whiteLabelDomain: rawWhiteLabelDomain,
+            adEnabled,
+            adTimer,
+            adTitle,
+            adDescription,
+            adSkipable,
+            refParam,
         } = req.body;
 
-        // if (!orginalUrl) {
-        //     req.session.error = "URL daalna zaroori hai";
-        //     return res.redirect('/');
-        // }
         if (!orginalUrl) {
-            return res.render('home', { error: 'URL daalna zaroori hai', shortUrl: null });
+            setCreateError(req, 'URL daalna zaroori hai');
+            return res.redirect(returnPath);
         }
 
+        let parsedUrl;
         try {
-            new URL(orginalUrl);
+            parsedUrl = new URL(orginalUrl);
         } catch {
-            req.session.error = "Valid URL daalo (https:// se shuru karo)";
-            return res.redirect('/');
+            setCreateError(req, 'Valid URL daalo (https:// se shuru karo)');
+            return res.redirect(returnPath);
         }
 
-        const ownDomain = req.get('host');
-        if (orginalUrl.includes(ownDomain)) {
-            req.session.error = "Apne hi domain ka URL short nahi kar sakte!";
-            return res.redirect('/');
+        const ownHost = req.get('host');
+        if (parsedUrl.host === ownHost) {
+            setCreateError(req, 'Apne hi domain ka URL short nahi kar sakte');
+            return res.redirect(returnPath);
+        }
+
+        const customAlias = String(rawCustomAlias || '').trim();
+        const password = String(rawPassword || '').trim();
+        const expiresAtValue = String(rawExpiresAt || '').trim();
+
+        const userId = req.user?.user || null;
+        const userDoc = userId
+            ? await User.findById(userId).select('plan whiteLabel')
+            : null;
+
+        const plan = userDoc?.plan || req.user?.plan || 'free';
+        const isPremium = plan === 'pro' || plan === 'business';
+        const isBusiness = plan === 'business';
+
+        if ((customAlias || password || expiresAtValue) && !isPremium) {
+            setCreateError(req, 'Custom alias, password aur expiry Pro/Business me available hain');
+            return res.redirect(returnPath);
+        }
+
+        let whiteLabelDomain = normalizeDomain(rawWhiteLabelDomain);
+        if (!whiteLabelDomain && isBusiness && userDoc?.whiteLabel?.enabled) {
+            whiteLabelDomain = normalizeDomain(userDoc.whiteLabel.customDomain);
+        }
+
+        if (whiteLabelDomain && !isBusiness) {
+            setCreateError(req, 'White-label domain sirf Business plan me available hai');
+            return res.redirect(returnPath);
+        }
+
+        if (whiteLabelDomain && !isValidDomain(whiteLabelDomain)) {
+            setCreateError(req, 'White-label domain valid format me daalo, example: links.brand.com');
+            return res.redirect(returnPath);
+        }
+
+        if (customAlias) {
+            if (!/^[a-zA-Z0-9_-]{3,40}$/.test(customAlias)) {
+                setCreateError(req, 'Custom alias me sirf letters, numbers, - aur _ allowed hain (3-40 chars)');
+                return res.redirect(returnPath);
+            }
+            if (RESERVED_CODES.has(customAlias.toLowerCase())) {
+                setCreateError(req, 'Ye alias reserved hai, koi aur alias try karo');
+                return res.redirect(returnPath);
+            }
         }
 
         if (customAlias) {
             const aliasExists = await Url.findOne({ shortCode: customAlias });
             if (aliasExists) {
-                req.session.error = "Ye alias already le liya gaya hai";
-                return res.redirect('/');
+                setCreateError(req, 'Ye alias already le liya gaya hai');
+                return res.redirect(returnPath);
             }
         }
 
-        const userId = req.user?.user ?? null;
-
-        const existingUrl = await Url.findOne({ orginalUrl, createdBy: userId });
-        if (existingUrl) {
-            const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
-            const shortUrl = `${baseUrl}/${existingUrl.shortCode}`;
-            req.session.shortUrl = shortUrl;
-            return res.redirect('/');
+        let expiresAt = null;
+        if (expiresAtValue) {
+            expiresAt = new Date(expiresAtValue);
+            if (Number.isNaN(expiresAt.getTime())) {
+                setCreateError(req, 'Expiry date valid nahi hai');
+                return res.redirect(returnPath);
+            }
+            if (expiresAt.getTime() <= Date.now()) {
+                setCreateError(req, 'Expiry date future ki honi chahiye');
+                return res.redirect(returnPath);
+            }
         }
 
-        const shortCode = customAlias || nanoid(6);
-        const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}`;
-        const shortUrl = `${baseUrl}/${shortCode}`;
+        let accessPasswordHash = '';
+        if (password) {
+            if (password.length < 4) {
+                setCreateError(req, 'Password kam se kam 4 characters ka hona chahiye');
+                return res.redirect(returnPath);
+            }
+            accessPasswordHash = await bcrypt.hash(password, 10);
+        }
 
-        const newUrl = await Url.create({
+        const hasAdvancedSettings = Boolean(
+            customAlias ||
+            password ||
+            expiresAtValue ||
+            whiteLabelDomain ||
+            adEnabled === 'on' ||
+            adEnabled === true ||
+            refParam
+        );
+
+        if (!hasAdvancedSettings) {
+            const existingUrl = await Url.findOne({ orginalUrl, createdBy: userId });
+            if (existingUrl) {
+                setCreateSuccess(req, existingUrl.shortUrl);
+                return res.redirect(returnPath);
+            }
+        }
+
+        let shortCode = customAlias || nanoid(6);
+        if (!customAlias) {
+            for (let attempt = 0; attempt < 5; attempt += 1) {
+                const exists = await Url.findOne({ shortCode });
+                if (!exists) break;
+                shortCode = nanoid(6);
+            }
+        }
+
+        const appBaseUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
+        const publicBaseUrl = whiteLabelDomain ? `https://${whiteLabelDomain}` : appBaseUrl;
+        const shortUrl = `${publicBaseUrl}/${shortCode}`;
+
+        const createdUrl = await Url.create({
             orginalUrl,
             shortCode,
             shortUrl,
+            customAlias,
             createdBy: userId,
-            //ads 
             adEnabled: adEnabled === 'on' || adEnabled === true,
             adTimer: Number(adTimer) || 5,
             adTitle: adTitle || '',
             adDescription: adDescription || '',
             adSkipable: adSkipable !== 'off',
-
-            refParam: req.body.refParam || null  // form se aayega
+            expiresAt: expiresAt || undefined,
+            hasPassword: Boolean(accessPasswordHash),
+            accessPasswordHash,
+            whiteLabelDomain,
+            refParam: refParam || null,
         });
 
-        // ✅ Cache the new URL in Redis immediately
-        try {
-            await redisClient.setex(`link:${shortCode}`, 86400, orginalUrl);
-        } catch (e) {
-            console.warn('Redis set failed (non-fatal):', e.message);
-        }
+        await setCacheValue(
+            shortCode,
+            requiresComplexHandling(createdUrl) ? COMPLEX_CACHE_SENTINEL : orginalUrl
+        );
 
         if (userId) {
             await incrementUrlCount(userId);
         }
 
-        req.session.shortUrl = `${baseUrl}/${newUrl.shortCode}`;
-        res.redirect('/');
-
+        setCreateSuccess(req, shortUrl);
+        return res.redirect(returnPath);
     } catch (error) {
         console.log(error);
-        req.session.error = "Something went wrong";
-        res.redirect('/');
+        setCreateError(req, 'Something went wrong');
+        return res.redirect(returnPath);
     }
-}
+};
 
-
-// ══════════════════════
-//  Redirect URL + Click Track
-// ══════════════════════
-
-// exports.redirectUrl = async (req, res) => {
-//     try {
-//         const code = req.params.code;
-
-//         // ══════════════════════════════════════
-//         // ⚡ STEP 1: Check Redis cache first
-//         // ══════════════════════════════════════
-//         try {
-//             const cachedUrl = await redisClient.get(`link:${code}`);
-//             if (cachedUrl) {
-//                 res.redirect(cachedUrl); // ~5ms — instant!
-
-//                 // Track click async (don't block redirect)
-//                 setImmediate(() => trackClick(code, req).catch(console.error));
-//                 return;
-//             }
-//         } catch (e) {
-//             console.warn('Redis get failed, falling back to DB:', e.message);
-//         }
-
-//         // ══════════════════════════════════════
-//         // 🗄️ STEP 2: Cache miss — hit MongoDB
-//         // Only fetch orginalUrl field — don't load
-//         // entire document with full clickHistory!
-//         // ══════════════════════════════════════
-//         const url = await Url.findOne(
-//             { shortCode: code },
-//             { orginalUrl: 1 }  // ✅ projection — fetch ONLY what we need
-//         );
-
-//         if (!url) {
-//             return res.status(404).render('404');
-//         }
-
-//         // Cache it for next time (24 hours)
-//         try {
-//             await redisClient.setex(`link:${code}`, 86400, url.orginalUrl);
-//         } catch (e) {
-//             console.warn('Redis set failed (non-fatal):', e.message);
-//         }
-
-//         // Send redirect immediately
-//         res.redirect(url.orginalUrl);
-
-//         // Track click async (don't block redirect)
-//         setImmediate(() => trackClick(code, req).catch(console.error));
-
-
-
-
-//         // // ✅ Affiliate tracking ke liye
-//         try {
-//             const url = await Url.findOne({ shortCode: req.params.code });
-
-//             if (!url) return res.status(404).render('404');
-
-//             // ✅ click detail save karo
-//             url.clicks += 1;
-//             url.lastClickedAt = new Date();
-//             url.clickDetails.push({
-//                 ip: req.ip,
-//                 clickedAt: new Date()
-//             });
-//             await url.save();
-//             // ✅ Ad check — enabled hai toh interstitial page dikhao
-//             if (url.adEnabled) {
-//                 return res.render('ad-interstitial', {
-//                     originalUrl: url.orginalUrl,
-//                     adTimer: url.adTimer || 5,
-//                     adTitle: url.adTitle || 'Sponsored',
-//                     adDescription: url.adDescription || '',
-//                     adBannerUrl: url.adBannerUrl || '',
-//                     adSkipable: url.adSkipable,
-//                     shortCode: url.shortCode
-//                 });
-//             }
-
-//             // Ad nahi hai — seedha redirect
-//             // res.redirect(url.originalUrl);
-
-//             // ✅ refParam original URL mein add karo
-//             let redirectTo = url.orginalUrl;
-//             if (url.refParam) {
-//                 // already ? hai URL mein?
-//                 const separator = redirectTo.includes('?') ? '&' : '?';
-//                 redirectTo += `${separator}${url.refParam}`;
-//             }
-
-//             res.redirect(redirectTo);
-
-//         } catch (error) {
-//             console.error(error);
-//             res.status(500).json({ message: "Server error" });
-//         }
-
-
-
-
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ message: "Server Error" });
-//     }
-
-
-//     //
-
-// }
-exports.redirectUrl = async (req, res) => {
+exports.unlockProtectedUrl = async (req, res) => {
     try {
         const code = req.params.code;
- 
-        // ══════════════════════════════════════
-        // ⚡ STEP 1: Redis cache check
-        // '__ad__' sentinel = ad-enabled link, must load full doc
-        // anything else   = plain URL, redirect immediately
-        // ══════════════════════════════════════
-        try {
-            const cached = await redisClient.get(`link:${code}`);
-            if (cached && cached !== '__ad__') {
-                // Plain redirect — fast path
-                setImmediate(() => trackClick(code, req).catch(console.error));
-                return res.redirect(cached);
-            }
-            // cached === '__ad__' or cache miss — fall through to DB
-        } catch (e) {
-            console.warn('Redis get failed, falling back to DB:', e.message);
-        }
- 
-        // ══════════════════════════════════════
-        // 🗄️ STEP 2: Load full doc (needed for ad check + refParam)
-        // ══════════════════════════════════════
+        const password = String(req.body.password || '').trim();
+
         const url = await Url.findOne({ shortCode: code });
- 
         if (!url) {
             return res.status(404).render('404');
         }
- 
-        // Update Redis cache with correct strategy
-        try {
-            if (url.adEnabled) {
-                await redisClient.setex(`link:${code}`, 86400, '__ad__');
-            } else {
-                await redisClient.setex(`link:${code}`, 86400, url.orginalUrl);
-            }
-        } catch (e) {
-            console.warn('Redis set failed (non-fatal):', e.message);
+
+        if (!url.hasPassword) {
+            return res.redirect(`/${code}`);
         }
- 
-        // Track click async — never blocks the response
+
+        if (!url.isActive || isExpired(url)) {
+            return res.status(410).render('link-expired', { url });
+        }
+
+        const isValidPassword = await bcrypt.compare(password, url.accessPasswordHash || '');
+        if (!isValidPassword) {
+            return res.status(401).render('protected-link', {
+                url,
+                error: 'Wrong password, dobara try karo',
+            });
+        }
+
+        res.cookie(unlockCookieName(code), '1', {
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 24 * 60 * 60 * 1000,
+        });
+
+        return res.redirect(`/${code}`);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+exports.redirectUrl = async (req, res) => {
+    try {
+        const code = req.params.code;
+
+        try {
+            const cached = await redisClient.get(`link:${code}`);
+            if (cached && cached !== COMPLEX_CACHE_SENTINEL) {
+                setImmediate(() => trackClick(code, req).catch(console.error));
+                return res.redirect(cached);
+            }
+        } catch (error) {
+            console.warn('Redis get failed, falling back to DB:', error.message);
+        }
+
+        const url = await Url.findOne({ shortCode: code });
+        if (!url) {
+            return res.status(404).render('404');
+        }
+
+        if (!url.isActive || isExpired(url)) {
+            return res.status(410).render('link-expired', { url });
+        }
+
+        await setCacheValue(
+            code,
+            requiresComplexHandling(url) ? COMPLEX_CACHE_SENTINEL : url.orginalUrl
+        );
+
+        if (url.hasPassword) {
+            const unlocked = req.cookies?.[unlockCookieName(code)] === '1';
+            if (!unlocked) {
+                return res.status(401).render('protected-link', {
+                    url,
+                    error: null,
+                });
+            }
+        }
+
         setImmediate(() => trackClick(code, req).catch(console.error));
- 
-        // ══════════════════════════════════════
-        // 📢 STEP 3: Ad check — show interstitial if enabled
-        // ══════════════════════════════════════
+
         if (url.adEnabled) {
             return res.render('ad-interstitial', {
                 url: {
-                    orginalUrl:    url.orginalUrl,
-                    adTimer:       url.adTimer || 5,
-                    adTitle:       url.adTitle || 'Sponsored',
+                    orginalUrl: url.orginalUrl,
+                    adTimer: url.adTimer || 5,
+                    adTitle: url.adTitle || 'Sponsored',
                     adDescription: url.adDescription || '',
-                    adBannerUrl:   url.adBannerUrl || '',
-                    adSkipable:    url.adSkipable,
-                    shortCode:     url.shortCode,
-                }
+                    adBannerUrl: url.adBannerUrl || '',
+                    adSkipable: url.adSkipable,
+                    shortCode: url.shortCode,
+                },
             });
         }
- 
-        // ══════════════════════════════════════
-        // 🔗 STEP 4: No ad — direct redirect (+ optional refParam)
-        // ══════════════════════════════════════
+
         let redirectTo = url.orginalUrl;
         if (url.refParam) {
             const separator = redirectTo.includes('?') ? '&' : '?';
             redirectTo += `${separator}${url.refParam}`;
         }
- 
+
         return res.redirect(redirectTo);
- 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Server Error" });
+        return res.status(500).json({ message: 'Server Error' });
     }
-}
- 
-
-
-// ══════════════════════
-//  Click Tracking (async, non-blocking)
-// ══════════════════════
+};
 
 async function trackClick(code, req) {
     const ip = (req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '').trim();
@@ -319,8 +388,6 @@ async function trackClick(code, req) {
     const ua = new UAParser(req.headers['user-agent']);
     const result = ua.getResult();
 
-    // ✅ Fix 3 — atomic update, never loads full document into memory
-    // No findOne → modify → save. One DB op, minimal RAM usage.
     await Url.findOneAndUpdate(
         { shortCode: code },
         {
@@ -333,19 +400,14 @@ async function trackClick(code, req) {
                     city: geo.city || 'Unknown',
                     device: result.device.type || 'Desktop',
                     browser: result.browser.name || 'Unknown',
-                    os: result.os.name,
-                    referrer: req.headers['referer'] || 'Direct',
+                    os: result.os.name || 'Unknown',
+                    referrer: req.headers.referer || 'Direct',
                     ip,
-                }
-            }
+                },
+            },
         }
     );
 }
-
-
-// ══════════════════════
-//  Delete URL
-// ══════════════════════
 
 exports.deleteUrl = async (req, res) => {
     try {
@@ -358,26 +420,19 @@ exports.deleteUrl = async (req, res) => {
             return res.status(404).render('404');
         }
 
-        // ✅ Remove from Redis cache too
         try {
             await redisClient.del(`link:${req.params.code}`);
-        } catch (e) {
-            console.warn('Redis del failed (non-fatal):', e.message);
+        } catch (error) {
+            console.warn('Redis del failed (non-fatal):', error.message);
         }
 
         await url.deleteOne();
-        res.redirect('/dashboard');
-
+        return res.redirect('/dashboard');
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Server error" });
+        return res.status(500).json({ message: 'Server error' });
     }
-}
-
-
-// ══════════════════════
-//  Analytics Page Data
-// ══════════════════════
+};
 
 exports.getAnalytics = async (req, res) => {
     try {
@@ -391,12 +446,12 @@ exports.getAnalytics = async (req, res) => {
         }
 
         const last7Days = [];
-        for (let i = 6; i >= 0; i--) {
+        for (let i = 6; i >= 0; i -= 1) {
             const date = new Date();
             date.setDate(date.getDate() - i);
             const dateStr = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 
-            const count = url.clickHistory.filter(c => {
+            const count = url.clickHistory.filter((c) => {
                 const d = new Date(c.clickedAt);
                 return d.toDateString() === date.toDateString();
             }).length;
@@ -405,7 +460,7 @@ exports.getAnalytics = async (req, res) => {
         }
 
         const countryCounts = {};
-        url.clickHistory.forEach(c => {
+        url.clickHistory.forEach((c) => {
             const key = c.country || 'Unknown';
             countryCounts[key] = (countryCounts[key] || 0) + 1;
         });
@@ -415,7 +470,7 @@ exports.getAnalytics = async (req, res) => {
             .map(([name, count]) => ({ name, count }));
 
         const cityCounts = {};
-        url.clickHistory.forEach(c => {
+        url.clickHistory.forEach((c) => {
             const key = c.city || 'Unknown';
             cityCounts[key] = (cityCounts[key] || 0) + 1;
         });
@@ -425,15 +480,14 @@ exports.getAnalytics = async (req, res) => {
             .map(([name, count]) => ({ name, count }));
 
         const deviceCounts = {};
-        url.clickHistory.forEach(c => {
+        url.clickHistory.forEach((c) => {
             const key = c.device || 'Unknown';
             deviceCounts[key] = (deviceCounts[key] || 0) + 1;
         });
-        const devices = Object.entries(deviceCounts)
-            .map(([name, count]) => ({ name, count }));
+        const devices = Object.entries(deviceCounts).map(([name, count]) => ({ name, count }));
 
         const browserCounts = {};
-        url.clickHistory.forEach(c => {
+        url.clickHistory.forEach((c) => {
             const key = c.browser || 'Unknown';
             browserCounts[key] = (browserCounts[key] || 0) + 1;
         });
@@ -443,7 +497,7 @@ exports.getAnalytics = async (req, res) => {
             .map(([name, count]) => ({ name, count }));
 
         const referrerCounts = {};
-        url.clickHistory.forEach(c => {
+        url.clickHistory.forEach((c) => {
             const key = c.referrer || 'Direct';
             referrerCounts[key] = (referrerCounts[key] || 0) + 1;
         });
@@ -452,9 +506,9 @@ exports.getAnalytics = async (req, res) => {
             .slice(0, 5)
             .map(([name, count]) => ({ name, count }));
 
-        const uniqueIps = new Set(url.clickHistory.map(c => c.ip).filter(Boolean));
+        const uniqueIps = new Set(url.clickHistory.map((c) => c.ip).filter(Boolean));
 
-        res.render('analytics', {
+        return res.render('analytics', {
             url,
             user: req.user,
             last7Days,
@@ -466,9 +520,12 @@ exports.getAnalytics = async (req, res) => {
             uniqueVisitors: uniqueIps.size,
             totalClicks: url.clicks,
         });
-
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Server error" });
+        return res.status(500).json({ message: 'Server error' });
     }
-}
+};
+
+exports.serverOn = (req, res) => {
+    res.status(200).json({ ok: true, message: 'Server running' });
+};

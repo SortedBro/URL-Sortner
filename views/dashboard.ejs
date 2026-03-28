@@ -95,7 +95,7 @@
               <div class="plan-username">
                 <%= user.name.split(' ')[0] %></div>
             <div class="plan-label">
-              <%= user.plan === ' free' ? 'FREE PLAN' : user.plan==='pro' ? '⭐ PRO' : '💎 BUSINESS' %>
+              <%= user.plan === 'free' ? 'FREE PLAN' : user.plan==='pro' ? '⭐ PRO' : '💎 BUSINESS' %>
               </div>
             </div>
           </div>
@@ -233,6 +233,7 @@
                   <tr>
                     <th>Original URL</th>
                     <th>Short URL</th>
+                    <th>Ad</th>
                     <th>Clicks</th>
                     <th class="hide-mobile">Status</th>
                     <th class="hide-mobile">Created</th>
@@ -250,8 +251,10 @@
                           <div class="url-tags">
                             <% if (url.customAlias) { %><span class="tag-badge alias">alias</span>
                               <% } %>
-                                <% if (url.password) { %><span class="tag-badge pw">🔒 protected</span>
+                                <% if (url.hasPassword) { %><span class="tag-badge pw">🔒 protected</span>
                                   <% } %>
+                                    <% if (url.whiteLabelDomain) { %><span class="tag-badge alias">wl: <%= url.whiteLabelDomain %></span>
+                                      <% } %>
                                     <% if (url.expiresAt) { %><span class="tag-badge exp <%= isExpired?'red':'' %>">
                                         <%= isExpired ? 'expired' : 'expires ' +new
                                           Date(url.expiresAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})
@@ -265,10 +268,11 @@
                             <%= url.shortUrl %>
                           </a>
                         </td>
-                        <!-- ads -->
                         <td>
-                          <a class="btn-action" href="/manage/ad/<%= url.shortCode %>">Edit Ad</a>
-
+                          <span class="status-badge <%= url.adEnabled ? 'active' : '' %>">
+                            <%= url.adEnabled ? 'On' : 'Off' %>
+                          </span>
+                          <a class="btn-action" href="/manage/ad/<%= url.shortCode %>">Edit</a>
                         </td>
                         <td>
                           <span class="click-badge <%= (url.clicks||0)===0?'zero':'' %>">
@@ -335,6 +339,7 @@
                 <% } %>
 
                   <form action="/shorten" method="POST" class="create-form">
+                    <input type="hidden" name="returnTo" value="dashboard" />
                     <div class="form-group">
                       <label>Long URL <span class="req">*</span></label>
                       <input type="url" name="orginalUrl" placeholder="https://example.com/bahut-lamba-url..." required
@@ -373,6 +378,18 @@
                       </div>
                     </div>
 
+                    <div class="form-group">
+                      <label>
+                        White Label Domain
+                        <% if (typeof user!=='undefined' &&user&&user.plan!=='business' ){%><span
+                            class="pro-chip">BUSINESS</span>
+                          <%}%>
+                      </label>
+                      <input type="text" name="whiteLabelDomain" placeholder="links.yourbrand.com" class="form-input"
+                        value="<%= (user && user.whiteLabel && user.whiteLabel.customDomain) ? user.whiteLabel.customDomain : '' %>"
+                        <%=(typeof user!=='undefined' &&user&&user.plan!=='business' )?'disabled':''%> />
+                    </div>
+
                     <button type="submit" class="snap-btn">
                       Snap URL
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -408,6 +425,12 @@
             <div class="tip-dot"></div>
             <div><strong>Expiry Date</strong>
               <p>Limited time offers ke liye auto-expire links</p>
+            </div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-dot"></div>
+            <div><strong>White Label</strong>
+              <p>Business plan me apna domain use karke brand links banao</p>
             </div>
           </div>
           <div class="tip-item">
@@ -519,7 +542,7 @@
       document.getElementById('tab-' + name).classList.add('active');
       if (btn) btn.classList.add('active');
     }
-<% if (typeof shortUrl !== 'undefined' && shortUrl) { %>
+<% if ((typeof shortUrl !== 'undefined' && shortUrl) || (typeof error !== 'undefined' && error)) { %>
       window.addEventListener('DOMContentLoaded', () => showTab('create', document.querySelectorAll('.nav-item')[1]));
 <% } %>
 
@@ -538,14 +561,15 @@
     }
 
     function exportCSV() {
-      const rows = [['Original URL', 'Short URL', 'Clicks', 'Created']];
+      const rows = [['Original URL', 'Short URL', 'Ad', 'Clicks', 'Created']];
       document.querySelectorAll('.link-row').forEach(row => {
         const cols = row.querySelectorAll('td');
         rows.push([
           cols[0].querySelector('.url-original')?.textContent.trim() || '',
           cols[1].querySelector('.url-short')?.textContent.trim() || '',
-          cols[2].querySelector('.click-badge')?.textContent.trim() || '0',
-          cols[4]?.querySelector('.date-text')?.textContent.trim() || ''
+          cols[2]?.textContent.replace(/\s+/g, ' ').trim() || '',
+          cols[3].querySelector('.click-badge')?.textContent.trim() || '0',
+          cols[5]?.querySelector('.date-text')?.textContent.trim() || ''
         ]);
       });
       const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');

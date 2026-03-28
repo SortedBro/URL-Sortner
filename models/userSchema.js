@@ -54,6 +54,12 @@ const userSchema = new mongoose.Schema(
 
         role: { type: String, enum: ['user', 'admin'], default: 'user' },
         isBanned: { type: Boolean, default: false },
+        whiteLabel: {
+            enabled: { type: Boolean, default: false },
+            customDomain: { type: String, default: '' },
+            brandName: { type: String, default: '' },
+            logoUrl: { type: String, default: '' },
+        },
 
 
 

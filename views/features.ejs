@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Features - SnapLink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href="/css/features.css" />
+</head>
+<body>
+  <header class="nav-wrap">
+    <a href="/" class="brand">Snap<span>Link</span></a>
+    <nav class="nav-links">
+      <a href="/tools">Tools</a>
+      <a class="active" href="/features">Features</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/about">About</a>
+    </nav>
+    <div class="nav-actions">
+      <% if (user) { %>
+        <a href="/dashboard" class="btn ghost">Dashboard</a>
+        <a href="/logout" class="btn solid">Logout</a>
+      <% } else { %>
+        <a href="/login" class="btn ghost">Login</a>
+        <a href="/signup" class="btn solid">Get Started</a>
+      <% } %>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="hero-chip">SnapLink Product Features</p>
+      <h1>Short links se zyada, <span>full growth stack</span></h1>
+      <p class="hero-sub">
+        New Link customization, ad interstitial, detailed analytics, bulk tools, aur business-level white-label sab ek jagah.
+      </p>
+    </section>
+
+    <section class="feature-grid">
+      <article class="card accent-a">
+        <h2>Smart New Link Builder</h2>
+        <p>Long URL se branded short link banao with custom alias, password protection, expiry date, ad toggle, and QR-ready sharing.</p>
+        <ul>
+          <li>Custom alias</li>
+          <li>Password-protected links</li>
+          <li>Auto expiry links</li>
+        </ul>
+      </article>
+
+      <article class="card accent-b">
+        <h2>White Label Domains</h2>
+        <p>Business plan me apna domain, brand name, aur logo use karke pure branded link experience provide karo.</p>
+        <ul>
+          <li>Custom brand domain</li>
+          <li>Brand identity controls</li>
+          <li>Campaign-level consistency</li>
+        </ul>
+      </article>
+
+      <article class="card accent-c">
+        <h2>Advanced Analytics</h2>
+        <p>Har click ka context dekho: country, city, device, browser, referrer, unique visitors, aur daily trend breakdown.</p>
+        <ul>
+          <li>Geo analytics</li>
+          <li>Device + browser split</li>
+          <li>Top links and engagement</li>
+        </ul>
+      </article>
+
+      <article class="card accent-d">
+        <h2>Bulk Shortening</h2>
+        <p>Pro users ke liye multiple URLs ko ek saath shorten karo aur CSV import/export se workflow fast rakho.</p>
+        <ul>
+          <li>CSV upload support</li>
+          <li>Bulk result export</li>
+          <li>Fast processing</li>
+        </ul>
+      </article>
+
+      <article class="card accent-e">
+        <h2>Ad Interstitial Links</h2>
+        <p>Links ke beech sponsored screen dikhake monetization enable karo with configurable timer, copy, and skip behavior.</p>
+        <ul>
+          <li>Ad timer control</li>
+          <li>Custom ad message</li>
+          <li>Skip option control</li>
+        </ul>
+      </article>
+
+      <article class="card accent-f">
+        <h2>Security + Reliability</h2>
+        <p>Authenticated dashboard, protected links, and server-side validations ke saath reliable URL operations maintain karo.</p>
+        <ul>
+          <li>Auth-protected dashboard</li>
+          <li>Secure link access</li>
+          <li>Session-safe actions</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="cta">
+      <h3>Ready to build branded, trackable links?</h3>
+      <% if (user) { %>
+        <a href="/dashboard" class="btn solid">Open Dashboard</a>
+      <% } else { %>
+        <a href="/signup" class="btn solid">Create Free Account</a>
+      <% } %>
+    </section>
+  </main>
+</body>
+</html>
