@@ -1,214 +1,212 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Edit Ad — <%= url.shortCode %></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Ad - <%= url.shortCode %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/pages/generated/edit-ad.inline.css" />
 </head>
+
 <body>
-
-<nav>
-  <a class="nav-logo" href="/"><div class="logo-dot"></div>SnapLink</a>
-  <div class="nav-right">
-    <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
-    <a class="btn-nav" href="/dashboard">← Dashboard</a>
-  </div>
-</nav>
-
-<main>
-
-  <div class="page-header">
-    <div class="eyebrow">Ad Settings</div>
-    <h1>Edit <em>/<%= url.shortCode %></em></h1>
-  </div>
-
-  <!-- URL Info -->
-  <div class="url-info">
-    <div class="url-info-left">
-      <div class="url-short">snaplink.fun/<%= url.shortCode %></div>
-      <div class="url-original"><%= url.originalUrl %></div>
+  <nav>
+    <a class="nav-logo" href="/"><div class="logo-dot"></div>SnapLink</a>
+    <div class="nav-right">
+      <button class="btn-nav" onclick="toggleTheme()" id="theme-btn">Toggle Theme</button>
+      <a class="btn-nav" href="/dashboard">Back to Dashboard</a>
     </div>
-    <div class="url-clicks">
-      <div class="clicks-num"><%= url.clicks || 0 %></div>
-      <div style="font-size:0.65rem; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em;">clicks</div>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <div class="eyebrow">Ad Settings</div>
+      <h1>Edit <em>/<%= url.shortCode %></em></h1>
     </div>
-  </div>
 
-  <!-- Form -->
-  <form id="ad-form">
-    <div class="form-card">
-
-      <!-- Enable Ad Toggle -->
-      <div class="form-section">
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <div class="toggle-title">Enable Ad Interstitial</div>
-            <div class="toggle-sub">Link click hone par redirect se pehle ad dikhega</div>
-          </div>
-          <label class="toggle-wrap">
-            <input class="toggle-input" type="checkbox" id="adEnabled"
-                   <%= url.adEnabled ? 'checked' : '' %>
-                   onchange="toggleAdSettings()"/>
-            <span class="toggle-track"></span>
-          </label>
-        </div>
+    <div class="url-info">
+      <div class="url-info-left">
+        <div class="url-short"><%= url.shortUrl || ('snaplink.fun/' + url.shortCode) %></div>
+        <div class="url-original"><%= url.orginalUrl || url.originalUrl %></div>
       </div>
+      <div class="url-clicks">
+        <div class="clicks-num"><%= url.clicks || 0 %></div>
+        <div style="font-size:0.65rem; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em;">clicks</div>
+      </div>
+    </div>
 
-      <!-- Ad Settings — hidden jab disabled -->
-      <div id="ad-settings">
-
-        <!-- Timer -->
-        <div class="form-section">
-          <div class="section-label">Timer Duration</div>
-          <div class="section-desc">Kitne seconds baad user redirect hoga</div>
-          <div class="timer-grid">
-            <% [5, 10, 15, 30].forEach(t => { %>
-            <button type="button"
-                    class="timer-btn <%= (url.adTimer || 5) === t ? 'active' : '' %>"
-                    data-val="<%= t %>"
-                    onclick="selectTimer(this)">
-              <%= t %>s
-            </button>
-            <% }) %>
-          </div>
-          <input type="hidden" id="adTimer" value="<%= url.adTimer || 5 %>"/>
-        </div>
-
-        <!-- Ad Content -->
-        <div class="form-section">
-          <div class="section-label">Ad Content</div>
-          <div class="section-desc">Jo user ad page pe dekhega</div>
-
-          <label class="form-label">Ad Title <span class="opt">(optional)</span></label>
-          <input class="form-input" type="text" id="adTitle"
-                 value="<%= url.adTitle || '' %>"
-                 placeholder="e.g. Check out this amazing offer!"
-                 oninput="updatePreview()"/>
-
-          <label class="form-label">Ad Description <span class="opt">(optional)</span></label>
-          <textarea class="form-input" id="adDescription"
-                    rows="3"
-                    placeholder="Short message jo user dekhega..."
-                    oninput="updatePreview()"><%= url.adDescription || '' %></textarea>
-
-          <!-- Live Preview -->
-          <div class="preview-box" id="preview-box">
-            <div class="preview-title" id="preview-title">—</div>
-            <div style="font-size:0.78rem; color:var(--text3); margin-top:3px;" id="preview-desc">—</div>
-          </div>
-        </div>
-
-        <!-- Allow Skip -->
+    <form id="ad-form">
+      <div class="form-card">
         <div class="form-section">
           <div class="toggle-row">
             <div class="toggle-info">
-              <div class="toggle-title">Allow Skip</div>
-              <div class="toggle-sub">User half-time ke baad ad skip kar sakta hai</div>
+              <div class="toggle-title">Enable Ad Interstitial</div>
+              <div class="toggle-sub">Link click hone par redirect se pehle ad dikhega</div>
             </div>
             <label class="toggle-wrap">
-              <input class="toggle-input" type="checkbox" id="adSkipable"
-                     <%= (url.adSkipable !== false) ? 'checked' : '' %>/>
+              <input
+                class="toggle-input"
+                type="checkbox"
+                id="adEnabled"
+                <%= url.adEnabled ? 'checked' : '' %>
+                onchange="toggleAdSettings()"
+              />
               <span class="toggle-track"></span>
             </label>
           </div>
+          <div style="margin-top:0.9rem; font-size:0.8rem; color:var(--text3); line-height:1.6;">
+            Monetag popunder is wired globally for enabled ad links using zone
+            <strong><%= monetagZoneId || '10810328' %></strong>.
+          </div>
         </div>
 
+        <div id="ad-settings">
+          <div class="form-section">
+            <div class="section-label">Timer Duration</div>
+            <div class="section-desc">Kitne seconds baad user redirect hoga</div>
+            <div class="timer-grid">
+              <% [5, 10, 15, 30].forEach((t) => { %>
+                <button
+                  type="button"
+                  class="timer-btn <%= (url.adTimer || 5) === t ? 'active' : '' %>"
+                  data-val="<%= t %>"
+                  onclick="selectTimer(this)"
+                >
+                  <%= t %>s
+                </button>
+              <% }) %>
+            </div>
+            <input type="hidden" id="adTimer" value="<%= url.adTimer || 5 %>" />
+          </div>
+
+          <div class="form-section">
+            <div class="section-label">Ad Content</div>
+            <div class="section-desc">Jo user ad page par dekhega</div>
+
+            <label class="form-label">Ad Title <span class="opt">(optional)</span></label>
+            <input
+              class="form-input"
+              type="text"
+              id="adTitle"
+              value="<%= url.adTitle || '' %>"
+              placeholder="e.g. Check out this amazing offer!"
+              oninput="updatePreview()"
+            />
+
+            <label class="form-label">Ad Description <span class="opt">(optional)</span></label>
+            <textarea
+              class="form-input"
+              id="adDescription"
+              rows="3"
+              placeholder="Short message jo user dekhega..."
+              oninput="updatePreview()"
+            ><%= url.adDescription || '' %></textarea>
+
+            <div class="preview-box" id="preview-box">
+              <div class="preview-title" id="preview-title">-</div>
+              <div style="font-size:0.78rem; color:var(--text3); margin-top:3px;" id="preview-desc">-</div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-title">Allow Skip</div>
+                <div class="toggle-sub">User half-time ke baad ad skip kar sakta hai</div>
+              </div>
+              <label class="toggle-wrap">
+                <input class="toggle-input" type="checkbox" id="adSkipable" <%= url.adSkipable !== false ? 'checked' : '' %> />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div id="save-msg-wrap" style="padding: 0 1.6rem;"></div>
+        <div class="form-actions">
+          <button class="btn-save" type="button" onclick="saveSettings()">
+            Save Ad Settings
+          </button>
+          <a class="btn-cancel" href="/dashboard">Cancel</a>
+        </div>
       </div>
+    </form>
+  </main>
 
-      <!-- Actions -->
-      <div id="save-msg-wrap" style="padding: 0 1.6rem;"></div>
-      <div class="form-actions">
-        <button class="btn-save" type="button" onclick="saveSettings()">
-          Save Ad Settings
-        </button>
-        <a class="btn-cancel" href="/dashboard">Cancel</a>
-      </div>
-
-    </div>
-  </form>
-
-</main>
-
-<script>
-  // Theme
-  function toggleTheme() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    document.getElementById('theme-btn').textContent = isDark ? '☾ Dark' : '☀ Light';
-    localStorage.setItem('snaplink-theme', isDark ? 'light' : 'dark');
-  }
-  const saved = localStorage.getItem('snaplink-theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', saved);
-  document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀ Light' : '☾ Dark';
-
-  // Toggle ad settings visibility
-  function toggleAdSettings() {
-    const enabled = document.getElementById('adEnabled').checked;
-    document.getElementById('ad-settings').style.opacity  = enabled ? '1' : '0.4';
-    document.getElementById('ad-settings').style.pointerEvents = enabled ? 'all' : 'none';
-  }
-  toggleAdSettings(); // init
-
-  // Timer select
-  function selectTimer(btn) {
-    document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('adTimer').value = btn.dataset.val;
-  }
-
-  // Live preview
-  function updatePreview() {
-    const title = document.getElementById('adTitle').value;
-    const desc  = document.getElementById('adDescription').value;
-    const box   = document.getElementById('preview-box');
-
-    if (title || desc) {
-      box.classList.add('show');
-      document.getElementById('preview-title').textContent = title || 'Sponsored Content';
-      document.getElementById('preview-desc').textContent  = desc  || 'Ad description yahan aayega';
-    } else {
-      box.classList.remove('show');
+  <script>
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('theme-btn').textContent = isDark ? 'Dark' : 'Light';
+      localStorage.setItem('snaplink-theme', isDark ? 'light' : 'dark');
     }
-  }
-  updatePreview(); // init
 
-  // Save
-  async function saveSettings() {
-    const msgWrap = document.getElementById('save-msg-wrap');
-    msgWrap.innerHTML = '';
+    const saved = localStorage.getItem('snaplink-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('theme-btn').textContent = saved === 'dark' ? 'Light' : 'Dark';
 
-    const body = {
-      adEnabled:     document.getElementById('adEnabled').checked,
-      adTimer:       Number(document.getElementById('adTimer').value),
-      adTitle:       document.getElementById('adTitle').value,
-      adDescription: document.getElementById('adDescription').value,
-      adSkipable:    document.getElementById('adSkipable').checked,
-    };
+    function toggleAdSettings() {
+      const enabled = document.getElementById('adEnabled').checked;
+      document.getElementById('ad-settings').style.opacity = enabled ? '1' : '0.4';
+      document.getElementById('ad-settings').style.pointerEvents = enabled ? 'all' : 'none';
+    }
+    toggleAdSettings();
 
-    try {
-      const res  = await fetch('/manage/ad/<%= url.shortCode %>', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(body)
-      });
-      const data = await res.json();
+    function selectTimer(btn) {
+      document.querySelectorAll('.timer-btn').forEach((button) => button.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('adTimer').value = btn.dataset.val;
+    }
 
-      if (data.success) {
-        msgWrap.innerHTML = '<div class="save-msg success">✅ Ad settings save ho gayi!</div>';
-        setTimeout(() => msgWrap.innerHTML = '', 3000);
+    function updatePreview() {
+      const title = document.getElementById('adTitle').value;
+      const desc = document.getElementById('adDescription').value;
+      const box = document.getElementById('preview-box');
+
+      if (title || desc) {
+        box.classList.add('show');
+        document.getElementById('preview-title').textContent = title || 'Sponsored Content';
+        document.getElementById('preview-desc').textContent = desc || 'Ad description yahan aayega';
       } else {
-        msgWrap.innerHTML = `<div class="save-msg error">❌ ${data.error || 'Kuch gadbad hui'}</div>`;
+        box.classList.remove('show');
       }
-    } catch (err) {
-      msgWrap.innerHTML = '<div class="save-msg error">❌ Server se connect nahi ho pa raha</div>';
     }
-  }
-</script>
+    updatePreview();
 
+    async function saveSettings() {
+      const msgWrap = document.getElementById('save-msg-wrap');
+      msgWrap.innerHTML = '';
+
+      const body = {
+        adEnabled: document.getElementById('adEnabled').checked,
+        adTimer: Number(document.getElementById('adTimer').value),
+        adTitle: document.getElementById('adTitle').value,
+        adDescription: document.getElementById('adDescription').value,
+        adSkipable: document.getElementById('adSkipable').checked,
+      };
+
+      try {
+        const res = await fetch('/manage/ad/<%= url.shortCode %>', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          msgWrap.innerHTML = '<div class="save-msg success">Ad settings save ho gayi.</div>';
+          setTimeout(() => {
+            msgWrap.innerHTML = '';
+          }, 3000);
+        } else {
+          msgWrap.innerHTML = `<div class="save-msg error">${data.error || 'Kuch gadbad hui'}</div>`;
+        }
+      } catch (err) {
+        msgWrap.innerHTML = '<div class="save-msg error">Server se connect nahi ho pa raha</div>';
+      }
+    }
+  </script>
 </body>
+
 </html>
-
-

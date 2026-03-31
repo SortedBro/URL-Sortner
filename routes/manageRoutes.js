@@ -1,6 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const { auth } = require('../middleware/auth.middleware');
+const { appConfig } = require('../config/appConfig');
 const Url = require('../models/urlSchema');
 const { cacheRedirectUrl } = require('../utils/urlCache');
 const { invalidateAdminDashboardCache, invalidateUserUrlReadCaches } = require('../utils/readCache');
@@ -13,7 +14,10 @@ router.get('/manage/ad/:code', auth, async (req, res) => {
             createdBy: req.user.user,
         });
         if (!url) return res.status(404).json({ error: 'URL nahi mila' });
-        res.render('edit-ad', { url });
+        res.render('edit-ad', {
+            url,
+            monetagZoneId: appConfig.monetagZoneId,
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });

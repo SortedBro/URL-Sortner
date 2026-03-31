@@ -23,6 +23,8 @@ const appConfig = Object.freeze({
     razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
     razorpayWebhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || '',
     internalJobSecret: process.env.INTERNAL_JOB_SECRET || '',
+    monetagZoneId: process.env.MONETAG_ZONE_ID || '10810328',
+    monetagScriptUrl: 'https://al5sm.com/tag.min.js',
     resendApiKey:
         process.env.RESEND_API_KEY ||
         process.env.RESEND_KEY ||

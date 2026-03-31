@@ -37,6 +37,19 @@ function consumeSessionField(session, key, fallback) {
     return value ?? fallback;
 }
 
+function consumeDashboardFlashState(session) {
+    return {
+        bulkResults: consumeSessionField(session, 'bulkResults', []),
+        bulkErrors: consumeSessionField(session, 'bulkErrors', []),
+        bulkUpdateResults: consumeSessionField(session, 'bulkUpdateResults', []),
+        bulkUpdateErrors: consumeSessionField(session, 'bulkUpdateErrors', []),
+        bulkDeleteResults: consumeSessionField(session, 'bulkDeleteResults', []),
+        bulkDeleteErrors: consumeSessionField(session, 'bulkDeleteErrors', []),
+        error: consumeSessionField(session, 'error', null),
+        shortUrl: consumeSessionField(session, 'shortUrl', null),
+    };
+}
+
 function isSameMonth(date, referenceDate) {
     if (!date) return false;
     const target = new Date(date);
@@ -93,17 +106,9 @@ exports.getDashboard = async (req, res) => {
         }
 
         if (cachedDashboard) {
-            const bulkResults = consumeSessionField(req.session, 'bulkResults', []);
-            const bulkErrors = consumeSessionField(req.session, 'bulkErrors', []);
-            const error = consumeSessionField(req.session, 'error', null);
-            const shortUrl = consumeSessionField(req.session, 'shortUrl', null);
-
             return res.render('dashboard', {
                 ...cachedDashboard,
-                bulkResults,
-                bulkErrors,
-                error,
-                shortUrl,
+                ...consumeDashboardFlashState(req.session),
             });
         }
 
@@ -131,21 +136,13 @@ exports.getDashboard = async (req, res) => {
             summary,
         };
 
-        const bulkResults = consumeSessionField(req.session, 'bulkResults', []);
-        const bulkErrors = consumeSessionField(req.session, 'bulkErrors', []);
-        const error = consumeSessionField(req.session, 'error', null);
-        const shortUrl = consumeSessionField(req.session, 'shortUrl', null);
-
         if (isRedisEnabled()) {
             await cacheUserDashboard(userId, dashboardPayload);
         }
 
         return res.render('dashboard', {
             ...dashboardPayload,
-            bulkResults,
-            bulkErrors,
-            error,
-            shortUrl,
+            ...consumeDashboardFlashState(req.session),
         });
     } catch (renderError) {
         console.log(renderError);

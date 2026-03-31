@@ -228,8 +228,16 @@
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
-                Export CSV
+                Links CSV
               </button>
+              <a href="/bulk-export/analytics" class="btn-export">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Analytics CSV
+              </a>
               <% } else { %>
                 <a href="/pricing" class="btn-export locked">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -471,68 +479,176 @@
     </div>
 
     <!-- ══ TAB: BULK ══ -->
-    <div class="tab-content" id="tab-bulk">
-      <% if (typeof user!=='undefined' &&user&&user.plan==='free' ) { %>
+        <div class="tab-content" id="tab-bulk">
+      <% if (typeof user !== 'undefined' && user && user.plan === 'free') { %>
         <div class="locked-feature">
-          <div class="locked-icon">🔒</div>
-          <h2>Bulk Shortener</h2>
-          <p>Ek saath 100+ URLs shorten karo — Pro aur Business plan mein available.</p>
+          <div class="locked-icon">LOCK</div>
+          <h2>Bulk Operations</h2>
+          <p>Bulk shorten, update, delete, and analytics export are available on Pro and Business plans.</p>
           <div class="locked-perks">
-            <span>✓ 500 URLs at once</span>
-            <span>✓ CSV import & export</span>
-            <span>✓ Custom aliases in bulk</span>
+            <span>500 links at once</span>
+            <span>Bulk update destinations</span>
+            <span>Bulk delete by short code</span>
+            <span>Analytics export CSV</span>
           </div>
           <a href="/pricing" class="snap-btn"
-            style="display:inline-flex;width:auto;padding:12px 28px;margin-top:1.5rem;text-decoration:none">⚡ Upgrade to
-            Pro — ₹99/mo</a>
+            style="display:inline-flex;width:auto;padding:12px 28px;margin-top:1.5rem;text-decoration:none">Upgrade to Pro - Rs 99/mo</a>
         </div>
-        <% } else { %>
+      <% } else { %>
+        <div class="bulk-grid">
           <div class="bulk-card">
             <div class="create-card-header">
               <h2>Bulk URL Shortener</h2>
-              <p>Ek saath multiple URLs — ek line mein ek URL likhao</p>
+              <p>Paste one URL per line and create short links in a single pass.</p>
             </div>
             <form action="/bulk-shorten" method="POST">
               <div class="form-group">
-                <label>URLs (ek line mein ek)</label>
+                <label>URLs (one per line)</label>
                 <textarea name="urls" class="bulk-textarea" rows="10"
                   placeholder="https://example.com/link1&#10;https://example.com/link2&#10;https://example.com/link3"></textarea>
               </div>
               <div class="bulk-actions">
-                <button type="button" class="btn-secondary" onclick="document.getElementById('csvImport').click()">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
-                  CSV Import
-                </button>
+                <button type="button" class="btn-secondary" onclick="document.getElementById('csvImport').click()">CSV Import</button>
                 <input type="file" id="csvImport" accept=".csv,.txt" style="display:none" onchange="loadCSV(this)">
-                <button type="submit" class="snap-btn" style="width:auto;padding:11px 28px">Sab Shorten Karo →</button>
+                <button type="submit" class="snap-btn" style="width:auto;padding:11px 28px">Shorten All</button>
               </div>
             </form>
-            <% if (typeof bulkResults!=='undefined' &&bulkResults&&bulkResults.length>0) { %>
-              <div class="bulk-results">
+            <% if (bulkResults && bulkResults.length > 0) { %>
+              <div class="bulk-results bulk-results-shorten">
                 <div class="bulk-results-header">
-                  <span>✓ <%= bulkResults.length %> URLs shortened</span>
-                  <button onclick="exportBulkCSV()" class="btn-export">Download CSV</button>
+                  <span>OK <%= bulkResults.length %> URLs shortened</span>
+                  <button onclick="exportBulkCSV('.bulk-results-shorten .bulk-row', 'bulk-results.csv')" class="btn-export">Download CSV</button>
                 </div>
-                <% bulkResults.forEach(r=>{ %>
+                <% bulkResults.forEach((r) => { %>
                   <div class="bulk-row">
-                    <span class="bulk-original">
-                      <%= r.original %>
-                    </span>
-                    <span class="bulk-arrow">→</span>
-                    <a class="bulk-short" href="<%= r.short %>" target="_blank">
-                      <%= r.short %>
-                    </a>
-                    <button class="btn-copy" onclick="copyUrl('<%= r.short %>',this)">Copy</button>
+                    <span class="bulk-original"><%= r.original %></span>
+                    <span class="bulk-arrow">-&gt;</span>
+                    <a class="bulk-short" href="<%= r.short %>" target="_blank"><%= r.short %></a>
+                    <button class="btn-copy" onclick="copyUrl('<%= r.short %>', this)">Copy</button>
                   </div>
-                  <% }) %>
+                <% }) %>
               </div>
-              <% } %>
+            <% } %>
+            <% if (bulkErrors && bulkErrors.length > 0) { %>
+              <div class="bulk-errors">
+                <div class="bulk-errors-header">Skipped rows: <%= bulkErrors.length %></div>
+                <% bulkErrors.forEach((item) => { %>
+                  <div class="bulk-error-row">
+                    <span class="bulk-error-entry"><%= item.url || item.entry || 'Row' %></span>
+                    <span class="bulk-error-text"><%= item.reason %></span>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
           </div>
-          <% } %>
+
+          <div class="bulk-card">
+            <div class="create-card-header">
+              <h2>Bulk Update</h2>
+              <p>Format each line as <code>shortCode, https://new-destination.com</code>.</p>
+            </div>
+            <form action="/bulk-update" method="POST">
+              <div class="form-group">
+                <label>Short code + new destination</label>
+                <textarea name="updates" class="bulk-textarea" rows="10"
+                  placeholder="spring-sale, https://example.com/new-landing&#10;creator-bio, https://example.com/updated-bio"></textarea>
+              </div>
+              <div class="bulk-actions">
+                <button type="button" class="btn-secondary" onclick="document.getElementById('updateCsvImport').click()">CSV Import</button>
+                <input type="file" id="updateCsvImport" accept=".csv,.txt" style="display:none" onchange="loadUpdateCSV(this)">
+                <button type="submit" class="snap-btn" style="width:auto;padding:11px 28px">Update Links</button>
+              </div>
+            </form>
+            <% if (bulkUpdateResults && bulkUpdateResults.length > 0) { %>
+              <div class="bulk-results bulk-results-update">
+                <div class="bulk-results-header">
+                  <span>OK <%= bulkUpdateResults.length %> links updated</span>
+                  <button onclick="exportBulkCSV('.bulk-results-update .bulk-row', 'bulk-updated-links.csv')" class="btn-export">Download CSV</button>
+                </div>
+                <% bulkUpdateResults.forEach((item) => { %>
+                  <div class="bulk-row">
+                    <span class="bulk-original">/<%= item.shortCode %></span>
+                    <span class="bulk-arrow">-&gt;</span>
+                    <span class="bulk-short"><%= item.original %></span>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+            <% if (bulkUpdateErrors && bulkUpdateErrors.length > 0) { %>
+              <div class="bulk-errors">
+                <div class="bulk-errors-header">Update errors: <%= bulkUpdateErrors.length %></div>
+                <% bulkUpdateErrors.forEach((item) => { %>
+                  <div class="bulk-error-row">
+                    <span class="bulk-error-entry"><%= item.entry || 'Row' %></span>
+                    <span class="bulk-error-text"><%= item.reason %></span>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+
+          <div class="bulk-card">
+            <div class="create-card-header">
+              <h2>Bulk Delete</h2>
+              <p>Paste short codes or short URLs. One entry per line.</p>
+            </div>
+            <form action="/bulk-delete" method="POST" onsubmit="return confirm('Selected links will be permanently deleted. Continue?')">
+              <div class="form-group">
+                <label>Short codes / short URLs</label>
+                <textarea name="codes" class="bulk-textarea" rows="10"
+                  placeholder="spring-sale&#10;https://snaplink.fun/creator-bio&#10;/launch-offer"></textarea>
+              </div>
+              <div class="bulk-actions">
+                <button type="button" class="btn-secondary" onclick="document.getElementById('deleteCsvImport').click()">CSV Import</button>
+                <input type="file" id="deleteCsvImport" accept=".csv,.txt" style="display:none" onchange="loadDeleteCSV(this)">
+                <button type="submit" class="btn-danger">Delete Links</button>
+              </div>
+            </form>
+            <% if (bulkDeleteResults && bulkDeleteResults.length > 0) { %>
+              <div class="bulk-results bulk-results-delete">
+                <div class="bulk-results-header">
+                  <span>OK <%= bulkDeleteResults.length %> links deleted</span>
+                  <button onclick="exportBulkCSV('.bulk-results-delete .bulk-row', 'bulk-deleted-links.csv')" class="btn-export">Download CSV</button>
+                </div>
+                <% bulkDeleteResults.forEach((item) => { %>
+                  <div class="bulk-row">
+                    <span class="bulk-original"><%= item.original %></span>
+                    <span class="bulk-arrow">-&gt;</span>
+                    <span class="bulk-short">/<%= item.shortCode %></span>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+            <% if (bulkDeleteErrors && bulkDeleteErrors.length > 0) { %>
+              <div class="bulk-errors">
+                <div class="bulk-errors-header">Delete errors: <%= bulkDeleteErrors.length %></div>
+                <% bulkDeleteErrors.forEach((item) => { %>
+                  <div class="bulk-error-row">
+                    <span class="bulk-error-entry"><%= item.entry || 'Row' %></span>
+                    <span class="bulk-error-text"><%= item.reason %></span>
+                  </div>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+
+          <div class="bulk-card">
+            <div class="create-card-header">
+              <h2>Analytics Export</h2>
+              <p>Download one CSV for all links with clicks, unique visitors, top device, country, and last activity.</p>
+            </div>
+            <div class="bulk-note-list">
+              <span>Total clicks per short link</span>
+              <span>Unique visitors estimate</span>
+              <span>Top country, browser, and device</span>
+              <span>Created and last-click timestamps</span>
+            </div>
+            <div class="bulk-actions">
+              <a href="/bulk-export/analytics" class="btn-secondary">Download Analytics CSV</a>
+            </div>
+          </div>
+        </div>
+      <% } %>
     </div>
 
   </main>
@@ -560,9 +676,20 @@
       document.getElementById('tab-' + name).classList.add('active');
       if (btn) btn.classList.add('active');
     }
+    function getNavButton(index) {
+      return document.querySelectorAll('.nav-item')[index] || null;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const tabFromQuery = new URLSearchParams(window.location.search).get('tab');
+      if (tabFromQuery === 'bulk') {
+        showTab('bulk', getNavButton(2));
+        return;
+      }
 <% if ((typeof shortUrl !== 'undefined' && shortUrl) || (typeof error !== 'undefined' && error)) { %>
-      window.addEventListener('DOMContentLoaded', () => showTab('create', document.querySelectorAll('.nav-item')[1]));
+      showTab('create', getNavButton(1));
 <% } %>
+    });
 
       function copyUrl(url, btn) {
         navigator.clipboard.writeText(url).then(() => {
@@ -596,23 +723,58 @@
       a.download = 'snaplink-export.csv'; a.click();
     }
 
-    function loadCSV(input) {
+    function readTextFile(input, onLoad) {
+      if (!input.files || !input.files[0]) return;
       const reader = new FileReader();
-      reader.onload = e => {
-        const lines = e.target.result.split('\n').map(l => l.trim()).filter(l => l.startsWith('http'));
-        document.querySelector('textarea[name=urls]').value = lines.join('\n');
-      };
+      reader.onload = e => onLoad(String(e.target.result || ''));
       reader.readAsText(input.files[0]);
     }
 
-    function exportBulkCSV() {
-      const rows = [['Original URL', 'Short URL']];
-      document.querySelectorAll('.bulk-row').forEach(row => {
-        rows.push([row.querySelector('.bulk-original')?.textContent.trim() || '', row.querySelector('.bulk-short')?.textContent.trim() || '']);
+    function loadCSV(input) {
+      readTextFile(input, (text) => {
+        const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.startsWith('http'));
+        document.querySelector('textarea[name=urls]').value = lines.join('\n');
       });
+    }
+
+    function loadUpdateCSV(input) {
+      readTextFile(input, (text) => {
+        const rows = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+        const lines = rows
+          .filter((line, index) => !(index === 0 && /short\s*code|short\s*url/i.test(line)))
+          .map(line => line.split(/[,\t|]/).map(part => part.trim()))
+          .filter(parts => parts.length >= 2)
+          .map(parts => parts[0] + ', ' + parts.slice(1).join(', '));
+        document.querySelector('textarea[name=updates]').value = lines.join('\n');
+      });
+    }
+
+    function loadDeleteCSV(input) {
+      readTextFile(input, (text) => {
+        const rows = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+        const lines = rows
+          .filter((line, index) => !(index === 0 && /short\s*code|short\s*url/i.test(line)))
+          .map(line => line.split(/[,\t|]/)[0].trim())
+          .filter(Boolean);
+        document.querySelector('textarea[name=codes]').value = lines.join('\n');
+      });
+    }
+
+    function exportBulkCSV(rowSelector, filename) {
+      const rows = [['Primary', 'Secondary']];
+      document.querySelectorAll(rowSelector).forEach(row => {
+        rows.push([
+          row.querySelector('.bulk-original')?.textContent.trim() || '',
+          row.querySelector('.bulk-short')?.textContent.trim() || ''
+        ]);
+      });
+      const csv = rows
+        .map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(','))
+        .join('\n');
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n')], { type: 'text/csv' }));
-      a.download = 'bulk-results.csv'; a.click();
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+      a.download = filename;
+      a.click();
     }
 
     let currentQRUrl = '';

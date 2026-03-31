@@ -511,6 +511,11 @@
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: var(--radius2); padding: 24px;
     }
+    .bulk-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
     .locked-feature {
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: var(--radius2); padding: 48px 24px;
@@ -535,6 +540,15 @@
       border-radius: var(--radius); padding: 10px 16px;
       font-size: 12px; font-weight: 600; color: var(--text2);
       cursor: pointer; font-family: 'Space Grotesk', sans-serif;
+      text-decoration: none;
+    }
+    .btn-danger {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(248,113,113,.12); border: 1px solid rgba(248,113,113,.28);
+      border-radius: var(--radius); padding: 10px 16px;
+      font-size: 12px; font-weight: 700; color: var(--red);
+      cursor: pointer; font-family: 'Space Grotesk', sans-serif;
+      text-decoration: none;
     }
     .bulk-results { margin-top: 20px; }
     .bulk-results-header {
@@ -552,6 +566,51 @@
     .bulk-original { flex: 1; color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .bulk-arrow { color: var(--text3); flex-shrink: 0; }
     .bulk-short { color: var(--accent); font-family: 'DM Mono', monospace; text-decoration: none; flex-shrink: 0; }
+    .bulk-errors {
+      margin-top: 16px;
+      border: 1px solid rgba(248,113,113,.2);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: rgba(248,113,113,.04);
+    }
+    .bulk-errors-header {
+      padding: 10px 14px;
+      background: rgba(248,113,113,.08);
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .bulk-error-row {
+      display: grid;
+      gap: 3px;
+      padding: 10px 14px;
+      border-top: 1px solid rgba(248,113,113,.12);
+    }
+    .bulk-error-entry {
+      color: var(--text);
+      font-size: 12px;
+      font-family: 'DM Mono', monospace;
+      word-break: break-all;
+    }
+    .bulk-error-text {
+      color: var(--text2);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .bulk-note-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .bulk-note-list span {
+      display: block;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      font-size: 12px;
+    }
 
     /* ── QR MODAL ── */
     .qr-modal-bg {
@@ -591,6 +650,7 @@
       .topbar, .main-content { grid-column: 1; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .create-grid { grid-template-columns: 1fr; }
+      .bulk-grid { grid-template-columns: 1fr; }
       .pro-features-row { grid-template-columns: 1fr; }
       .hide-mobile { display: none; }
       .main-content { padding: 16px 14px; }

@@ -128,6 +128,21 @@ function sendShortLinkRedirect(res, destination) {
     return res.end();
 }
 
+function buildRedirectDestination(urlDoc) {
+    let destination = String(urlDoc?.orginalUrl || '');
+
+    if (!destination) {
+        return '';
+    }
+
+    if (urlDoc?.refParam) {
+        const separator = destination.includes('?') ? '&' : '?';
+        destination += `${separator}${urlDoc.refParam}`;
+    }
+
+    return destination;
+}
+
 function buildClickContext(req) {
     const ip = (req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '').trim();
     const geo = geoip.lookup(ip) || {};
@@ -502,6 +517,7 @@ exports.redirectUrl = async (req, res) => {
                 return res.render('ad-interstitial', {
                     url: {
                         orginalUrl: cachedUrl.orginalUrl,
+                        destinationUrl: buildRedirectDestination(cachedUrl),
                         adTimer: cachedUrl.adTimer || 5,
                         adTitle: cachedUrl.adTitle || 'Sponsored',
                         adDescription: cachedUrl.adDescription || '',
@@ -509,16 +525,12 @@ exports.redirectUrl = async (req, res) => {
                         adSkipable: cachedUrl.adSkipable,
                         shortCode: cachedUrl.shortCode,
                     },
+                    monetagZoneId: appConfig.monetagZoneId,
+                    monetagScriptUrl: appConfig.monetagScriptUrl,
                 });
             }
 
-            let cachedRedirect = cachedUrl.orginalUrl;
-            if (cachedUrl.refParam) {
-                const separator = cachedRedirect.includes('?') ? '&' : '?';
-                cachedRedirect += `${separator}${cachedUrl.refParam}`;
-            }
-
-            return sendShortLinkRedirect(res, cachedRedirect);
+            return sendShortLinkRedirect(res, buildRedirectDestination(cachedUrl));
         }
 
         const url = await findUrlByShortCode(requestedCode, {}, {
@@ -553,6 +565,7 @@ exports.redirectUrl = async (req, res) => {
             return res.render('ad-interstitial', {
                 url: {
                     orginalUrl: url.orginalUrl,
+                    destinationUrl: buildRedirectDestination(url),
                     adTimer: url.adTimer || 5,
                     adTitle: url.adTitle || 'Sponsored',
                     adDescription: url.adDescription || '',
@@ -560,16 +573,12 @@ exports.redirectUrl = async (req, res) => {
                     adSkipable: url.adSkipable,
                     shortCode: url.shortCode,
                 },
+                monetagZoneId: appConfig.monetagZoneId,
+                monetagScriptUrl: appConfig.monetagScriptUrl,
             });
         }
 
-        let redirectTo = url.orginalUrl;
-        if (url.refParam) {
-            const separator = redirectTo.includes('?') ? '&' : '?';
-            redirectTo += `${separator}${url.refParam}`;
-        }
-
-        return sendShortLinkRedirect(res, redirectTo);
+        return sendShortLinkRedirect(res, buildRedirectDestination(url));
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Server Error' });
