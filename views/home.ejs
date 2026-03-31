@@ -28,32 +28,31 @@
     <section class="home-hero">
       <div class="home-hero-grid">
         <div class="hero-copy-column">
-          <div class="eyebrow">Clean link workflows for modern teams</div>
-          <h1 class="home-title">Shorten URLs, create QR codes, and share smarter from one polished workspace.</h1>
+          <div class="eyebrow">Built for cleaner sharing</div>
+          <h1 class="home-title">Short links and QR codes in one clean homepage.</h1>
           <p class="home-lead">
-            SnapLink keeps the first step simple. Drop in any long URL, turn it into a short link or QR code,
-            then keep analytics, branding, and growth tools ready when you need them.
+            Paste a long URL, create a short link or QR code in seconds, and move on without extra steps.
           </p>
 
           <div class="hero-stat-row">
             <article class="hero-stat-card">
-              <strong>Short links</strong>
-              <span>Create readable links that are easier to share across social, chat, email, and campaigns.</span>
+              <strong>Shorten fast</strong>
+              <span>Create cleaner links for chat, social, email, and campaigns.</span>
             </article>
             <article class="hero-stat-card">
-              <strong>Instant QR</strong>
-              <span>Generate a QR code on the homepage without leaving the flow or opening extra tools.</span>
+              <strong>QR on the same screen</strong>
+              <span>Generate a QR code without opening another page.</span>
             </article>
             <article class="hero-stat-card">
-              <strong>Built to grow</strong>
-              <span>When you are ready, unlock analytics, wallet, affiliate, API, bulk actions, and white label.</span>
+              <strong>Grow later</strong>
+              <span>Analytics, bulk tools, API, and business features are ready when needed.</span>
             </article>
           </div>
 
           <div class="hero-proof-row">
-            <span>No credit card required</span>
+            <span>Start free</span>
             <span>Fast redirects</span>
-            <span>QR downloads included</span>
+            <span>QR downloads</span>
           </div>
         </div>
 
@@ -67,9 +66,9 @@
             <div class="tool-panel-head">
               <div>
                 <p class="tool-panel-kicker">Fast start</p>
-                <h2>Turn a long URL into a clean short link</h2>
+                <h2>Turn any long URL into a share-ready short link</h2>
               </div>
-              <span class="tool-panel-badge">Ready in seconds</span>
+              <span class="tool-panel-badge">One clean flow</span>
             </div>
 
             <% if (error) { %>
@@ -78,7 +77,7 @@
 
             <form action="/shorten" method="POST" class="hero-shortener" id="heroShortenerForm">
               <label class="tool-field tool-field-full">
-                <span>Paste your long URL</span>
+                <span>Paste a destination URL</span>
                 <input type="url" name="orginalUrl" placeholder="https://example.com/your-long-link" required>
               </label>
 
@@ -110,12 +109,12 @@
                 </div>
               <% } else { %>
                 <div class="signin-note">
-                  <strong>Optional controls unlock after sign in.</strong>
-                  <span>Log in to manage custom aliases, redirect ads, analytics, and saved links.</span>
+                  <strong>More controls unlock after sign in.</strong>
+                  <span>Log in for aliases, redirect ads, analytics, and saved links.</span>
                 </div>
               <% } %>
 
-              <button type="submit" class="hero-submit">Create short link</button>
+              <button type="submit" class="hero-submit">Shorten URL</button>
             </form>
 
             <% if (shortUrl) { %>
@@ -171,84 +170,41 @@
       </div>
     </section>
 
-    <section class="home-signal-strip">
-      <article class="signal-card">
-        <span class="signal-label">Use case</span>
-        <strong>Share product links, bio links, forms, and campaign pages without messy URLs.</strong>
-      </article>
-      <article class="signal-card">
-        <span class="signal-label">Why it feels simpler</span>
-        <strong>Shortener and QR generator live on the same screen, so users solve the problem faster.</strong>
-      </article>
-      <article class="signal-card">
-        <span class="signal-label">What scales later</span>
-        <strong>Analytics, affiliate, wallet, API access, white label, and business controls are already in the product.</strong>
-      </article>
-    </section>
-
     <section class="home-section">
       <div class="section-heading-row">
         <div>
-          <div class="eyebrow">Everything starts from the first link</div>
-          <h2 class="section-title">A cleaner homepage that helps users choose the right action immediately.</h2>
+          <div class="eyebrow">Main features</div>
+          <h2 class="section-title">Everything important stays front and center.</h2>
         </div>
         <p class="section-copy section-heading-copy">
-          Instead of forcing users to search around the product, the homepage now gives two clear starting points:
-          shorten a URL or generate a QR code.
+          Start with the two actions most users need first, then move into analytics and growth tools later.
         </p>
       </div>
 
       <div class="capability-grid">
         <article class="capability-card">
           <div class="capability-icon">01</div>
-          <h3>Short links that feel professional</h3>
-          <p>Create readable, lightweight share links with optional aliases, redirect ads, and clean copy actions.</p>
+          <h3>Shorten URLs</h3>
+          <p>Create clean links quickly with optional alias and ads controls.</p>
         </article>
         <article class="capability-card">
           <div class="capability-icon">02</div>
-          <h3>QR generation built into the hero</h3>
-          <p>Generate and download a QR code instantly from the homepage without opening a separate utility page.</p>
+          <h3>Create QR codes</h3>
+          <p>Generate and download QR codes from the same homepage flow.</p>
         </article>
         <article class="capability-card">
           <div class="capability-icon">03</div>
-          <h3>Upgrade path already connected</h3>
-          <p>When users are ready, SnapLink expands into analytics, wallet, affiliate, bulk actions, teams, and API workflows.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="home-section workflow-section">
-      <div class="section-heading-row compact">
-        <div>
-          <div class="eyebrow">Simple flow</div>
-          <h2 class="section-title">From long URL to share-ready asset in three quick steps.</h2>
-        </div>
-      </div>
-
-      <div class="workflow-grid">
-        <article class="workflow-card">
-          <span class="workflow-step">Step 1</span>
-          <h3>Paste the destination</h3>
-          <p>Start with any long URL from your store, video, document, landing page, or profile link.</p>
-        </article>
-        <article class="workflow-card">
-          <span class="workflow-step">Step 2</span>
-          <h3>Pick short link or QR</h3>
-          <p>Use the homepage switch to choose the output format your audience needs right now.</p>
-        </article>
-        <article class="workflow-card">
-          <span class="workflow-step">Step 3</span>
-          <h3>Share and grow</h3>
-          <p>Publish it across socials, offline print, chat, email, or campaigns, then move into analytics when needed.</p>
+          <h3>Track and scale</h3>
+          <p>Open analytics, bulk actions, API, wallet, and affiliate tools when your workflow grows.</p>
         </article>
       </div>
     </section>
 
     <section class="home-cta">
       <div class="home-cta-inner">
-        <div class="eyebrow">Ready to ship cleaner links</div>
-        <h2>Start with one URL. Grow into a full sharing workflow.</h2>
-        <p>SnapLink is designed to feel easy on day one and still stay useful when your traffic, campaigns, and team get bigger.</p>
+        <div class="eyebrow">Get started</div>
+        <h2>Create your first short link in a minute.</h2>
+        <p>Start free, keep it simple, and upgrade only when you need more control.</p>
         <div class="home-cta-actions">
           <% if (isLoggedIn) { %>
             <a href="/dashboard" class="btn-primary">Open dashboard</a>

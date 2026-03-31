@@ -27,6 +27,7 @@ const helperCopy = typeof helperCopyText !== 'undefined' ? helperCopyText : 'Nee
   </div>
 
   <div class="nav-right">
+    <button type="button" id="themeBtnTop" class="nav-btn-outline nav-theme-toggle" onclick="toggleTheme()">Light mode</button>
     <span class="auth-helper-copy"><%= helperCopy %></span>
     <a href="<%= helperHref %>" class="nav-btn-solid auth-helper-link"><%= helperLabel %></a>
   </div>
@@ -46,6 +47,16 @@ const helperCopy = typeof helperCopyText !== 'undefined' ? helperCopyText : 'Nee
       const toggle = nav.querySelector('.nav-toggle');
       if (toggle) toggle.setAttribute('aria-expanded', 'false');
     });
+  });
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('[data-navbar-root] .nav-link, [data-navbar-root] .nav-btn-outline, [data-navbar-root] .nav-btn-solid');
+    if (!link) return;
+    const nav = link.closest('[data-navbar-root]');
+    if (!nav) return;
+    nav.classList.remove('is-open');
+    const toggle = nav.querySelector('.nav-toggle');
+    if (toggle) toggle.setAttribute('aria-expanded', 'false');
   });
 
   document.addEventListener('keydown', (event) => {

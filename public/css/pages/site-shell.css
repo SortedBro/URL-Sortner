@@ -204,6 +204,11 @@ main,
   color: var(--site-text);
 }
 
+.nav-theme-toggle {
+  white-space: nowrap;
+  min-width: 116px;
+}
+
 .nav-btn-solid,
 .btn-primary,
 .btn-submit,
@@ -636,6 +641,10 @@ main,
   .nav-btn-solid {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .nav-theme-toggle {
+    min-width: 0;
   }
 
   .auth-helper-copy {

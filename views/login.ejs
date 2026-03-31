@@ -19,29 +19,14 @@
     <section class="auth-shell">
       <aside class="auth-aside">
         <div class="auth-kicker">SnapLink access</div>
-        <h1 class="auth-title">Pick up where your links left off.</h1>
-        <p class="auth-copy">Sign in to manage links, review analytics, rotate API keys, and keep campaigns moving.</p>
-        <div class="auth-points">
-          <div class="auth-point"><strong>Dashboard</strong><p class="section-copy">See active links, clicks, and top performers in one place.</p></div>
-          <div class="auth-point"><strong>Settings</strong><p class="section-copy">Manage API, webhooks, white label, reports, and team controls from the same account.</p></div>
-          <div class="auth-point"><strong>Support</strong><p class="section-copy">Need help signing in? Use the About page contact form or public email links.</p></div>
-        </div>
-        <div class="auth-mini-grid">
-          <div class="auth-mini-card">
-            <span>Realtime</span>
-            <strong>Analytics ready</strong>
-          </div>
-          <div class="auth-mini-card">
-            <span>Business</span>
-            <strong>API and white label</strong>
-          </div>
-        </div>
+        <h1 class="auth-title">Welcome back.</h1>
+        <p class="auth-copy">Log in to manage links, analytics, and account settings.</p>
       </aside>
 
       <div class="auth-card">
         <div class="auth-kicker">Welcome back</div>
         <h2 class="auth-title">Log in to SnapLink.</h2>
-        <p class="auth-copy">Use the same email and password you created during signup.</p>
+        <p class="auth-copy">Use your email and password to continue.</p>
 
         <% if (typeof error !== 'undefined' && error) { %>
           <div class="inline-alert error"><%= error %></div>
@@ -62,7 +47,7 @@
               <a href="/about" class="inline-help-link">Need help?</a>
             </div>
             <div class="input-wrap">
-              <input class="auth-input" type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+              <input class="auth-input" type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required>
               <button type="button" class="eye-btn" id="togglePass" aria-label="Toggle password visibility">
                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -74,7 +59,7 @@
 
           <label class="checkbox-row" for="remember">
             <input type="checkbox" id="remember" name="remember">
-            <span>Keep this browser signed in for quicker access.</span>
+            <span>Keep me signed in on this browser.</span>
           </label>
 
           <button type="submit" class="btn-submit">Log in</button>

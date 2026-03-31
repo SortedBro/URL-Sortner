@@ -1,4 +1,4 @@
-/* Shared theme utility for all pages.
+﻿/* Shared theme utility for all pages.
  * Keeps theme behavior consistent and avoids duplicate inline scripts.
  */
 (function attachSnapTheme(windowObj) {
@@ -23,16 +23,8 @@
     function setButtonLabel(button, theme) {
         if (!button) return;
 
-        // Preserve per-page label style.
-        if (button.id === 'theme-btn') {
-            button.textContent = theme === 'dark' ? '☀ Light' : '☾ Dark';
-            return;
-        }
-        if (button.id === 'toggleBtn') {
-            button.textContent = theme === 'dark' ? '🌙 dark' : '☀ light';
-            return;
-        }
-        button.textContent = theme === 'dark' ? '🌙' : '☀️';
+        const nextLabel = theme === 'dark' ? 'Light mode' : 'Dark mode';
+        button.textContent = nextLabel;
     }
 
     function getThemeButtons() {
@@ -66,7 +58,6 @@
         toggle: toggleTheme,
     };
 
-    // Keep compatibility with existing onclick="toggleTheme()".
     windowObj.toggleTheme = toggleTheme;
 
     if (doc.readyState === 'loading') {

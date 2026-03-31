@@ -37,6 +37,7 @@ const displayUserInitial = displayUserName.charAt(0).toUpperCase();
   </div>
 
   <div class="nav-right">
+    <button type="button" id="themeBtnTop" class="nav-btn-outline nav-theme-toggle" onclick="toggleTheme()">Light mode</button>
     <% if (typeof user !== 'undefined' && user) { %>
       <a href="/dashboard" class="nav-link">Dashboard</a>
       <a href="/affiliate/wallet" class="nav-link">Wallet</a>
@@ -66,6 +67,16 @@ const displayUserInitial = displayUserName.charAt(0).toUpperCase();
       const toggle = nav.querySelector('.nav-toggle');
       if (toggle) toggle.setAttribute('aria-expanded', 'false');
     });
+  });
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('[data-navbar-root] .nav-link, [data-navbar-root] .nav-btn-outline, [data-navbar-root] .nav-btn-solid');
+    if (!link) return;
+    const nav = link.closest('[data-navbar-root]');
+    if (!nav) return;
+    nav.classList.remove('is-open');
+    const toggle = nav.querySelector('.nav-toggle');
+    if (toggle) toggle.setAttribute('aria-expanded', 'false');
   });
 
   document.addEventListener('keydown', (event) => {
