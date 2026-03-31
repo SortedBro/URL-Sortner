@@ -132,21 +132,34 @@
     </div>
   </div>
 
+  <%- include('../partials/feedback-ui') %>
+
   <script src="/js/shared/theme.js"></script>
+  <script src="/js/shared/feedback-ui.js"></script>
   <script>
     // Theme
 
     // Delete URL
     async function deleteUrl(urlId) {
-      if (!confirm('Yeh URL delete karo? Yeh action undo nahi hoga!')) return;
+      const ok = await window.snaplinkUI.confirm({
+        title: 'Delete this short URL?',
+        message: 'This URL will be removed from the platform and cannot be restored from the admin panel.',
+        confirmText: 'Delete URL',
+        tone: 'danger'
+      });
+      if (!ok) return;
+
       try {
         const res = await fetch(`/admin/urls/${urlId}`, { method: 'DELETE' });
         const data = await res.json();
         if (data.success) {
           document.getElementById(`url-row-${urlId}`).remove();
+          window.snaplinkUI.toast('URL deleted successfully.', { tone: 'success' });
+        } else {
+          window.snaplinkUI.toast(data.error || 'URL delete nahi ho paya.', { tone: 'error' });
         }
-      } catch(e) {
-        alert('Error! Try again.');
+      } catch (e) {
+        window.snaplinkUI.toast('Delete request fail ho gaya. Dobara try karo.', { tone: 'error' });
       }
     }
   </script>

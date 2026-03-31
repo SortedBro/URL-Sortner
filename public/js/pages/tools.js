@@ -1,8 +1,8 @@
-/* SnapLink tools page interactions */
+﻿/* SnapLink tools page interactions */
 
 function copyText(text, button) {
   const normalizedText = typeof text === 'string' ? text.trim() : '';
-  if (!normalizedText || normalizedText === '-' || normalizedText === '—' || normalizedText === 'â€”') return;
+  if (!normalizedText || normalizedText === '-' || normalizedText === 'â€”' || normalizedText === 'Ã¢â‚¬â€') return;
 
   navigator.clipboard.writeText(normalizedText).then(() => {
     if (!button) return;
@@ -124,7 +124,7 @@ function copyQRDataURL() {
   });
 }
 
-/* ════ 2. Image Compressor ════ */
+/* â•â•â•â• 2. Image Compressor â•â•â•â• */
 let origFile = null;
 function loadImg(input) {
   origFile = input.files[0]; if (!origFile) return;
@@ -173,7 +173,7 @@ function dlImg() {
 }
 function fmtBytes(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'; return (b / 1048576).toFixed(2) + ' MB'; }
 
-/* ════ 3. YT Video Downloader ════ */
+/* â•â•â•â• 3. YT Video Downloader â•â•â•â• */
 function ytTypeChange() {
   const type = document.getElementById('ytType').value;
   document.getElementById('ytAudioFmtField').style.display = type === 'audio' ? 'block' : 'none';
@@ -248,29 +248,29 @@ async function downloadYTVideo() {
       document.getElementById('ytDlLink').href = dlUrl;
       document.getElementById('ytDlLink').style.display = 'flex';
       document.getElementById('ytStatusMsg').innerHTML =
-        '<div class="yt-success-msg">✓ Download link ready hai! Button click karo.</div>';
+        '<div class="yt-success-msg">âœ“ Download link ready hai! Button click karo.</div>';
       // Also try auto-download
       const a = document.createElement('a');
       a.href = dlUrl; a.target = '_blank'; a.download = '';
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
 
     } else if (data.status === 'picker') {
-      // Multiple streams available — show all options
-      let html = '<div class="yt-success-msg">Multiple streams available — choose karo:</div>';
+      // Multiple streams available â€” show all options
+      let html = '<div class="yt-success-msg">Multiple streams available â€” choose karo:</div>';
       document.getElementById('ytStatusMsg').innerHTML = html;
       const dlLink = document.getElementById('ytDlLink');
       dlLink.href = data.picker[0]?.url || '#';
-      dlLink.textContent = '⬇ Best Quality Download';
+      dlLink.textContent = 'â¬‡ Best Quality Download';
       dlLink.style.display = 'flex';
 
     } else if (data.status === 'error') {
-      ytSetStatus(`❌ Error: ${data.error?.code || 'Unknown error'} — ${data.error?.context?.service || 'Try karo dobara'}`, true);
+      ytSetStatus(`âŒ Error: ${data.error?.code || 'Unknown error'} â€” ${data.error?.context?.service || 'Try karo dobara'}`, true);
     } else {
-      ytSetStatus('❌ Unexpected response. Dobara try karo ya cobalt.tools directly use karo.', true);
+      ytSetStatus('âŒ Unexpected response. Dobara try karo ya cobalt.tools directly use karo.', true);
     }
   } catch (err) {
     console.error(err);
-    ytSetStatus('❌ Server se connect nahi ho saka. Route add kiya hai? cobalt.tools directly try karo.', true);
+    ytSetStatus('âŒ Server se connect nahi ho saka. Route add kiya hai? cobalt.tools directly try karo.', true);
   }
 
   document.getElementById('ytDlBtn').disabled = false;
@@ -278,15 +278,15 @@ async function downloadYTVideo() {
 
 function ytOpenVideo() {
   const vid = document.getElementById('ytMetaVidId').textContent;
-  if (vid && vid !== '—') window.open(`https://youtube.com/watch?v=${vid}`, '_blank');
+  if (vid && vid !== 'â€”') window.open(`https://youtube.com/watch?v=${vid}`, '_blank');
 }
 
 function buildThumbButtons(vid) {
   const qualities = [
-    { label: 'Max HD', key: 'maxresdefault', size: '1280×720' },
-    { label: 'High',   key: 'hqdefault',     size: '480×360'  },
-    { label: 'Medium', key: 'mqdefault',      size: '320×180'  },
-    { label: 'SD',     key: 'sddefault',      size: '640×480'  },
+    { label: 'Max HD', key: 'maxresdefault', size: '1280Ã—720' },
+    { label: 'High',   key: 'hqdefault',     size: '480Ã—360'  },
+    { label: 'Medium', key: 'mqdefault',      size: '320Ã—180'  },
+    { label: 'SD',     key: 'sddefault',      size: '640Ã—480'  },
   ];
   const wrap = document.getElementById('ytThumbBtns');
   wrap.innerHTML = '';
@@ -306,7 +306,7 @@ async function dlThumb(url, vid, q) {
   } catch { window.open(url, '_blank'); }
 }
 
-/* ════ 4. UTM Builder ════ */
+/* â•â•â•â• 4. UTM Builder â•â•â•â• */
 function buildUTM() {
   const base = document.getElementById('utmBase').value.trim();
   const src = document.getElementById('utmSrc').value.trim();
@@ -324,23 +324,23 @@ function buildUTM() {
 function copyUTM() { const v = document.getElementById('utmOut').textContent; if (!v.includes('bharo')) { navigator.clipboard.writeText(v).then(() => alert('UTM Link copied!')); } }
 function resetUTM() { ['utmBase','utmSrc','utmMed','utmCamp','utmCont','utmTerm'].forEach(id => document.getElementById(id).value = ''); document.getElementById('utmOut').textContent = 'URL aur Source bharo...'; document.getElementById('utmParams').innerHTML = ''; }
 
-/* ════ 5. JSON ════ */
+/* â•â•â•â• 5. JSON â•â•â•â• */
 function fmtJSON() {
   const inp = document.getElementById('jsonIn').value;
   const st = document.getElementById('jsonStat');
   if (!inp.trim()) { document.getElementById('jsonOut').value = ''; st.textContent = ''; return; }
-  try { document.getElementById('jsonOut').value = JSON.stringify(JSON.parse(inp), null, 2); st.textContent = '✓ Valid'; st.style.color = 'var(--green)'; }
-  catch (e) { document.getElementById('jsonOut').value = 'Error: ' + e.message; st.textContent = '✕ Invalid'; st.style.color = 'var(--red)'; }
+  try { document.getElementById('jsonOut').value = JSON.stringify(JSON.parse(inp), null, 2); st.textContent = 'âœ“ Valid'; st.style.color = 'var(--green)'; }
+  catch (e) { document.getElementById('jsonOut').value = 'Error: ' + e.message; st.textContent = 'âœ• Invalid'; st.style.color = 'var(--red)'; }
 }
 function minJSON() { try { document.getElementById('jsonOut').value = JSON.stringify(JSON.parse(document.getElementById('jsonIn').value)); } catch {} }
 function sortJSON() { try { const sort = obj => Array.isArray(obj) ? obj.map(sort) : obj && typeof obj === 'object' ? Object.fromEntries(Object.entries(obj).sort().map(([k,v]) => [k, sort(v)])) : obj; document.getElementById('jsonOut').value = JSON.stringify(sort(JSON.parse(document.getElementById('jsonIn').value)), null, 2); } catch {} }
 function clearJSON() { document.getElementById('jsonIn').value = ''; document.getElementById('jsonOut').value = ''; document.getElementById('jsonStat').textContent = ''; }
 
-/* ════ 6. Hash ════ */
+/* â•â•â•â• 6. Hash â•â•â•â• */
 async function genHash() {
   const text = document.getElementById('hashIn').value;
   const ids = ['hMD5','hSHA1','hSHA256','hSHA512'];
-  if (!text) { ids.forEach(id => document.getElementById(id).textContent = '—'); return; }
+  if (!text) { ids.forEach(id => document.getElementById(id).textContent = 'â€”'); return; }
   const enc = new TextEncoder().encode(text);
   const hex = buf => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
   const [s1, s256, s512] = await Promise.all([
@@ -356,7 +356,7 @@ async function genHash() {
 /* MD5 */
 function md5(s){function sa(x,y){const l=(x&0xFFFF)+(y&0xFFFF);return((x>>16)+(y>>16)+(l>>16))<<16|(l&0xFFFF);}function rl(n,c){return n<<c|n>>>32-c;}function cm(q,a,b,x,s,t){return sa(rl(sa(sa(a,q),sa(x,t)),s),b);}function ff(a,b,c,d,x,s,t){return cm(b&c|~b&d,a,b,x,s,t);}function gg(a,b,c,d,x,s,t){return cm(b&d|c&~d,a,b,x,s,t);}function hh(a,b,c,d,x,s,t){return cm(b^c^d,a,b,x,s,t);}function ii(a,b,c,d,x,s,t){return cm(c^(b|~d),a,b,x,s,t);}const u=unescape(encodeURIComponent(s));const x=[];for(let i=0;i<u.length;i+=4)x.push(u.charCodeAt(i)|u.charCodeAt(i+1)<<8|u.charCodeAt(i+2)<<16|u.charCodeAt(i+3)<<24);x[u.length>>2]|=0x80<<(u.length%4*8);x[(u.length+8>>>6<<4)+14]=u.length*8;let a=0x67452301,b=0xEFCDAB89,c=0x98BADCFE,d=0x10325476;for(let i=0;i<x.length;i+=16){const[A,B,C,D]=[a,b,c,d];a=ff(a,b,c,d,x[i],7,-680876936);d=ff(d,a,b,c,x[i+1],12,-389564586);c=ff(c,d,a,b,x[i+2],17,606105819);b=ff(b,c,d,a,x[i+3],22,-1044525330);a=ff(a,b,c,d,x[i+4],7,-176418897);d=ff(d,a,b,c,x[i+5],12,1200080426);c=ff(c,d,a,b,x[i+6],17,-1473231341);b=ff(b,c,d,a,x[i+7],22,-45705983);a=ff(a,b,c,d,x[i+8],7,1770035416);d=ff(d,a,b,c,x[i+9],12,-1958414417);c=ff(c,d,a,b,x[i+10],17,-42063);b=ff(b,c,d,a,x[i+11],22,-1990404162);a=ff(a,b,c,d,x[i+12],7,1804603682);d=ff(d,a,b,c,x[i+13],12,-40341101);c=ff(c,d,a,b,x[i+14],17,-1502002290);b=ff(b,c,d,a,x[i+15],22,1236535329);a=gg(a,b,c,d,x[i+1],5,-165796510);d=gg(d,a,b,c,x[i+6],9,-1069501632);c=gg(c,d,a,b,x[i+11],14,643717713);b=gg(b,c,d,a,x[i],20,-373897302);a=gg(a,b,c,d,x[i+5],5,-701558691);d=gg(d,a,b,c,x[i+10],9,38016083);c=gg(c,d,a,b,x[i+15],14,-660478335);b=gg(b,c,d,a,x[i+4],20,-405537848);a=gg(a,b,c,d,x[i+9],5,568446438);d=gg(d,a,b,c,x[i+14],9,-1019803690);c=gg(c,d,a,b,x[i+3],14,-187363961);b=gg(b,c,d,a,x[i+8],20,1163531501);a=gg(a,b,c,d,x[i+13],5,-1444681467);d=gg(d,a,b,c,x[i+2],9,-51403784);c=gg(c,d,a,b,x[i+7],14,1735328473);b=gg(b,c,d,a,x[i+12],20,-1926607734);a=hh(a,b,c,d,x[i+5],4,-378558);d=hh(d,a,b,c,x[i+8],11,-2022574463);c=hh(c,d,a,b,x[i+11],16,1839030562);b=hh(b,c,d,a,x[i+14],23,-35309556);a=hh(a,b,c,d,x[i+1],4,-1530992060);d=hh(d,a,b,c,x[i+4],11,1272893353);c=hh(c,d,a,b,x[i+7],16,-155497632);b=hh(b,c,d,a,x[i+10],23,-1094730640);a=hh(a,b,c,d,x[i+13],4,681279174);d=hh(d,a,b,c,x[i],11,-358537222);c=hh(c,d,a,b,x[i+3],16,-722521979);b=hh(b,c,d,a,x[i+6],23,76029189);a=hh(a,b,c,d,x[i+9],4,-640364487);d=hh(d,a,b,c,x[i+12],11,-421815835);c=hh(c,d,a,b,x[i+15],16,530742520);b=hh(b,c,d,a,x[i+2],23,-995338651);a=ii(a,b,c,d,x[i],6,-198630844);d=ii(d,a,b,c,x[i+7],10,1126891415);c=ii(c,d,a,b,x[i+14],15,-1416354905);b=ii(b,c,d,a,x[i+5],21,-57434055);a=ii(a,b,c,d,x[i+12],6,1700485571);d=ii(d,a,b,c,x[i+3],10,-1894986606);c=ii(c,d,a,b,x[i+10],15,-1051523);b=ii(b,c,d,a,x[i+1],21,-2054922799);a=ii(a,b,c,d,x[i+8],6,1873313359);d=ii(d,a,b,c,x[i+15],10,-30611744);c=ii(c,d,a,b,x[i+6],15,-1560198380);b=ii(b,c,d,a,x[i+13],21,1309151649);a=ii(a,b,c,d,x[i+4],6,-145523070);d=ii(d,a,b,c,x[i+11],10,-1120210379);c=ii(c,d,a,b,x[i+2],15,718787259);b=ii(b,c,d,a,x[i+9],21,-343485551);a=sa(a,A);b=sa(b,B);c=sa(c,C);d=sa(d,D);}return[a,b,c,d].map(n=>(n>>>0).toString(16).padStart(8,'0').match(/../g).map(s=>s[1]+s[0]).join('')).join('');}
 
-/* ════ 7. Base64 ════ */
+/* â•â•â•â• 7. Base64 â•â•â•â• */
 function b64Mode(m, btn) {
   document.querySelectorAll('.mtab').forEach(b => b.classList.remove('active')); btn.classList.add('active');
   document.getElementById('b64TextMode').style.display = m === 'text' ? 'flex' : 'none';
@@ -366,7 +366,7 @@ function doB64Enc() { try { document.getElementById('b64Out').value = btoa(unesc
 function doB64Dec() { try { document.getElementById('b64Out').value = decodeURIComponent(escape(atob(document.getElementById('b64In').value))); } catch { document.getElementById('b64Out').value = 'Error: Invalid Base64 string'; } }
 function imgToB64(input) { const f = input.files[0]; if (!f) return; const r = new FileReader(); r.onload = e => { document.getElementById('b64ImgOut').value = e.target.result; }; r.readAsDataURL(f); }
 
-/* ════ 8. Color Picker ════ */
+/* â•â•â•â• 8. Color Picker â•â•â•â• */
 function updColor(hex) {
   document.getElementById('cHexIn').value = hex;
   document.getElementById('cHex').textContent = hex;
@@ -386,7 +386,7 @@ function updColor(hex) {
   document.getElementById('cupText').style.color = hex;
   document.getElementById('cupBorder').style.borderColor = hex;
   const ratio = lum > 0.5 ? (lum+0.05)/0.05 : 0.05/(lum+0.05);
-  document.getElementById('contrastInfo').innerHTML = `<span>Contrast on white: ${ratio.toFixed(1)}:1 ${ratio >= 4.5 ? '✓ AA' : ratio >= 3 ? '~ AA Large' : '✕ Low'}</span>`;
+  document.getElementById('contrastInfo').innerHTML = `<span>Contrast on white: ${ratio.toFixed(1)}:1 ${ratio >= 4.5 ? 'âœ“ AA' : ratio >= 3 ? '~ AA Large' : 'âœ• Low'}</span>`;
   buildShades(h[0], h[1]);
 }
 function updFromHex(hex) { if (/^#[0-9a-fA-F]{6}$/.test(hex)) { document.getElementById('cPick').value = hex; updColor(hex); } }
@@ -402,7 +402,7 @@ function buildShades(h, s) {
   });
 }
 
-/* ════ 9. Word Counter ════ */
+/* â•â•â•â• 9. Word Counter â•â•â•â• */
 function countWords() {
   const t = document.getElementById('wordIn').value;
   const w = t.trim() ? t.trim().split(/\s+/).length : 0;
@@ -582,7 +582,7 @@ function genMultiPass() {
 }
 // (moved to main DOMContentLoaded)
 
-/* ════ 12. Fake Data Generator ════ */
+/* â•â•â•â• 12. Fake Data Generator â•â•â•â• */
 const fakeDB = {
   in: {
     first: ['Aarav','Aditi','Amit','Ananya','Arjun','Deepak','Divya','Fatima','Gaurav','Kavya','Meera','Mohammed','Neha','Priya','Rahul','Riya','Rohit','Sachin','Sanjay','Sunita','Vikram','Zara'],
@@ -659,7 +659,7 @@ function dlFakeData() {
   const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='fake-data.'+ext; a.click();
 }
 
-/* ════ 13. Markdown Editor ════ */
+/* â•â•â•â• 13. Markdown Editor â•â•â•â• */
 function renderMD() {
   const md = document.getElementById('mdInput').value;
   // Simple markdown parser
@@ -695,7 +695,7 @@ function dlMarkdown() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content],{type:'text/markdown'})); a.download='document.md'; a.click();
 }
 
-/* ════ 14. Meta Tag Generator ════ */
+/* â•â•â•â• 14. Meta Tag Generator â•â•â•â• */
 function genMeta() {
   const title    = document.getElementById('metaTitle').value;
   const desc     = document.getElementById('metaDesc').value;
@@ -756,15 +756,15 @@ function genMeta() {
   document.getElementById('mpDesc').textContent  = desc  || 'Description yahan dikhega...';
 }
 
-/* ════ 15. Emoji Picker ════ */
+/* â•â•â•â• 15. Emoji Picker â•â•â•â• */
 const EMOJIS = [
-  {cat:'Smileys',emojis:['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','🥲','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','💫','🤯','🤠','🥳','😎','🤓','🧐','😕','😟','🙁','☹️','😮','😯','😲','😳','🥺','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿']},
-  {cat:'People',emojis:['👋','🤚','🖐️','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🙏','✍️','💅','🤳','💪','🦾','🦿','🦵','🦶','👂','🦻','👃','🧠','🫀','🫁','🦷','🦴','👀','👁️','👅','👄','💋','🩸']},
-  {cat:'Animals',emojis:['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦟','🦗','🕷️','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🦣','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🦬','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🪶','🐓','🦃','🦤','🦚','🦜','🦢','🦩','🕊️','🐇','🦝','🦨','🦡','🦫','🦦','🦥','🐁','🐀','🐿️','🦔']},
-  {cat:'Food',emojis:['🍎','🍊','🍋','🍇','🍓','🫐','🍈','🍑','🍒','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶️','🫑','🧄','🧅','🥔','🍠','🌽','🥕','🫛','🧆','🥙','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍱','🍘','🍣','🍤','🍙','🍚','🍜','🍝','🍛','🍲','🫙','🍦','🍧','🍨','🍩','🍪','🎂','🍰','🧁','🥧','🍫','🍬','🍭','🍮','🍯','☕','🍵','🧃','🥤','🧋','🍶','🍺','🍷','🥂','🥃','🍸','🍹']},
-  {cat:'Travel',emojis:['🚗','🚕','🚙','🚌','🚎','🏎️','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🏍️','🛵','🛺','🚲','🛴','🛹','🛼','🚁','🛸','✈️','🛩️','🚀','🛶','⛵','🚤','🛥️','🛳️','⛴️','🚢','⚓','🗺️','🏔️','⛰️','🌋','🗻','🏕️','🏖️','🏜️','🏝️','🏞️','🏟️','🏛️','🏗️','🏘️','🏙️','🌅','🌄','🌠','🎇','🎆','🌇','🌆','🏙️','🌃','🌌','🌉','🌁']},
-  {cat:'Objects',emojis:['⌚','📱','💻','⌨️','🖥️','🖨️','🖱️','💾','💿','📷','📸','📹','🎥','📞','☎️','📺','📻','🧭','⏱️','⏰','⏳','📡','🔋','🔌','💡','🔦','🕯️','🗑️','🛢️','💰','💵','💳','💎','🔧','🔨','⚒️','🛠️','🔩','🔗','⛓️','🪝','🧲','🔑','🗝️','🪪','🔐','🔒','🔓','🪞','🪟','🚪','🛋️','🪑','🚽','🪠','🚿','🛁','🪤','📦','📫','📬','📭','📮','📯','📜','📃','📄','📑','📊','📈','📉','📋','📌','📍','✂️','🗃️','🗄️','🗑️']},
-  {cat:'Symbols',emojis:['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉️','✡️','🔯','🪯','☯️','🛐','⛎','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','🆔','⚛️','🉑','☢️','☣️','📴','📳','🈶','🈚','🈸','🈺','🈷️','✴️','🆚','💮','🉐','㊙️','㊗️','🈴','🈵','🈹','🈲','🅰️','🅱️','🆎','🆑','🅾️','🆘','❌','⭕','🛑','⛔','📛','🚫','✅','☑️','✔️','❎','🔰','♻️','🔱','📛','🔰','⭕','✅','❌']}
+  {cat:'Smileys',emojis:['ðŸ˜€','ðŸ˜ƒ','ðŸ˜„','ðŸ˜','ðŸ˜†','ðŸ˜…','ðŸ¤£','ðŸ˜‚','ðŸ™‚','ðŸ™ƒ','ðŸ˜‰','ðŸ˜Š','ðŸ˜‡','ðŸ¥°','ðŸ˜','ðŸ¤©','ðŸ˜˜','ðŸ˜—','ðŸ˜š','ðŸ˜™','ðŸ¥²','ðŸ˜‹','ðŸ˜›','ðŸ˜œ','ðŸ¤ª','ðŸ˜','ðŸ¤‘','ðŸ¤—','ðŸ¤­','ðŸ¤«','ðŸ¤”','ðŸ¤','ðŸ¤¨','ðŸ˜','ðŸ˜‘','ðŸ˜¶','ðŸ˜','ðŸ˜’','ðŸ™„','ðŸ˜¬','ðŸ¤¥','ðŸ˜Œ','ðŸ˜”','ðŸ˜ª','ðŸ¤¤','ðŸ˜´','ðŸ˜·','ðŸ¤’','ðŸ¤•','ðŸ¤¢','ðŸ¤®','ðŸ¤§','ðŸ¥µ','ðŸ¥¶','ðŸ¥´','ðŸ˜µ','ðŸ’«','ðŸ¤¯','ðŸ¤ ','ðŸ¥³','ðŸ˜Ž','ðŸ¤“','ðŸ§','ðŸ˜•','ðŸ˜Ÿ','ðŸ™','â˜¹ï¸','ðŸ˜®','ðŸ˜¯','ðŸ˜²','ðŸ˜³','ðŸ¥º','ðŸ˜¦','ðŸ˜§','ðŸ˜¨','ðŸ˜°','ðŸ˜¥','ðŸ˜¢','ðŸ˜­','ðŸ˜±','ðŸ˜–','ðŸ˜£','ðŸ˜ž','ðŸ˜“','ðŸ˜©','ðŸ˜«','ðŸ¥±','ðŸ˜¤','ðŸ˜¡','ðŸ˜ ','ðŸ¤¬','ðŸ˜ˆ','ðŸ‘¿']},
+  {cat:'People',emojis:['ðŸ‘‹','ðŸ¤š','ðŸ–ï¸','âœ‹','ðŸ––','ðŸ‘Œ','ðŸ¤Œ','ðŸ¤','âœŒï¸','ðŸ¤ž','ðŸ¤Ÿ','ðŸ¤˜','ðŸ¤™','ðŸ‘ˆ','ðŸ‘‰','ðŸ‘†','ðŸ–•','ðŸ‘‡','â˜ï¸','ðŸ‘','ðŸ‘Ž','âœŠ','ðŸ‘Š','ðŸ¤›','ðŸ¤œ','ðŸ‘','ðŸ™Œ','ðŸ‘','ðŸ¤²','ðŸ™','âœï¸','ðŸ’…','ðŸ¤³','ðŸ’ª','ðŸ¦¾','ðŸ¦¿','ðŸ¦µ','ðŸ¦¶','ðŸ‘‚','ðŸ¦»','ðŸ‘ƒ','ðŸ§ ','ðŸ«€','ðŸ«','ðŸ¦·','ðŸ¦´','ðŸ‘€','ðŸ‘ï¸','ðŸ‘…','ðŸ‘„','ðŸ’‹','ðŸ©¸']},
+  {cat:'Animals',emojis:['ðŸ¶','ðŸ±','ðŸ­','ðŸ¹','ðŸ°','ðŸ¦Š','ðŸ»','ðŸ¼','ðŸ¨','ðŸ¯','ðŸ¦','ðŸ®','ðŸ·','ðŸ¸','ðŸµ','ðŸ™ˆ','ðŸ™‰','ðŸ™Š','ðŸ”','ðŸ§','ðŸ¦','ðŸ¤','ðŸ¦†','ðŸ¦…','ðŸ¦‰','ðŸ¦‡','ðŸº','ðŸ—','ðŸ´','ðŸ¦„','ðŸ','ðŸ›','ðŸ¦‹','ðŸŒ','ðŸž','ðŸœ','ðŸ¦Ÿ','ðŸ¦—','ðŸ•·ï¸','ðŸ¦‚','ðŸ¢','ðŸ','ðŸ¦Ž','ðŸ¦–','ðŸ¦•','ðŸ™','ðŸ¦‘','ðŸ¦','ðŸ¦ž','ðŸ¦€','ðŸ¡','ðŸ ','ðŸŸ','ðŸ¬','ðŸ³','ðŸ‹','ðŸ¦ˆ','ðŸŠ','ðŸ…','ðŸ†','ðŸ¦“','ðŸ¦','ðŸ¦§','ðŸ¦£','ðŸ˜','ðŸ¦›','ðŸ¦','ðŸª','ðŸ«','ðŸ¦’','ðŸ¦˜','ðŸ¦¬','ðŸƒ','ðŸ‚','ðŸ„','ðŸŽ','ðŸ–','ðŸ','ðŸ‘','ðŸ¦™','ðŸ','ðŸ¦Œ','ðŸ•','ðŸ©','ðŸ¦®','ðŸ•â€ðŸ¦º','ðŸˆ','ðŸˆâ€â¬›','ðŸª¶','ðŸ“','ðŸ¦ƒ','ðŸ¦¤','ðŸ¦š','ðŸ¦œ','ðŸ¦¢','ðŸ¦©','ðŸ•Šï¸','ðŸ‡','ðŸ¦','ðŸ¦¨','ðŸ¦¡','ðŸ¦«','ðŸ¦¦','ðŸ¦¥','ðŸ','ðŸ€','ðŸ¿ï¸','ðŸ¦”']},
+  {cat:'Food',emojis:['ðŸŽ','ðŸŠ','ðŸ‹','ðŸ‡','ðŸ“','ðŸ«','ðŸˆ','ðŸ‘','ðŸ’','ðŸ¥­','ðŸ','ðŸ¥¥','ðŸ¥','ðŸ…','ðŸ†','ðŸ¥‘','ðŸ¥¦','ðŸ¥¬','ðŸ¥’','ðŸŒ¶ï¸','ðŸ«‘','ðŸ§„','ðŸ§…','ðŸ¥”','ðŸ ','ðŸŒ½','ðŸ¥•','ðŸ«›','ðŸ§†','ðŸ¥™','ðŸŒ®','ðŸŒ¯','ðŸ«”','ðŸ¥—','ðŸ¥˜','ðŸ«•','ðŸ¥«','ðŸ±','ðŸ˜','ðŸ£','ðŸ¤','ðŸ™','ðŸš','ðŸœ','ðŸ','ðŸ›','ðŸ²','ðŸ«™','ðŸ¦','ðŸ§','ðŸ¨','ðŸ©','ðŸª','ðŸŽ‚','ðŸ°','ðŸ§','ðŸ¥§','ðŸ«','ðŸ¬','ðŸ­','ðŸ®','ðŸ¯','â˜•','ðŸµ','ðŸ§ƒ','ðŸ¥¤','ðŸ§‹','ðŸ¶','ðŸº','ðŸ·','ðŸ¥‚','ðŸ¥ƒ','ðŸ¸','ðŸ¹']},
+  {cat:'Travel',emojis:['ðŸš—','ðŸš•','ðŸš™','ðŸšŒ','ðŸšŽ','ðŸŽï¸','ðŸš“','ðŸš‘','ðŸš’','ðŸš','ðŸ›»','ðŸšš','ðŸš›','ðŸšœ','ðŸï¸','ðŸ›µ','ðŸ›º','ðŸš²','ðŸ›´','ðŸ›¹','ðŸ›¼','ðŸš','ðŸ›¸','âœˆï¸','ðŸ›©ï¸','ðŸš€','ðŸ›¶','â›µ','ðŸš¤','ðŸ›¥ï¸','ðŸ›³ï¸','â›´ï¸','ðŸš¢','âš“','ðŸ—ºï¸','ðŸ”ï¸','â›°ï¸','ðŸŒ‹','ðŸ—»','ðŸ•ï¸','ðŸ–ï¸','ðŸœï¸','ðŸï¸','ðŸžï¸','ðŸŸï¸','ðŸ›ï¸','ðŸ—ï¸','ðŸ˜ï¸','ðŸ™ï¸','ðŸŒ…','ðŸŒ„','ðŸŒ ','ðŸŽ‡','ðŸŽ†','ðŸŒ‡','ðŸŒ†','ðŸ™ï¸','ðŸŒƒ','ðŸŒŒ','ðŸŒ‰','ðŸŒ']},
+  {cat:'Objects',emojis:['âŒš','ðŸ“±','ðŸ’»','âŒ¨ï¸','ðŸ–¥ï¸','ðŸ–¨ï¸','ðŸ–±ï¸','ðŸ’¾','ðŸ’¿','ðŸ“·','ðŸ“¸','ðŸ“¹','ðŸŽ¥','ðŸ“ž','â˜Žï¸','ðŸ“º','ðŸ“»','ðŸ§­','â±ï¸','â°','â³','ðŸ“¡','ðŸ”‹','ðŸ”Œ','ðŸ’¡','ðŸ”¦','ðŸ•¯ï¸','ðŸ—‘ï¸','ðŸ›¢ï¸','ðŸ’°','ðŸ’µ','ðŸ’³','ðŸ’Ž','ðŸ”§','ðŸ”¨','âš’ï¸','ðŸ› ï¸','ðŸ”©','ðŸ”—','â›“ï¸','ðŸª','ðŸ§²','ðŸ”‘','ðŸ—ï¸','ðŸªª','ðŸ”','ðŸ”’','ðŸ”“','ðŸªž','ðŸªŸ','ðŸšª','ðŸ›‹ï¸','ðŸª‘','ðŸš½','ðŸª ','ðŸš¿','ðŸ›','ðŸª¤','ðŸ“¦','ðŸ“«','ðŸ“¬','ðŸ“­','ðŸ“®','ðŸ“¯','ðŸ“œ','ðŸ“ƒ','ðŸ“„','ðŸ“‘','ðŸ“Š','ðŸ“ˆ','ðŸ“‰','ðŸ“‹','ðŸ“Œ','ðŸ“','âœ‚ï¸','ðŸ—ƒï¸','ðŸ—„ï¸','ðŸ—‘ï¸']},
+  {cat:'Symbols',emojis:['â¤ï¸','ðŸ§¡','ðŸ’›','ðŸ’š','ðŸ’™','ðŸ’œ','ðŸ–¤','ðŸ¤','ðŸ¤Ž','ðŸ’”','â¤ï¸â€ðŸ”¥','â¤ï¸â€ðŸ©¹','â£ï¸','ðŸ’•','ðŸ’ž','ðŸ’“','ðŸ’—','ðŸ’–','ðŸ’˜','ðŸ’','ðŸ’Ÿ','â˜®ï¸','âœï¸','â˜ªï¸','ðŸ•‰ï¸','âœ¡ï¸','ðŸ”¯','ðŸª¯','â˜¯ï¸','ðŸ›','â›Ž','â™ˆ','â™‰','â™Š','â™‹','â™Œ','â™','â™Ž','â™','â™','â™‘','â™’','â™“','ðŸ†”','âš›ï¸','ðŸ‰‘','â˜¢ï¸','â˜£ï¸','ðŸ“´','ðŸ“³','ðŸˆ¶','ðŸˆš','ðŸˆ¸','ðŸˆº','ðŸˆ·ï¸','âœ´ï¸','ðŸ†š','ðŸ’®','ðŸ‰','ãŠ™ï¸','ãŠ—ï¸','ðŸˆ´','ðŸˆµ','ðŸˆ¹','ðŸˆ²','ðŸ…°ï¸','ðŸ…±ï¸','ðŸ†Ž','ðŸ†‘','ðŸ…¾ï¸','ðŸ†˜','âŒ','â­•','ðŸ›‘','â›”','ðŸ“›','ðŸš«','âœ…','â˜‘ï¸','âœ”ï¸','âŽ','ðŸ”°','â™»ï¸','ðŸ”±','ðŸ“›','ðŸ”°','â­•','âœ…','âŒ']}
 ];
 
 function initEmoji() {
@@ -792,7 +792,7 @@ function renderEmojis(list) {
 function searchEmoji(q) {
   if (!q.trim()) { initEmoji(); return; }
   const all = EMOJIS.flatMap(c => c.emojis);
-  // Simple: show all (can't search by name without dict — just filter nothing)
+  // Simple: show all (can't search by name without dict â€” just filter nothing)
   renderEmojis(all.filter((_, i) => i < 200));
 }
 
@@ -806,7 +806,7 @@ function selectEmoji(e) {
 function copyEmoji() { copyText(document.getElementById('emojiSelectedShow').textContent, document.getElementById('emojiCopyBtn')); }
 // (moved to main DOMContentLoaded)
 
-/* ════ 16. Invoice Generator ════ */
+/* â•â•â•â• 16. Invoice Generator â•â•â•â• */
 let invItemCount = 0;
 function addInvItem(desc='', qty=1, rate=0) {
   invItemCount++;
@@ -817,7 +817,7 @@ function addInvItem(desc='', qty=1, rate=0) {
     <input type="text"   class="tinput" placeholder="Item description" value="${desc}" oninput="updateInv()" style="flex:3">
     <input type="number" class="tinput" placeholder="Qty"  value="${qty}"  min="1" oninput="updateInv()" style="flex:1">
     <input type="number" class="tinput" placeholder="Rate" value="${rate}" min="0" oninput="updateInv()" style="flex:2">
-    <button class="tbtn-xs secondary" onclick="document.getElementById('irow${id}').remove();updateInv()">✕</button>`;
+    <button class="tbtn-xs secondary" onclick="document.getElementById('irow${id}').remove();updateInv()">âœ•</button>`;
   wrap.appendChild(row);
   updateInv();
 }
@@ -830,8 +830,8 @@ function updateInv() {
   document.getElementById('prevFrom').textContent     = document.getElementById('invFrom').value     || 'Your Business';
   document.getElementById('prevFromSub').textContent  = document.getElementById('invFromEmail').value || '';
   document.getElementById('prevNum').textContent      = document.getElementById('invNum').value       || 'INV-001';
-  document.getElementById('prevDate').textContent     = document.getElementById('invDate').value      || '—';
-  document.getElementById('prevDue').textContent      = document.getElementById('invDue').value       || '—';
+  document.getElementById('prevDate').textContent     = document.getElementById('invDate').value      || 'â€”';
+  document.getElementById('prevDue').textContent      = document.getElementById('invDue').value       || 'â€”';
   document.getElementById('prevTo').textContent       = document.getElementById('invTo').value        || 'Client Name';
   document.getElementById('prevToEmail').textContent  = document.getElementById('invToEmail').value   || '';
   document.getElementById('prevGSTRate').textContent  = gstPct;
@@ -846,7 +846,7 @@ function updateInv() {
     const amt  = qty * rate;
     subtotal  += amt;
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${desc||'—'}</td><td>${qty}</td><td>${cur}${rate.toFixed(2)}</td><td>${cur}${amt.toFixed(2)}</td>`;
+    tr.innerHTML = `<td>${desc||'â€”'}</td><td>${qty}</td><td>${cur}${rate.toFixed(2)}</td><td>${cur}${amt.toFixed(2)}</td>`;
     tbody.appendChild(tr);
   });
 
@@ -883,13 +883,13 @@ function printInvoice() {
 }
 
 
-/* ════ Age Calculator ════ */
+/* â•â•â•â• Age Calculator â•â•â•â• */
 /* Additional productivity and utility tools */
 
 const ones = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
 const tens = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
-const hindiOnes = ['','एक','दो','तीन','चार','पाँच','छह','सात','आठ','नौ','दस','ग्यारह','बारह','तेरह','चौदह','पंद्रह','सोलह','सत्रह','अठारह','उन्नीस'];
-const hindiTens = ['','','बीस','तीस','चालीस','पचास','साठ','सत्तर','अस्सी','नब्बे'];
+const hindiOnes = ['','à¤à¤•','à¤¦à¥‹','à¤¤à¥€à¤¨','à¤šà¤¾à¤°','à¤ªà¤¾à¤à¤š','à¤›à¤¹','à¤¸à¤¾à¤¤','à¤†à¤ ','à¤¨à¥Œ','à¤¦à¤¸','à¤—à¥à¤¯à¤¾à¤°à¤¹','à¤¬à¤¾à¤°à¤¹','à¤¤à¥‡à¤°à¤¹','à¤šà¥Œà¤¦à¤¹','à¤ªà¤‚à¤¦à¥à¤°à¤¹','à¤¸à¥‹à¤²à¤¹','à¤¸à¤¤à¥à¤°à¤¹','à¤…à¤ à¤¾à¤°à¤¹','à¤‰à¤¨à¥à¤¨à¥€à¤¸'];
+const hindiTens = ['','','à¤¬à¥€à¤¸','à¤¤à¥€à¤¸','à¤šà¤¾à¤²à¥€à¤¸','à¤ªà¤šà¤¾à¤¸','à¤¸à¤¾à¤ ','à¤¸à¤¤à¥à¤¤à¤°','à¤…à¤¸à¥à¤¸à¥€','à¤¨à¤¬à¥à¤¬à¥‡'];
 
 function belowHundred(n) { return n < 20 ? ones[n] : tens[Math.floor(n/10)] + (n%10 ? ' '+ones[n%10] : ''); }
 function belowHundredHi(n) { return n < 20 ? hindiOnes[n] : hindiTens[Math.floor(n/10)] + (n%10 ? ' '+hindiOnes[n%10] : ''); }
@@ -906,31 +906,31 @@ function toWords(n) {
 }
 
 function toWordsHindi(n) {
-  if (n === 0) return 'शून्य';
-  if (n < 0) return 'माइनस ' + toWordsHindi(-n);
+  if (n === 0) return 'à¤¶à¥‚à¤¨à¥à¤¯';
+  if (n < 0) return 'à¤®à¤¾à¤‡à¤¨à¤¸ ' + toWordsHindi(-n);
   if (n < 100) return belowHundredHi(n);
-  if (n < 1000) return hindiOnes[Math.floor(n/100)] + ' सौ' + (n%100 ? ' ' + toWordsHindi(n%100) : '');
-  if (n < 100000)   return toWordsHindi(Math.floor(n/1000))     + ' हज़ार'  + (n%1000   ? ' ' + toWordsHindi(n%1000)   : '');
-  if (n < 10000000) return toWordsHindi(Math.floor(n/100000))   + ' लाख'   + (n%100000 ? ' ' + toWordsHindi(n%100000) : '');
-  if (n < 1000000000) return toWordsHindi(Math.floor(n/10000000)) + ' करोड़' + (n%10000000 ? ' ' + toWordsHindi(n%10000000) : '');
-  return toWordsHindi(Math.floor(n/1000000000)) + ' अरब' + (n%1000000000 ? ' ' + toWordsHindi(n%1000000000) : '');
+  if (n < 1000) return hindiOnes[Math.floor(n/100)] + ' à¤¸à¥Œ' + (n%100 ? ' ' + toWordsHindi(n%100) : '');
+  if (n < 100000)   return toWordsHindi(Math.floor(n/1000))     + ' à¤¹à¤œà¤¼à¤¾à¤°'  + (n%1000   ? ' ' + toWordsHindi(n%1000)   : '');
+  if (n < 10000000) return toWordsHindi(Math.floor(n/100000))   + ' à¤²à¤¾à¤–'   + (n%100000 ? ' ' + toWordsHindi(n%100000) : '');
+  if (n < 1000000000) return toWordsHindi(Math.floor(n/10000000)) + ' à¤•à¤°à¥‹à¤¡à¤¼' + (n%10000000 ? ' ' + toWordsHindi(n%10000000) : '');
+  return toWordsHindi(Math.floor(n/1000000000)) + ' à¤…à¤°à¤¬' + (n%1000000000 ? ' ' + toWordsHindi(n%1000000000) : '');
 }
 
 function num2words() {
   const raw = document.getElementById('numInput').value.trim();
   const n = parseInt(raw);
-  if (!raw || isNaN(n)) { document.getElementById('numEnglish').textContent = '—'; document.getElementById('numHindi').textContent = '—'; return; }
+  if (!raw || isNaN(n)) { document.getElementById('numEnglish').textContent = 'â€”'; document.getElementById('numHindi').textContent = 'â€”'; return; }
   const mode = document.getElementById('numCurrency').value;
   let engResult = toWords(Math.abs(n));
   let hinResult = toWordsHindi(Math.abs(n));
-  if (mode === 'inr') { engResult += ' Rupees Only'; hinResult += ' रुपये मात्र'; }
+  if (mode === 'inr') { engResult += ' Rupees Only'; hinResult += ' à¤°à¥à¤ªà¤¯à¥‡ à¤®à¤¾à¤¤à¥à¤°'; }
   else if (mode === 'usd') { engResult += ' Dollars Only'; }
-  if (n < 0) { engResult = 'Minus ' + engResult; hinResult = 'माइनस ' + hinResult; }
+  if (n < 0) { engResult = 'Minus ' + engResult; hinResult = 'à¤®à¤¾à¤‡à¤¨à¤¸ ' + hinResult; }
   document.getElementById('numEnglish').textContent = engResult;
   document.getElementById('numHindi').textContent = hinResult;
 }
 
-/* ════ Aspect Ratio Calculator ════ */
+/* â•â•â•â• Aspect Ratio Calculator â•â•â•â• */
 function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
 
 const commonRatios = {
@@ -964,7 +964,7 @@ function calcAR(changed) {
   const scale = Math.min(maxW/w, maxH/h);
   box.style.width  = Math.round(w*scale) + 'px';
   box.style.height = Math.round(h*scale) + 'px';
-  document.getElementById('arVisualLabel').textContent = w + ' × ' + h;
+  document.getElementById('arVisualLabel').textContent = w + ' Ã— ' + h;
 
   if (document.getElementById('arNewW').value) scaleAR();
 }
@@ -985,7 +985,7 @@ function setAR(w, h) {
 
 // (moved to main DOMContentLoaded)
 
-/* ════ GST Calculator ════ */
+/* â•â•â•â• GST Calculator â•â•â•â• */
 let gstRate = 5;
 function setGSTRate(rate, btn) {
   gstRate = rate;
@@ -1004,15 +1004,15 @@ function calcGST() {
     total = amt; orig = amt * 100 / (100 + gstRate); gstAmt = total - orig;
   }
   const half = gstAmt / 2;
-  document.getElementById('gstOrig').textContent  = '₹' + orig.toFixed(2);
-  document.getElementById('gstCGST').textContent  = '₹' + half.toFixed(2);
-  document.getElementById('gstSGST').textContent  = '₹' + half.toFixed(2);
-  document.getElementById('gstTotal').textContent = '₹' + total.toFixed(2);
-  document.getElementById('gstAmt2').textContent  = '₹' + gstAmt.toFixed(2);
+  document.getElementById('gstOrig').textContent  = 'â‚¹' + orig.toFixed(2);
+  document.getElementById('gstCGST').textContent  = 'â‚¹' + half.toFixed(2);
+  document.getElementById('gstSGST').textContent  = 'â‚¹' + half.toFixed(2);
+  document.getElementById('gstTotal').textContent = 'â‚¹' + total.toFixed(2);
+  document.getElementById('gstAmt2').textContent  = 'â‚¹' + gstAmt.toFixed(2);
   document.querySelectorAll('.gst-half').forEach(el => el.textContent = gstRate/2);
 }
 
-/* ════ Profit Margin Calculator ════ */
+/* â•â•â•â• Profit Margin Calculator â•â•â•â• */
 function calcProfit() {
   const cost = parseFloat(document.getElementById('profCost').value) || 0;
   const sell = parseFloat(document.getElementById('profSell').value) || 0;
@@ -1028,11 +1028,11 @@ function calcProfit() {
   document.getElementById('profGross').textContent     = cur + gross.toFixed(2);
   document.getElementById('profMarginBig').textContent = margin.toFixed(1) + '%';
   document.getElementById('profMarkup').textContent    = markup.toFixed(1) + '%';
-  document.getElementById('profBreak').textContent     = sell > 0 ? Math.ceil(cost / (sell - cost) * qty) + ' units' : '—';
+  document.getElementById('profBreak').textContent     = sell > 0 ? Math.ceil(cost / (sell - cost) * qty) + ' units' : 'â€”';
   document.getElementById('profMarginBig').style.color = gross >= 0 ? 'var(--green)' : 'var(--red)';
 }
 
-/* ════ Pomodoro Timer ════ */
+/* â•â•â•â• Pomodoro Timer â•â•â•â• */
 let pomoTimer = null, pomoRemaining = 25*60, pomoTotal = 25*60, pomoRunning = false, pomoSessions = 0, pomoTotalFocused = 0;
 const POMO_MODES = { focus: 25*60, short: 5*60, long: 15*60 };
 function setPomoMode(mode, btn) {
@@ -1045,11 +1045,11 @@ function setPomoMode(mode, btn) {
 function togglePomo() {
   if (pomoRunning) {
     clearInterval(pomoTimer); pomoRunning = false;
-    document.getElementById('pomoStartBtn').textContent = '▶ Resume';
+    document.getElementById('pomoStartBtn').textContent = 'â–¶ Resume';
     document.getElementById('pomoStatus').textContent = 'Paused';
   } else {
     pomoRunning = true;
-    document.getElementById('pomoStartBtn').textContent = '⏸ Pause';
+    document.getElementById('pomoStartBtn').textContent = 'â¸ Pause';
     document.getElementById('pomoStatus').textContent = document.getElementById('pomoTask').value || 'Focusing...';
     pomoTimer = setInterval(() => {
       pomoRemaining--;
@@ -1061,10 +1061,10 @@ function togglePomo() {
           document.getElementById('pomoTotalMin').textContent = pomoTotalFocused;
         }
         document.getElementById('pomoCount').textContent = pomoSessions;
-        document.getElementById('pomoStatus').textContent = '✓ Done!';
-        document.getElementById('pomoStartBtn').textContent = '▶ Start';
+        document.getElementById('pomoStatus').textContent = 'âœ“ Done!';
+        document.getElementById('pomoStartBtn').textContent = 'â–¶ Start';
         try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA').play(); } catch {}
-        alert('⏰ Time up! ' + (document.getElementById('pomoModeFocus').classList.contains('active') ? 'Break lo! ☕' : 'Wapas kaam shuru karo! 💪'));
+        alert('â° Time up! ' + (document.getElementById('pomoModeFocus').classList.contains('active') ? 'Break lo! â˜•' : 'Wapas kaam shuru karo! ðŸ’ª'));
         pomoRemaining = pomoTotal;
       }
       updatePomoDisplay();
@@ -1073,7 +1073,7 @@ function togglePomo() {
 }
 function resetPomo() {
   clearInterval(pomoTimer); pomoRunning = false; pomoRemaining = pomoTotal;
-  document.getElementById('pomoStartBtn').textContent = '▶ Start';
+  document.getElementById('pomoStartBtn').textContent = 'â–¶ Start';
   document.getElementById('pomoStatus').textContent = 'Ready';
   updatePomoDisplay();
 }
@@ -1085,7 +1085,7 @@ function updatePomoDisplay() {
   document.getElementById('pomoProgress').style.strokeDashoffset = circumference * (1 - pct);
 }
 
-/* ════ Unit Converter ════ */
+/* â•â•â•â• Unit Converter â•â•â•â• */
 const UNITS = {
   length: { m:'Meter', km:'Kilometer', cm:'Centimeter', mm:'Millimeter', mi:'Mile', ft:'Feet', in:'Inch', yd:'Yard' },
   weight: { kg:'Kilogram', g:'Gram', mg:'Milligram', lb:'Pound', oz:'Ounce', t:'Metric Ton' },
@@ -1155,7 +1155,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('unitFrom')) setUnitCat('length', document.querySelector('.unit-cat'));
 });
 
-/* ════ CSS Gradient Generator ════ */
+/* â•â•â•â• CSS Gradient Generator â•â•â•â• */
 let gradType = 'linear';
 let gradColors = ['#FAC775','#F09595'];
 const GRAD_PRESETS = [
@@ -1186,7 +1186,7 @@ function renderGradColorInputs() {
     <div class="grad-color-row">
       <input type="color" value="${c}" onchange="gradColors[${i}]=this.value;updateGrad()" class="color-pick-sm">
       <input type="text" value="${c}" onchange="gradColors[${i}]=this.value;this.previousElementSibling.value=this.value;updateGrad()" class="tinput" style="flex:1;font-size:12px" maxlength="7">
-      ${gradColors.length>2 ? `<button class="tbtn-xs secondary" onclick="gradColors.splice(${i},1);renderGradColorInputs();updateGrad()">✕</button>` : ''}
+      ${gradColors.length>2 ? `<button class="tbtn-xs secondary" onclick="gradColors.splice(${i},1);renderGradColorInputs();updateGrad()">âœ•</button>` : ''}
     </div>`).join('');
 }
 function updateGrad() {
@@ -1215,7 +1215,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('gradPresets')) { initGradPresets(); renderGradColorInputs(); updateGrad(); }
 });
 
-/* ════ Age Calculator ════ */
+/* â•â•â•â• Age Calculator â•â•â•â• */
 function calcAge() {
   const dob   = new Date(document.getElementById('ageDOB').value);
   const asOf  = new Date(document.getElementById('ageAsOf').value || Date.now());
@@ -1236,7 +1236,7 @@ function calcAge() {
   const nextBday = new Date(asOf.getFullYear(), dob.getMonth(), dob.getDate());
   if (nextBday <= asOf) nextBday.setFullYear(nextBday.getFullYear() + 1);
   const daysToB = Math.ceil((nextBday - asOf) / 86400000);
-  document.getElementById('ageNextBday').textContent = daysToB === 0 ? '🎂 Aaj!' : daysToB + ' days mein';
+  document.getElementById('ageNextBday').textContent = daysToB === 0 ? 'ðŸŽ‚ Aaj!' : daysToB + ' days mein';
 }
 function calcDateDiff() {
   const start = new Date(document.getElementById('dateStart').value);
@@ -1272,3 +1272,4 @@ document.addEventListener('DOMContentLoaded', () => {
 // Signal that tools.js is fully loaded
 window._toolsReady = true;
 window.dispatchEvent(new Event("toolsReady"));
+

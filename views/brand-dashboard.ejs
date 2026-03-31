@@ -104,8 +104,13 @@
         </div>
         <div class="card-right">
           <% if (c.status === 'pending') { %>
-            <form action="/brand/campaigns/<%= c._id %>/delete" method="POST" style="margin:0">
-              <button class="btn-action danger" type="submit" onclick="return confirm('Campaign delete karo?')">Delete</button>
+            <form action="/brand/campaigns/<%= c._id %>/delete" method="POST" style="margin:0"
+              data-confirm-dialog
+              data-confirm-title="Delete this brand campaign?"
+              data-confirm-message="Only pending campaigns can be deleted. Once removed, this submission and its notes will be lost."
+              data-confirm-confirm="Delete campaign"
+              data-confirm-tone="danger">
+              <button class="btn-action danger" type="submit">Delete</button>
             </form>
           <% } %>
         </div>
@@ -181,6 +186,9 @@
   </div>
 </div>
 
+<%- include('partials/feedback-ui') %>
+
+<script src="/js/shared/feedback-ui.js"></script>
 <script>
   // THEME
   function toggleTheme() {

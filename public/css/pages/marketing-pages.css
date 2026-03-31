@@ -1,4 +1,4 @@
-﻿.page-stack {
+.page-stack {
   display: grid;
   gap: 1.5rem;
 }
@@ -12,10 +12,12 @@
 .tool-tags,
 .check-list {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.8rem;
 }
 
-.check-list {
+.check-list,
+.plan-features,
+.contact-methods {
   padding: 0;
   margin: 0;
   list-style: none;
@@ -23,20 +25,13 @@
 
 .check-list li,
 .plan-features li,
-.faq-answer ul li,
-.timeline-list li,
-.contact-methods li,
-.legal-directory a,
-.tool-tags span {
-  position: relative;
-}
-
-.check-list li,
-.plan-features li,
 .timeline-list li,
 .contact-methods li {
   list-style: none;
-  padding-left: 1.3rem;
+  position: relative;
+  padding-left: 1.25rem;
+  color: var(--site-text-soft);
+  line-height: 1.7;
 }
 
 .check-list li::before,
@@ -46,11 +41,11 @@
   content: '';
   position: absolute;
   left: 0;
-  top: 0.66rem;
-  width: 8px;
-  height: 8px;
+  top: 0.7rem;
+  width: 7px;
+  height: 7px;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--site-accent), var(--site-accent-strong));
+  background: linear-gradient(180deg, var(--site-accent), var(--site-accent-strong));
 }
 
 .hero-panel,
@@ -65,37 +60,52 @@
 .auth-aside,
 .upgrade-summary,
 .upgrade-card {
-  padding: 1.6rem;
+  padding: 1.55rem;
   border-radius: 28px;
   border: 1px solid var(--site-border);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.hero-panel,
-.plan-card,
-.person-card,
-.faq-card,
-.tool-panel-card,
-.auth-card,
-.auth-aside,
-.upgrade-summary,
-.upgrade-card {
+  background: linear-gradient(180deg, rgba(27, 29, 36, 0.94), rgba(21, 22, 28, 0.94));
   box-shadow: var(--site-shadow);
 }
 
-.hero-panel h3,
-.person-card h3,
-.plan-card h3,
-.tool-summary-card h3,
-.upgrade-card h3,
-.auth-card h3 {
-  margin: 0 0 0.8rem;
-  font-family: 'Syne', sans-serif;
-  font-size: 1.4rem;
+.person-card,
+.plan-card,
+.auth-card,
+.auth-aside,
+.upgrade-card,
+.upgrade-summary,
+.tool-summary-card,
+.hero-panel,
+.legal-sidebar,
+.legal-content {
+  position: relative;
+  overflow: hidden;
 }
 
-.hero-panel .mini-metrics {
-  margin-top: 1rem;
+.person-card::before,
+.plan-card::before,
+.auth-card::before,
+.auth-aside::before,
+.tool-summary-card::before,
+.hero-panel::before,
+.section-card::before,
+.content-card::before,
+.legal-content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.04), transparent 35%, transparent 70%, rgba(255, 196, 76, 0.04));
+  pointer-events: none;
+}
+
+.hero-panel > *,
+.plan-card > *,
+.person-card > *,
+.auth-card > *,
+.auth-aside > *,
+.tool-summary-card > *,
+.legal-content > * {
+  position: relative;
+  z-index: 1;
 }
 
 .person-card {
@@ -111,10 +121,11 @@
   align-items: center;
   justify-content: center;
   font-family: 'Syne', sans-serif;
-  font-size: 1.8rem;
+  font-size: 1.9rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--site-accent), var(--site-accent-strong));
-  color: #16120a;
+  background: linear-gradient(180deg, #ffd16d 0%, #ffc44c 100%);
+  color: #17110a;
+  box-shadow: 0 16px 34px rgba(255, 196, 76, 0.16);
 }
 
 .person-role,
@@ -130,22 +141,22 @@
 }
 
 .contact-grid {
-  grid-template-columns: 0.9fr 1.1fr;
-}
-
-.contact-methods {
-  padding: 0;
-  margin: 0;
+  grid-template-columns: 0.92fr 1.08fr;
 }
 
 .contact-method-card,
 .info-band,
 .stat-strip,
-.tool-highlight {
-  padding: 1.2rem;
-  border-radius: 22px;
+.tool-highlight,
+.compare-row,
+.auth-point,
+.upgrade-point,
+.error-link-card,
+.auth-mini-card {
+  padding: 1.15rem;
+  border-radius: 20px;
   border: 1px solid var(--site-border);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.035);
 }
 
 .contact-form,
@@ -169,11 +180,11 @@
 .form-group label,
 .otp-label,
 .upgrade-switch-label {
-  font-size: 0.82rem;
   color: var(--site-text-soft);
+  font-size: 0.76rem;
   font-family: 'DM Mono', monospace;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
 }
 
 .form-input,
@@ -182,16 +193,16 @@
 .upgrade-switch,
 .otp-box {
   width: 100%;
-  min-height: 52px;
+  min-height: 54px;
   padding: 0 1rem;
   border-radius: 16px;
   border: 1px solid var(--site-border);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--site-text);
 }
 
 .form-textarea {
-  min-height: 150px;
+  min-height: 148px;
   padding: 1rem;
   resize: vertical;
 }
@@ -203,14 +214,7 @@
 .upgrade-switch:focus {
   outline: none;
   border-color: var(--site-border-strong);
-}
-
-.inline-help,
-.form-help,
-.auth-hint,
-.upgrade-note {
-  color: var(--site-text-soft);
-  font-size: 0.95rem;
+  box-shadow: 0 0 0 4px rgba(255, 196, 76, 0.08);
 }
 
 .pricing-grid {
@@ -224,9 +228,10 @@
   gap: 1rem;
 }
 
-.plan-card.is-featured {
+.plan-card.is-featured,
+#enterprise {
   border-color: var(--site-border-strong);
-  transform: translateY(-8px);
+  box-shadow: 0 28px 80px rgba(255, 196, 76, 0.08);
 }
 
 .plan-label-row,
@@ -242,15 +247,15 @@
 }
 
 .plan-chip.popular {
-  background: rgba(244, 201, 108, 0.15);
+  background: rgba(255, 196, 76, 0.12);
 }
 
 .plan-price strong,
 .upgrade-price strong {
   font-family: 'Syne', sans-serif;
-  font-size: clamp(2.4rem, 4vw, 4rem);
+  font-size: clamp(2.8rem, 4vw, 4.6rem);
   line-height: 1;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.06em;
 }
 
 .plan-price span,
@@ -268,11 +273,11 @@
 .plan-current {
   min-height: 50px;
   border-radius: 16px;
-  border: 1px solid rgba(127, 224, 180, 0.3);
+  border: 1px solid rgba(124, 224, 175, 0.24);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(127, 224, 180, 0.08);
+  background: rgba(124, 224, 175, 0.08);
   color: var(--site-success);
   font-weight: 700;
 }
@@ -284,10 +289,7 @@
 }
 
 .compare-row {
-  padding: 1rem 1.15rem;
-  border-radius: 18px;
-  border: 1px solid var(--site-border);
-  background: rgba(255, 255, 255, 0.04);
+  justify-content: space-between;
 }
 
 .faq-list {
@@ -297,7 +299,7 @@
 .faq-item {
   border: 1px solid var(--site-border);
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.03);
   overflow: hidden;
 }
 
@@ -336,18 +338,18 @@
 }
 
 .tool-overview {
-  padding: 1.5rem;
+  padding: 1.7rem;
 }
 
 .tool-directory {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 1.12fr 0.88fr;
   gap: 1rem;
-  margin-top: 1.25rem;
+  margin-top: 0.2rem;
 }
 
 .tool-tags {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .tool-tags span {
@@ -358,6 +360,13 @@
   text-align: center;
   color: var(--site-text-soft);
   cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.tool-tags span:hover {
+  color: var(--site-text);
+  border-color: var(--site-border-strong);
+  transform: translateY(-1px);
 }
 
 .tools-page .tool-tabs-bar {
@@ -368,14 +377,27 @@
 }
 
 .tools-page .tool-tabs-scroll {
-  width: min(1200px, calc(100% - 2rem));
+  width: min(1240px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: 0.75rem 0;
+  padding: 0.6rem 0;
 }
 
 .tools-page .tools-panels-wrap {
   max-width: none;
-  padding-top: 1rem;
+  padding-top: 0.5rem;
+}
+
+.tools-page .ttab {
+  border-color: var(--site-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--site-text-soft);
+}
+
+.tools-page .ttab.active,
+.tools-page .ttab:hover {
+  border-color: var(--site-border-strong);
+  color: var(--site-text);
+  background: rgba(255, 196, 76, 0.08);
 }
 
 .legal-shell {
@@ -384,7 +406,7 @@
 
 .legal-sidebar,
 .legal-content {
-  background: rgba(255, 255, 255, 0.04);
+  background: linear-gradient(180deg, rgba(27, 29, 36, 0.94), rgba(21, 22, 28, 0.94));
 }
 
 .legal-directory a {
@@ -397,6 +419,7 @@
   border: 1px solid var(--site-border);
   text-decoration: none;
   color: var(--site-text-soft);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .legal-directory a.active,
@@ -425,7 +448,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(244, 201, 108, 0.12);
+  background: rgba(255, 196, 76, 0.1);
   color: var(--site-accent);
   font-family: 'DM Mono', monospace;
 }
@@ -444,10 +467,6 @@
   .legal-shell {
     grid-template-columns: 1fr;
   }
-
-  .tool-tags {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 720px) {
@@ -457,11 +476,7 @@
     grid-template-columns: 1fr;
   }
 
-  .plan-card.is-featured {
-    transform: none;
-  }
-
   .tools-page .tool-tabs-bar {
-    top: 82px;
+    top: 86px;
   }
 }

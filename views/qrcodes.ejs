@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <%
@@ -82,10 +82,10 @@
   <div class="main">
     <% if (urls.length === 0) { %>
       <div class="empty-state">
-        <div class="empty-icon">📷</div>
+        <div class="empty-icon">QR</div>
         <h3>Koi link nahi abhi tak</h3>
         <p>Pehle kuch links banao, phir unke QR codes yahan dikhenge</p>
-        <a href="/dashboard" class="empty-cta">Dashboard pe jao →</a>
+        <a href="/dashboard" class="empty-cta">Dashboard pe jao</a>
       </div>
     <% } else { %>
       <div class="qr-grid" id="qrGrid">
@@ -100,7 +100,7 @@
               <div class="qr-clicks"><%= url.clicks || 0 %> clicks</div>
             </div>
             <div class="qr-actions">
-              <button class="qr-btn dl" onclick="downloadQR('qr-<%= i %>', '<%= url.shortCode %>')">⬇ Save</button>
+              <button class="qr-btn dl" onclick="downloadQR('qr-<%= i %>', '<%= url.shortCode %>')">Save</button>
               <button class="qr-btn copy" id="copybtn-<%= i %>" onclick="copyUrl('<%= url.shortUrl %>', 'copybtn-<%= i %>')">Copy URL</button>
             </div>
           </div>
@@ -118,7 +118,7 @@
     <div class="qr-modal-url" id="modalUrl"></div>
     <div id="modal-canvas-wrap"></div>
     <div class="modal-actions">
-      <button class="btn-download" onclick="downloadModalQR()">⬇ Download</button>
+      <button class="btn-download" onclick="downloadModalQR()">Download</button>
       <button class="btn-modal-copy" onclick="copyModalUrl()">Copy URL</button>
     </div>
   </div>
@@ -191,6 +191,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 </script>
 </body>
 </html>
+
 
 
 

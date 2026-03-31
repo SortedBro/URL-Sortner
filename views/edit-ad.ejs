@@ -41,8 +41,8 @@
         <div class="form-section">
           <div class="toggle-row">
             <div class="toggle-info">
-              <div class="toggle-title">Enable Ad Interstitial</div>
-              <div class="toggle-sub">Link click hone par redirect se pehle ad dikhega</div>
+              <div class="toggle-title">Enable Redirect Ads</div>
+              <div class="toggle-sub">Link click hone par ad network trigger hoga aur phir original URL khulega</div>
             </div>
             <label class="toggle-wrap">
               <input
@@ -50,7 +50,6 @@
                 type="checkbox"
                 id="adEnabled"
                 <%= url.adEnabled ? 'checked' : '' %>
-                onchange="toggleAdSettings()"
               />
               <span class="toggle-track"></span>
             </label>
@@ -59,67 +58,8 @@
             Monetag popunder is wired globally for enabled ad links using zone
             <strong><%= monetagZoneId || '10810328' %></strong>.
           </div>
-        </div>
-
-        <div id="ad-settings">
-          <div class="form-section">
-            <div class="section-label">Timer Duration</div>
-            <div class="section-desc">Kitne seconds baad user redirect hoga</div>
-            <div class="timer-grid">
-              <% [5, 10, 15, 30].forEach((t) => { %>
-                <button
-                  type="button"
-                  class="timer-btn <%= (url.adTimer || 5) === t ? 'active' : '' %>"
-                  data-val="<%= t %>"
-                  onclick="selectTimer(this)"
-                >
-                  <%= t %>s
-                </button>
-              <% }) %>
-            </div>
-            <input type="hidden" id="adTimer" value="<%= url.adTimer || 5 %>" />
-          </div>
-
-          <div class="form-section">
-            <div class="section-label">Ad Content</div>
-            <div class="section-desc">Jo user ad page par dekhega</div>
-
-            <label class="form-label">Ad Title <span class="opt">(optional)</span></label>
-            <input
-              class="form-input"
-              type="text"
-              id="adTitle"
-              value="<%= url.adTitle || '' %>"
-              placeholder="e.g. Check out this amazing offer!"
-              oninput="updatePreview()"
-            />
-
-            <label class="form-label">Ad Description <span class="opt">(optional)</span></label>
-            <textarea
-              class="form-input"
-              id="adDescription"
-              rows="3"
-              placeholder="Short message jo user dekhega..."
-              oninput="updatePreview()"
-            ><%= url.adDescription || '' %></textarea>
-
-            <div class="preview-box" id="preview-box">
-              <div class="preview-title" id="preview-title">-</div>
-              <div style="font-size:0.78rem; color:var(--text3); margin-top:3px;" id="preview-desc">-</div>
-            </div>
-          </div>
-
-          <div class="form-section">
-            <div class="toggle-row">
-              <div class="toggle-info">
-                <div class="toggle-title">Allow Skip</div>
-                <div class="toggle-sub">User half-time ke baad ad skip kar sakta hai</div>
-              </div>
-              <label class="toggle-wrap">
-                <input class="toggle-input" type="checkbox" id="adSkipable" <%= url.adSkipable !== false ? 'checked' : '' %> />
-                <span class="toggle-track"></span>
-              </label>
-            </div>
+          <div style="margin-top:0.8rem; font-size:0.8rem; color:var(--text3); line-height:1.6;">
+            Visible interstitial page removed. Enabled hone par short link hidden ad redirect bridge use karega.
           </div>
         </div>
 
@@ -146,44 +86,12 @@
     document.documentElement.setAttribute('data-theme', saved);
     document.getElementById('theme-btn').textContent = saved === 'dark' ? 'Light' : 'Dark';
 
-    function toggleAdSettings() {
-      const enabled = document.getElementById('adEnabled').checked;
-      document.getElementById('ad-settings').style.opacity = enabled ? '1' : '0.4';
-      document.getElementById('ad-settings').style.pointerEvents = enabled ? 'all' : 'none';
-    }
-    toggleAdSettings();
-
-    function selectTimer(btn) {
-      document.querySelectorAll('.timer-btn').forEach((button) => button.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('adTimer').value = btn.dataset.val;
-    }
-
-    function updatePreview() {
-      const title = document.getElementById('adTitle').value;
-      const desc = document.getElementById('adDescription').value;
-      const box = document.getElementById('preview-box');
-
-      if (title || desc) {
-        box.classList.add('show');
-        document.getElementById('preview-title').textContent = title || 'Sponsored Content';
-        document.getElementById('preview-desc').textContent = desc || 'Ad description yahan aayega';
-      } else {
-        box.classList.remove('show');
-      }
-    }
-    updatePreview();
-
     async function saveSettings() {
       const msgWrap = document.getElementById('save-msg-wrap');
       msgWrap.innerHTML = '';
 
       const body = {
         adEnabled: document.getElementById('adEnabled').checked,
-        adTimer: Number(document.getElementById('adTimer').value),
-        adTitle: document.getElementById('adTitle').value,
-        adDescription: document.getElementById('adDescription').value,
-        adSkipable: document.getElementById('adSkipable').checked,
       };
 
       try {

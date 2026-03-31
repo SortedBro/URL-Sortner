@@ -1,24 +1,21 @@
-﻿<%
+<%
 const activePage = typeof currentPage !== 'undefined' ? currentPage : '';
 const navbarClassName = ['navbar', typeof navbarClass !== 'undefined' ? navbarClass : 'site-navbar'].filter(Boolean).join(' ');
 const navLinks = [
-    { key: 'home', href: '/', label: 'Home' },
-    { key: 'tools', href: '/tools', label: 'Tools' },
-    { key: 'features', href: '/features', label: 'Features' },
-    { key: 'pricing', href: '/pricing', label: 'Pricing' },
-    { key: 'about', href: '/about', label: 'About' },
-    { key: 'faq', href: '/faq', label: 'FAQ' },
+  { key: 'features', href: '/features', label: 'Features' },
+  { key: 'pricing', href: '/pricing', label: 'Pricing' },
+  { key: 'analytics', href: '/features#analytics-engine', label: 'Analytics' },
+  { key: 'enterprise', href: '/pricing#enterprise', label: 'Enterprise' },
 ];
 const displayUserName = typeof user !== 'undefined' && user
-    ? (user.name || [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.email || 'User')
-    : 'User';
+  ? (user.name || [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.email || 'User')
+  : 'User';
 const displayUserShortName = displayUserName.split(/\s+/)[0];
 const displayUserInitial = displayUserName.charAt(0).toUpperCase();
 %>
 <nav class="<%= navbarClassName %>">
-  <a href="/" class="nav-logo">
-    <span class="logo-dot"></span>
-    Snap<em>Link</em>
+  <a href="/" class="nav-logo" aria-label="SnapLink home">
+    SnapLink
   </a>
 
   <div class="nav-center">
@@ -28,17 +25,16 @@ const displayUserInitial = displayUserName.charAt(0).toUpperCase();
   </div>
 
   <div class="nav-right">
-    <button class="theme-btn" id="themeBtn" type="button" onclick="toggleTheme()">Theme</button>
     <% if (typeof user !== 'undefined' && user) { %>
-      <div class="nav-user">
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+      <a href="/affiliate/wallet" class="nav-link">Wallet</a>
+      <div class="nav-user" title="<%= displayUserName %>">
         <div class="nav-avatar"><%= displayUserInitial %></div>
         <span class="nav-username"><%= displayUserShortName %></span>
       </div>
-      <a href="/affiliate/wallet" class="nav-link">Earnings</a>
-      <a href="/dashboard" class="nav-link">Dashboard</a>
       <a href="/logout" class="nav-btn-outline">Logout</a>
     <% } else { %>
-      <a href="/login" class="nav-link">Login</a>
+      <a href="/login" class="nav-link">Sign In</a>
       <a href="/signup" class="nav-btn-solid">Get Started</a>
     <% } %>
   </div>

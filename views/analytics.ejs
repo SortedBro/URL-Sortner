@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <%
@@ -34,10 +34,10 @@
     <div class="page-header">
       <div>
         <a href="/dashboard" class="back-link">Back to Dashboard</a>
-        <div class="page-title">Analytics — <span>/<%= url.shortCode %></span></div>
+        <div class="page-title">Analytics - <span>/<%= url.shortCode %></span></div>
         <div class="url-info">
           <span class="url-pill"><%= url.shortUrl %></span>
-          <span class="url-original-pill" title="<%= url.originalUrl %>">→ <%= url.originalUrl %></span>
+          <span class="url-original-pill" title="<%= url.originalUrl %>">Original: <%= url.originalUrl %></span>
         </div>
       </div>
       <!-- Download buttons -->
@@ -70,7 +70,7 @@
       <div class="stat-card">
         <div class="stat-label">Last Click</div>
         <div class="stat-value" style="font-size:1rem;padding-top:6px">
-          <%= url.lastClickedAt ? new Date(url.lastClickedAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'2-digit'}) : '—' %>
+          <%= url.lastClickedAt ? new Date(url.lastClickedAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'2-digit'}) : '-' %>
         </div>
         <div class="stat-sub">
           <%= url.lastClickedAt ? new Date(url.lastClickedAt).toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}) : 'koi click nahi' %>
@@ -86,7 +86,7 @@
       <div class="stat-card">
         <div class="stat-label">Top Country</div>
         <div class="stat-value" style="font-size:1rem;padding-top:6px">
-          <%= countries.length > 0 ? countries[0].name : '—' %>
+          <%= countries.length > 0 ? countries[0].name : '-' %>
         </div>
         <div class="stat-sub"><%= countries.length > 0 ? countries[0].count + ' clicks' : 'no data' %></div>
       </div>
@@ -115,7 +115,7 @@
       <div class="section-title">Audience</div>
       <div class="two-col">
         <div class="card">
-          <div class="card-title">🌍 Countries</div>
+          <div class="card-title">Countries</div>
           <% if (countries.length === 0) { %>
             <div class="empty-row">Abhi koi data nahi</div>
           <% } else { %>
@@ -130,7 +130,7 @@
           <% } %>
         </div>
         <div class="card">
-          <div class="card-title">🏙️ Cities</div>
+          <div class="card-title">Cities</div>
           <% if (cities.length === 0) { %>
             <div class="empty-row">Abhi koi data nahi</div>
           <% } else { %>
@@ -152,15 +152,15 @@
       <div class="section-title">Devices & Browsers</div>
       <div class="two-col">
         <div class="card">
-          <div class="card-title">📱 Devices</div>
+          <div class="card-title">Devices</div>
           <% if (devices.length === 0) { %>
             <div class="empty-row">Abhi koi data nahi</div>
           <% } else { %>
             <div class="device-grid">
-              <% const deviceIcons = { Mobile:'📱', Desktop:'💻', Tablet:'📟' }; %>
+              <% const deviceIcons = { Mobile:'M', Desktop:'D', Tablet:'T' }; %>
               <% devices.forEach(d => { %>
                 <div class="device-pill">
-                  <div class="device-icon"><%= deviceIcons[d.name] || '🖥️' %></div>
+                  <div class="device-icon"><%= deviceIcons[d.name] || '?' %></div>
                   <div class="device-count"><%= d.count %></div>
                   <div class="device-name"><%= d.name %></div>
                 </div>
@@ -169,7 +169,7 @@
           <% } %>
         </div>
         <div class="card">
-          <div class="card-title">🌐 Browsers</div>
+        <div class="card-title">Browsers</div>
           <% if (browsers.length === 0) { %>
             <div class="empty-row">Abhi koi data nahi</div>
           <% } else { %>
@@ -190,7 +190,7 @@
     <div class="section">
       <div class="section-title">Traffic Sources</div>
       <div class="card">
-        <div class="card-title">🔗 Referrers</div>
+        <div class="card-title">Referrers</div>
         <% if (referrers.length === 0) { %>
           <div class="empty-row">Abhi koi data nahi</div>
         <% } else { %>
@@ -211,7 +211,7 @@
       <div class="section-title">Click History</div>
       <div class="table-wrap">
         <div class="table-header-row">
-          <span class="table-title">📋 Har click ki detail</span>
+          <span class="table-title">Click history</span>
           <span class="table-count-badge" id="clickCountBadge"><%= clickHistory.length %> clicks</span>
         </div>
 
@@ -245,26 +245,26 @@
                       <div style="color:var(--text);font-size:11px"><%= dateStr %></div>
                       <div style="color:var(--muted);font-size:10px"><%= timeStr %></div>
                     </td>
-                    <td><span class="ip-badge"><%= click.ip || '—' %></span></td>
+                    <td><span class="ip-badge"><%= click.ip || '-' %></span></td>
                     <td>
                       <span class="country-flag">
-                        <% if (click.country && click.country !== 'Unknown') { %>🌍<% } %>
+                      <% if (click.country && click.country !== 'Unknown') { %>Geo<% } %>
                       </span>
-                      <%= click.country || '—' %>
+                        <%= click.country || '-' %>
                     </td>
-                    <td><%= click.city || '—' %></td>
+                    <td><%= click.city || '-' %></td>
                     <td>
                       <span class="device-tag">
-                        <% if (click.device === 'Mobile') { %>📱
-                        <% } else if (click.device === 'Tablet') { %>📟
-                        <% } else { %>💻<% } %>
-                        <%= click.device || '—' %>
+                          <% if (click.device === 'Mobile') { %>M
+                          <% } else if (click.device === 'Tablet') { %>T
+                          <% } else { %>D<% } %>
+                        <%= click.device || '-' %>
                       </span>
                     </td>
-                    <td><span class="browser-tag"><%= click.browser || '—' %></span></td>
+                    <td><span class="browser-tag"><%= click.browser || '-' %></span></td>
                     <td>
                       <span class="referrer-tag" title="<%= click.referrer %>">
-                        <%= click.referrer === 'Direct' ? 'Direct' : (click.referrer || '—').replace(/https?:\/\//, '').split('/')[0] %>
+                        <%= click.referrer === 'Direct' ? 'Direct' : (click.referrer || '-').replace(/https?:\/\//, '').split('/')[0] %>
                       </span>
                     </td>
                   </tr>
@@ -288,20 +288,20 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
   <script>
-    // ── Theme ──
+    // Theme
     function toggleTheme() {
       const html = document.documentElement;
       const isDark = html.getAttribute('data-theme') === 'dark';
       html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-      document.getElementById('theme-btn').textContent = isDark ? '☾ Dark' : '☀ Light';
+      document.getElementById('theme-btn').textContent = isDark ? 'Dark' : 'Light';
       localStorage.setItem('theme', isDark ? 'light' : 'dark');
       updateChartTheme();
     }
     const saved = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', saved);
-    document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀ Light' : '☾ Dark';
+    document.getElementById('theme-btn').textContent = saved === 'dark' ? 'Light' : 'Dark';
 
-    // ── Click history data from server ──
+    // Click history data from server
     const clickHistory = <%- JSON.stringify(clickHistory) %>;
     const shortUrl     = '<%= url.shortUrl %>';
     const shortCode    = '<%= url.shortCode %>';
@@ -313,7 +313,7 @@
       return acc;
     }, {});
 
-    // ── Chart.js ──
+    // Chart.js
     let clicksChart;
 
     function getDateKey(date) {
@@ -379,7 +379,7 @@
     // Build chart on load
     buildChart(7);
 
-    // ── Pagination ──
+    // Pagination
     const ROWS_PER_PAGE = 15;
     let currentPage = 1;
     const allRows = Array.from(document.querySelectorAll('#clickTableBody tr'));
@@ -401,7 +401,7 @@
 
       const prev = document.createElement('button');
       prev.className = 'page-btn';
-      prev.textContent = '← Prev';
+      prev.textContent = 'Prev';
       prev.disabled = currentPage === 1;
       prev.onclick = () => showPage(currentPage - 1);
       pg.appendChild(prev);
@@ -416,7 +416,7 @@
 
       const next = document.createElement('button');
       next.className = 'page-btn';
-      next.textContent = 'Next →';
+      next.textContent = 'Next';
       next.disabled = currentPage === totalPages;
       next.onclick = () => showPage(currentPage + 1);
       pg.appendChild(next);
@@ -424,17 +424,17 @@
 
     if (allRows.length > 0) showPage(1);
 
-    // ── CSV Download ──
+    // CSV download
     function downloadCSV() {
       const headers = ['#', 'Time', 'IP Address', 'Country', 'City', 'Device', 'Browser', 'Referrer'];
       const rows = [...clickHistory].reverse().map((c, i) => [
         i + 1,
         new Date(c.clickedAt).toLocaleString('en-IN'),
-        c.ip || '—',
-        c.country || '—',
-        c.city || '—',
-        c.device || '—',
-        c.browser || '—',
+        c.ip || '-',
+        c.country || '-',
+        c.city || '-',
+        c.device || '-',
+        c.browser || '-',
         c.referrer || 'Direct',
       ]);
       const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
@@ -446,7 +446,7 @@
       a.click();
     }
 
-    // ── Excel Download ──
+    // Excel download
     function downloadExcel() {
       const wb = XLSX.utils.book_new();
 
@@ -467,11 +467,11 @@
       const rows = [...clickHistory].reverse().map((c, i) => [
         i + 1,
         new Date(c.clickedAt).toLocaleString('en-IN'),
-        c.ip || '—',
-        c.country || '—',
-        c.city || '—',
-        c.device || '—',
-        c.browser || '—',
+        c.ip || '-',
+        c.country || '-',
+        c.city || '-',
+        c.device || '-',
+        c.browser || '-',
         c.referrer || 'Direct',
       ]);
       const ws2 = XLSX.utils.aoa_to_sheet([headers, ...rows]);
@@ -480,7 +480,7 @@
       XLSX.writeFile(wb, `snaplink-analytics-${shortCode}.xlsx`);
     }
 
-    // ── PDF Download ──
+    // PDF download
     function downloadPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
@@ -501,11 +501,11 @@
       const rows = [...clickHistory].reverse().slice(0, 100).map((c, i) => [
         i + 1,
         new Date(c.clickedAt).toLocaleString('en-IN'),
-        c.ip || '—',
-        c.country || '—',
-        c.city || '—',
-        c.device || '—',
-        c.browser || '—',
+        c.ip || '-',
+        c.country || '-',
+        c.city || '-',
+        c.device || '-',
+        c.browser || '-',
         (c.referrer || 'Direct').replace(/https?:\/\//, '').split('/')[0],
       ]);
 
@@ -525,5 +525,6 @@
 
 </body>
 </html>
+
 
 

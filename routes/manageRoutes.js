@@ -27,16 +27,12 @@ router.get('/manage/ad/:code', auth, async (req, res) => {
 // POST - save ad settings - accepts JSON payload.
 router.post('/manage/ad/:code', auth, async (req, res) => {
     try {
-        const { adEnabled, adTimer, adTitle, adDescription, adSkipable } = req.body;
+        const { adEnabled } = req.body;
 
         const updated = await Url.findOneAndUpdate(
             { shortCode: req.params.code, createdBy: req.user.user },
             {
                 adEnabled: adEnabled === true,
-                adTimer: Number(adTimer) || 5,
-                adTitle: adTitle || '',
-                adDescription: adDescription || '',
-                adSkipable: adSkipable === true,
             },
             { new: true }
         );

@@ -153,6 +153,9 @@
   </div>
 </div>
 
+<%- include('../partials/feedback-ui') %>
+
+<script src="/js/shared/feedback-ui.js"></script>
 <script>
   // Theme
   function toggleTheme() {
@@ -211,9 +214,9 @@
       });
       const data = await res.json();
       if (data.success) { closeModal(); window.location.reload(); }
-      else alert(data.error || 'Kuch gadbad hui');
+      else window.snaplinkUI.toast(data.error || 'Kuch gadbad hui', { tone: 'error' });
     } catch (err) {
-      alert('Server error');
+      window.snaplinkUI.toast('Server error', { tone: 'error' });
     }
   }
 

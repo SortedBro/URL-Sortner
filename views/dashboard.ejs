@@ -22,7 +22,7 @@
     const userDisplayInitial = userDisplayName.charAt(0).toUpperCase();
   %>
 
-  <!-- ═══════ SIDEBAR ═══════ -->
+  <!-- Sidebar -->
   <aside class="sidebar">
     <a class="sidebar-logo" href="/">
       <span class="logo-dot"></span>
@@ -151,7 +151,7 @@
     </div>
   </aside>
 
-  <!-- ═══════ TOPBAR ═══════ -->
+  <!-- Topbar -->
   <header class="topbar">
     <div class="topbar-left">
       <h1>Hey, <span>
@@ -170,7 +170,7 @@
     </div>
   </header>
 
-  <!-- ═══════ MAIN ═══════ -->
+  <!-- Main content -->
   <main class="main-content">
 
     <!-- Stats -->
@@ -193,7 +193,7 @@
         <div class="stat-label">Top Link</div>
         <% const top = summary.topLink; %>
           <div class="stat-value mono">
-            <%= top ? '/' +top.shortCode : '—' %>
+            <%= top ? '/' +top.shortCode : '-' %>
           </div>
           <div class="stat-sub">
             <%= top ? (top.clicks||0)+' clicks' : 'koi link nahi' %>
@@ -208,7 +208,7 @@
       </div>
     </div>
 
-    <!-- ══ TAB: MY LINKS ══ -->
+    <!-- Tab: My Links -->
     <div class="tab-content active" id="tab-links">
       <div class="table-section">
         <div class="table-header">
@@ -255,11 +255,11 @@
 
         <% if (urls.length===0) { %>
           <div class="empty-state">
-            <div class="empty-icon">🔗</div>
+            <div class="empty-icon">Link</div>
             <h3>Koi link nahi abhi tak</h3>
             <p>Pehla short URL banao aur track karna shuru karo</p>
             <button onclick="showTab('create', document.querySelectorAll('.nav-item')[1])" class="empty-cta">Pehla link
-              banao →</button>
+              banao</button>
           </div>
           <% } else { %>
             <div class="table-wrap">
@@ -286,7 +286,7 @@
                           <div class="url-tags">
                             <% if (url.customAlias) { %><span class="tag-badge alias">alias</span>
                               <% } %>
-                                <% if (url.hasPassword) { %><span class="tag-badge pw">🔒 protected</span>
+                                <% if (url.hasPassword) { %><span class="tag-badge pw">Locked</span>
                                   <% } %>
                                     <% if (url.whiteLabelDomain) { %><span class="tag-badge alias">wl: <%= url.whiteLabelDomain %></span>
                                       <% } %>
@@ -311,13 +311,13 @@
                         </td>
                         <td>
                           <span class="click-badge <%= (url.clicks||0)===0?'zero':'' %>">
-                            <% if ((url.clicks||0)>0) { %>▲<% } %>
+                            <% if ((url.clicks||0)>0) { %>+<% } %>
                                 <%= url.clicks||0 %>
                           </span>
                         </td>
                         <td class="hide-mobile">
                           <span class="status-badge <%= isExpired?'expired':'active' %>">
-                            <%= isExpired ? '✕ Expired' : '● Active' %>
+                            <%= isExpired ? 'Expired' : 'Active' %>
                           </span>
                         </td>
                         <td class="hide-mobile">
@@ -332,10 +332,14 @@
                             <button class="btn-copy" onclick="copyUrl('<%= url.shortUrl %>',this)">Copy</button>
                             <button class="btn-qr"
                               onclick="openQR('<%= url.shortUrl %>','<%= url.shortCode %>')">QR</button>
-                            <a class="btn-analytics" href="/analytics/<%= url.shortCode %>">📊</a>
-                            <form action="/delete/<%= url.shortCode %>" method="POST" style="margin:0">
-                              <button class="btn-delete" type="submit"
-                                onclick="return confirm('Delete karo?')">✕</button>
+                            <a class="btn-analytics" href="/analytics/<%= url.shortCode %>">Stats</a>
+                            <form action="/delete/<%= url.shortCode %>" method="POST" style="margin:0"
+                              data-confirm-dialog
+                              data-confirm-title="Delete this short link?"
+                              data-confirm-message="This short link will be removed from your dashboard. Click data will stop updating after deletion."
+                              data-confirm-confirm="Delete link"
+                              data-confirm-tone="danger">
+                              <button class="btn-delete" type="submit">Delete</button>
                             </form>
                           </div>
                         </td>
@@ -348,22 +352,22 @@
       </div>
     </div>
 
-    <!-- ══ TAB: NEW LINK ══ -->
+    <!-- Tab: New Link -->
     <div class="tab-content" id="tab-create">
       <div class="create-grid">
         <div class="create-card">
           <div class="create-card-header">
             <h2>New Short Link</h2>
-            <p>URL short karo — customize bhi kar sakte ho</p>
+            <p>URL short karo - customize bhi kar sakte ho</p>
           </div>
 
           <% if (typeof error !=='undefined' && error) { %>
-            <div class="alert alert-error">⚠ <%= error %>
+            <div class="alert alert-error">Error: <%= error %>
             </div>
             <% } %>
               <% if (typeof shortUrl !=='undefined' && shortUrl) { %>
                 <div class="result-card">
-                  <div class="result-label">✓ Short URL ready!</div>
+                  <div class="result-label">Short URL ready!</div>
                   <div class="result-row">
                     <a href="<%= shortUrl %>" target="_blank" class="result-url">
                       <%= shortUrl %>
@@ -436,18 +440,18 @@
 
                   <% if (typeof user!=='undefined' &&user&&user.plan==='free' ) { %>
                     <div class="upgrade-nudge">
-                      <span>🔒 Custom alias, password, expiry date — Pro mein unlock hote hain</span>
-                      <a href="/pricing">Upgrade ₹99/mo →</a>
+                      <span>Custom alias, password, expiry date - Pro mein unlock hote hain</span>
+                      <a href="/pricing">Upgrade Rs 99/mo</a>
                     </div>
                     <% } %>
         </div>
 
         <div class="tips-card">
-          <h3>💡 Tips</h3>
+          <h3>Tips</h3>
           <div class="tip-item">
             <div class="tip-dot"></div>
             <div><strong>Custom Alias</strong>
-              <p>snap.link/brand-name — memorable links zyada click hote hain</p>
+              <p>snap.link/brand-name - memorable links zyada click hote hain</p>
             </div>
           </div>
           <div class="tip-item">
@@ -471,14 +475,14 @@
           <div class="tip-item">
             <div class="tip-dot"></div>
             <div><strong>QR Code</strong>
-              <p>Har link ka QR download karo — print mein use karo</p>
+              <p>Har link ka QR download karo - print mein use karo</p>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ══ TAB: BULK ══ -->
+    <!-- Tab: Bulk -->
         <div class="tab-content" id="tab-bulk">
       <% if (typeof user !== 'undefined' && user && user.plan === 'free') { %>
         <div class="locked-feature">
@@ -592,7 +596,12 @@
               <h2>Bulk Delete</h2>
               <p>Paste short codes or short URLs. One entry per line.</p>
             </div>
-            <form action="/bulk-delete" method="POST" onsubmit="return confirm('Selected links will be permanently deleted. Continue?')">
+            <form action="/bulk-delete" method="POST"
+              data-confirm-dialog
+              data-confirm-title="Delete selected links?"
+              data-confirm-message="Bulk delete will permanently remove every listed short link. Please confirm before we continue."
+              data-confirm-confirm="Delete selected links"
+              data-confirm-tone="danger">
               <div class="form-group">
                 <label>Short codes / short URLs</label>
                 <textarea name="codes" class="bulk-textarea" rows="10"
@@ -656,18 +665,21 @@
   <!-- QR Modal -->
   <div class="qr-modal-bg" id="qrModalBg" onclick="closeQR(event)">
     <div class="qr-modal">
-      <button class="qr-modal-close" onclick="closeQRBtn()">✕</button>
+      <button class="qr-modal-close" onclick="closeQRBtn()">Close</button>
       <div class="qr-modal-title">QR Code</div>
       <div class="qr-modal-url" id="qrUrl"></div>
       <div id="qr-canvas-wrap"><canvas id="qrCanvas"></canvas></div>
       <div class="qr-actions">
-        <button class="btn-download" onclick="downloadQR()">⬇ Download</button>
+        <button class="btn-download" onclick="downloadQR()">Download</button>
         <button class="btn-modal-copy" onclick="copyQRUrl()">Copy URL</button>
       </div>
     </div>
   </div>
 
+  <%- include('partials/feedback-ui') %>
+
   <script src="/js/shared/theme.js"></script>
+  <script src="/js/shared/feedback-ui.js"></script>
   <script>
 
     function showTab(name, btn) {
@@ -803,6 +815,8 @@
 </body>
 
 </html>
+
+
 
 
 

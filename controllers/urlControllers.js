@@ -514,15 +514,10 @@ exports.redirectUrl = async (req, res) => {
             setImmediate(() => recordResolvedUrlClick(cachedUrl, req).catch(console.error));
 
             if (cachedUrl.adEnabled) {
-                return res.render('ad-interstitial', {
+                return res.render('ad-redirect', {
                     url: {
                         orginalUrl: cachedUrl.orginalUrl,
                         destinationUrl: buildRedirectDestination(cachedUrl),
-                        adTimer: cachedUrl.adTimer || 5,
-                        adTitle: cachedUrl.adTitle || 'Sponsored',
-                        adDescription: cachedUrl.adDescription || '',
-                        adBannerUrl: cachedUrl.adBannerUrl || '',
-                        adSkipable: cachedUrl.adSkipable,
                         shortCode: cachedUrl.shortCode,
                     },
                     monetagZoneId: appConfig.monetagZoneId,
@@ -562,15 +557,10 @@ exports.redirectUrl = async (req, res) => {
         setImmediate(() => recordResolvedUrlClick(url, req).catch(console.error));
 
         if (url.adEnabled) {
-            return res.render('ad-interstitial', {
+            return res.render('ad-redirect', {
                 url: {
                     orginalUrl: url.orginalUrl,
                     destinationUrl: buildRedirectDestination(url),
-                    adTimer: url.adTimer || 5,
-                    adTitle: url.adTitle || 'Sponsored',
-                    adDescription: url.adDescription || '',
-                    adBannerUrl: url.adBannerUrl || '',
-                    adSkipable: url.adSkipable,
                     shortCode: url.shortCode,
                 },
                 monetagZoneId: appConfig.monetagZoneId,

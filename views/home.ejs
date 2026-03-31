@@ -1,454 +1,429 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SnapLink - Free URL Shortener for Fast, Branded Links</title>
-  <meta name="description" content="Create clean short links, branded aliases, QR codes, and conversion-ready analytics with SnapLink. Built for creators, marketers, and growing teams." />
-  <meta name="keywords" content="url shortener, branded links, short links, QR code, analytics, custom alias, white label, india link shortener" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://snaplink.fun/" />
-
-  <meta property="og:title" content="SnapLink - Free URL Shortener" />
-  <meta property="og:description" content="Create fast branded links, track every click, and launch short URLs that look professional." />
-  <meta property="og:url" content="https://snaplink.fun/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://snaplink.fun/favicon.png" />
-  <meta property="og:site_name" content="SnapLink" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="SnapLink - Free URL Shortener" />
-  <meta name="twitter:description" content="Shorten links, track clicks, and launch branded URLs with a clean dashboard." />
-  <meta name="twitter:image" content="https://snaplink.fun/favicon.png" />
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "SnapLink",
-    "url": "https://snaplink.fun",
-    "description": "Fast link shortening platform for branded links, analytics, and QR codes.",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://snaplink.fun/search?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/favicon.png">
-  <link rel="stylesheet" href="/css/pages/home.css">
-  <link rel="stylesheet" href="/css/pages/home-landing.css">
-  <script src="/js/shared/theme.js"></script>
+  <%
+    const seo = {
+      title: 'SnapLink - Free URL Shortener and URL to QR Code Generator',
+      description: 'Shorten long URLs, generate QR codes instantly, track clicks, and manage cleaner share links with SnapLink.',
+      keywords: 'url shortener, qr code generator, url to qr code, branded links, click analytics, short links',
+      path: '/',
+      stylesheets: ['/css/pages/site-shell.css', '/css/pages/home-landing.css'],
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'SnapLink',
+        url: `${appUrl}/`,
+        description: 'Short links, QR codes, analytics, and sharing workflows in one clean product.'
+      }
+    };
+    const isLoggedIn = typeof user !== 'undefined' && user;
+    const isFree = isLoggedIn && user.plan === 'free';
+  %>
+  <%- include('partials/seo-head', { seo }) %>
 </head>
-<body class="home-page">
-  <% const isLoggedIn = typeof user !== 'undefined' && user; %>
-  <% const isFree = isLoggedIn && user.plan === 'free'; %>
-  <% const userPlan = isLoggedIn ? String(user.plan || 'free').toUpperCase() : 'FREE'; %>
-  <% const displayUserName = isLoggedIn ? (user.name || [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.email || 'User') : 'User'; %>
-  <% const displayUserShortName = displayUserName.split(/\s+/)[0]; %>
-  <% const displayUserInitial = displayUserName.charAt(0).toUpperCase(); %>
+<body class="site-page home-page">
+  <%- include('partials/site-navbar', { currentPage: '' }) %>
 
-  <nav class="navbar home-navbar">
-    <a href="/" class="nav-logo">
-      <span class="logo-dot"></span>
-      Snap<em>Link</em>
-    </a>
+  <main class="page-shell home-shell">
+    <section class="home-hero">
+      <div class="home-hero-grid">
+        <div class="hero-copy-column">
+          <div class="eyebrow">Clean link workflows for modern teams</div>
+          <h1 class="home-title">Shorten URLs, create QR codes, and share smarter from one polished workspace.</h1>
+          <p class="home-lead">
+            SnapLink keeps the first step simple. Drop in any long URL, turn it into a short link or QR code,
+            then keep analytics, branding, and growth tools ready when you need them.
+          </p>
 
-    <div class="nav-center">
-      <a href="/tools" class="nav-link">Tools</a>
-      <a href="/features" class="nav-link">Features</a>
-      <a href="/pricing" class="nav-link">Pricing</a>
-      <a href="/about" class="nav-link">About</a>
-    </div>
-
-    <div class="nav-right">
-      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">Moon</button>
-      <% if (isLoggedIn) { %>
-        <div class="nav-user">
-          <div class="nav-avatar"><%= displayUserInitial %></div>
-          <span class="nav-username"><%= displayUserShortName %></span>
-        </div>
-        <a href="/affiliate/wallet" class="nav-link">Earnings</a>
-        <a href="/dashboard" class="nav-link">Dashboard</a>
-        <a href="/logout" class="nav-btn-outline">Logout</a>
-      <% } else { %>
-        <a href="/login" class="nav-link">Login</a>
-        <a href="/signup" class="nav-btn-solid">Get Started</a>
-      <% } %>
-    </div>
-  </nav>
-
-  <main class="home-main">
-    <section class="hero-shell">
-      <div class="hero-copy">
-        <div class="hero-chip">Fast links. Branded look. Real analytics.</div>
-        <h1 class="hero-title">Turn every long URL into a sharper <span>growth asset</span>.</h1>
-        <p class="hero-subtitle">
-          SnapLink helps creators, marketers, and teams launch short links that look clean,
-          convert better, and stay trackable from first click to final campaign report.
-        </p>
-
-        <div class="hero-points">
-          <div class="hero-point">
-            <span class="hero-point-kicker">Custom</span>
-            <p>Aliases, password locks, expiry, QR code, and white-label support in one workflow.</p>
+          <div class="hero-stat-row">
+            <article class="hero-stat-card">
+              <strong>Short links</strong>
+              <span>Create readable links that are easier to share across social, chat, email, and campaigns.</span>
+            </article>
+            <article class="hero-stat-card">
+              <strong>Instant QR</strong>
+              <span>Generate a QR code on the homepage without leaving the flow or opening extra tools.</span>
+            </article>
+            <article class="hero-stat-card">
+              <strong>Built to grow</strong>
+              <span>When you are ready, unlock analytics, wallet, affiliate, API, bulk actions, and white label.</span>
+            </article>
           </div>
-          <div class="hero-point">
-            <span class="hero-point-kicker">Built to scale</span>
-            <p>Redis-backed redirects, buffered click logging, and business-ready API access.</p>
+
+          <div class="hero-proof-row">
+            <span>No credit card required</span>
+            <span>Fast redirects</span>
+            <span>QR downloads included</span>
           </div>
         </div>
 
-        <div class="hero-actions">
-          <% if (isLoggedIn) { %>
-            <a href="/dashboard" class="hero-btn-primary">Open Dashboard</a>
-          <% } else { %>
-            <a href="/signup" class="hero-btn-primary">Create Free Account</a>
-          <% } %>
-          <a href="/pricing" class="hero-btn-secondary">See Pricing</a>
-        </div>
-
-        <div class="hero-proof">
-          <span>10 free links every month</span>
-          <span>Pro at Rs 99 per month</span>
-          <span>Business white-label ready</span>
-        </div>
-      </div>
-
-      <div class="hero-panel">
-        <div class="panel-header">
-          <div>
-            <p class="panel-label">Launch a new link</p>
-            <h2>Command center</h2>
+        <div class="hero-toolbox">
+          <div class="tool-switch" role="tablist" aria-label="Homepage tools">
+            <button type="button" class="tool-switch-btn is-active" id="switch-short" onclick="toggleHomeMode('short')" aria-selected="true">URL Shortener</button>
+            <button type="button" class="tool-switch-btn" id="switch-qr" onclick="toggleHomeMode('qr')" aria-selected="false">URL to QR Code</button>
           </div>
-          <span class="plan-pill"><%= userPlan %></span>
-        </div>
 
-        <% if (error) { %>
-          <div class="alert error">
-            <strong>Issue:</strong>
-            <span><%= error %></span>
-          </div>
-        <% } %>
+          <section class="hero-tool-panel is-active" id="short-panel" aria-labelledby="switch-short">
+            <div class="tool-panel-head">
+              <div>
+                <p class="tool-panel-kicker">Fast start</p>
+                <h2>Turn a long URL into a clean short link</h2>
+              </div>
+              <span class="tool-panel-badge">Ready in seconds</span>
+            </div>
 
-        <form action="/shorten" method="POST" class="launch-form">
-          <label class="field-group field-group-wide">
-            <span class="field-label">Long URL</span>
-            <input type="url" name="orginalUrl" placeholder="https://example.com/really-long-campaign-url" required class="field-input field-input-lg" />
-          </label>
+            <% if (error) { %>
+              <div class="alert error home-alert"><%= error %></div>
+            <% } %>
 
-          <% if (isLoggedIn) { %>
-            <label class="field-group field-group-wide field-group-alias">
-              <span class="field-label">Custom alias</span>
-              <input type="text" name="customAlias" placeholder="brand-campaign" class="field-input" <%= isFree ? 'disabled' : '' %> />
-              <% if (isFree) { %>
-                <a href="/pricing" class="inline-upgrade">Unlock in Pro</a>
+            <form action="/shorten" method="POST" class="hero-shortener" id="heroShortenerForm">
+              <label class="tool-field tool-field-full">
+                <span>Paste your long URL</span>
+                <input type="url" name="orginalUrl" placeholder="https://example.com/your-long-link" required>
+              </label>
+
+              <% if (isLoggedIn) { %>
+                <div class="advanced-block">
+                  <button type="button" class="advanced-toggle" id="advancedToggleBtn" aria-expanded="false" onclick="toggleAdvanced()">
+                    <span>Advanced options</span>
+                    <span class="advanced-toggle-mark" id="advancedToggleMark">+</span>
+                  </button>
+
+                  <div class="advanced-panel" id="advancedPanel">
+                    <div class="advanced-grid">
+                      <label class="tool-field">
+                        <span>Custom alias</span>
+                        <input type="text" name="customAlias" placeholder="brand-launch" <%= isFree ? 'disabled' : '' %>>
+                        <small><%= isFree ? 'Pro plan required for aliases.' : 'Optional vanity slug for branded sharing.' %></small>
+                      </label>
+
+                      <label class="toggle-card">
+                        <input type="checkbox" name="adEnabled" value="on" id="heroAdEnabled" onchange="toggleAdState(this)">
+                        <span class="toggle-card-ui"></span>
+                        <span class="toggle-copy">
+                          <strong>Redirect ads</strong>
+                          <small>Ads off means direct open. Ads on means ad redirect first, then original URL opens.</small>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              <% } else { %>
+                <div class="signin-note">
+                  <strong>Optional controls unlock after sign in.</strong>
+                  <span>Log in to manage custom aliases, redirect ads, analytics, and saved links.</span>
+                </div>
               <% } %>
-            </label>
-          <% } %>
 
-          <% if (isLoggedIn) { %>
-            <div class="advanced-card">
-              <button type="button" class="advanced-toggle" onclick="toggleAdSettings()" id="adToggleBtn">
-                <span>Ad interstitial settings</span>
-                <svg id="adChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </button>
+              <button type="submit" class="hero-submit">Create short link</button>
+            </form>
 
-              <div class="advanced-panel" id="adSettingsPanel">
-                <label class="switch-row">
-                  <div>
-                    <span class="field-label">Enable ad page</span>
-                    <p class="field-help">Show a timed interstitial page before opening the destination.</p>
+            <% if (shortUrl) { %>
+              <div class="result-card home-result">
+                <div class="result-copy">
+                  <strong>Short link ready</strong>
+                  <a href="<%= shortUrl %>" target="_blank" rel="noopener" class="result-link" id="resultUrl"><%= shortUrl %></a>
+                </div>
+                <div class="result-actions">
+                  <a href="<%= shortUrl %>" target="_blank" rel="noopener" class="btn-secondary">Open</a>
+                  <button type="button" class="copy-btn" onclick="copyUrl('<%= shortUrl %>', this)">Copy</button>
+                </div>
+              </div>
+            <% } %>
+          </section>
+
+          <section class="hero-tool-panel" id="qr-panel" aria-labelledby="switch-qr" hidden>
+            <div class="tool-panel-head">
+              <div>
+                <p class="tool-panel-kicker">Instant generator</p>
+                <h2>Convert any URL into a downloadable QR code</h2>
+              </div>
+              <span class="tool-panel-badge">No signup needed</span>
+            </div>
+
+            <div class="qr-tool-grid">
+              <label class="tool-field tool-field-full">
+                <span>URL to encode</span>
+                <input type="url" id="heroQrInput" placeholder="https://example.com/product-page" inputmode="url">
+              </label>
+
+              <div class="qr-actions-row">
+                <button type="button" class="hero-submit" onclick="generateHeroQr()">Generate QR code</button>
+                <button type="button" class="btn-secondary qr-download-btn" id="heroQrDownloadBtn" onclick="downloadHeroQr()" disabled>Download PNG</button>
+              </div>
+
+              <div class="qr-preview-card">
+                <div class="qr-preview-header">
+                  <strong>Preview</strong>
+                  <button type="button" class="copy-btn qr-copy-btn" id="heroQrCopyBtn" onclick="copyHeroQrUrl(this)" disabled>Copy URL</button>
+                </div>
+                <div class="qr-preview-stage" id="heroQrPreviewStage">
+                  <div class="qr-placeholder" id="heroQrPlaceholder">
+                    <strong>QR preview appears here</strong>
+                    <span>Paste a valid URL and generate the code.</span>
                   </div>
-                  <div class="switch-wrap">
-                    <input type="checkbox" name="adEnabled" id="adEnabled" value="on" onchange="toggleAdFields(this)">
-                    <span class="switch-track"></span>
-                  </div>
-                </label>
-
-                <div class="advanced-fields" id="adFields">
-                  <div class="timer-row">
-                    <span class="field-label">Timer</span>
-                    <div class="timer-options">
-                      <label><input type="radio" name="adTimer" value="5" checked><span>5s</span></label>
-                      <label><input type="radio" name="adTimer" value="10"><span>10s</span></label>
-                      <label><input type="radio" name="adTimer" value="15"><span>15s</span></label>
-                      <label><input type="radio" name="adTimer" value="30"><span>30s</span></label>
-                    </div>
-                  </div>
-
-                  <label class="field-group field-group-wide">
-                    <span class="field-label">Ad title</span>
-                    <input type="text" name="adTitle" id="adTitle" class="field-input" placeholder="For example: Check this partner offer" maxlength="80">
-                  </label>
-
-                  <label class="field-group field-group-wide">
-                    <span class="field-label">Ad description</span>
-                    <input type="text" name="adDescription" id="adDescription" class="field-input" placeholder="Short supporting line for the ad page" maxlength="160">
-                  </label>
-
-                  <label class="switch-row compact">
-                    <div>
-                      <span class="field-label">Allow skip</span>
-                      <p class="field-help">Let users continue before the timer fully ends.</p>
-                    </div>
-                    <div class="switch-wrap">
-                      <input type="checkbox" name="adSkipable" value="on" checked>
-                      <span class="switch-track"></span>
-                    </div>
-                  </label>
+                  <canvas id="heroQrCanvas" width="220" height="220" hidden></canvas>
                 </div>
               </div>
             </div>
-          <% } %>
-
-          <button type="submit" class="launch-button">
-            <span>Snap URL</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </button>
-        </form>
-
-        <% if (shortUrl) { %>
-          <div class="alert success">
-            <div>
-              <strong>Short link ready</strong>
-              <a href="<%= shortUrl %>" target="_blank" class="result-link" id="resultUrl"><%= shortUrl %></a>
-            </div>
-            <button class="copy-btn" onclick="copyUrl('<%= shortUrl %>', this)">Copy</button>
-          </div>
-        <% } %>
-
-        <div class="panel-footer-metrics">
-          <div>
-            <span>Analytics</span>
-            <strong>Real-time</strong>
-          </div>
-          <div>
-            <span>QR export</span>
-            <strong>Included</strong>
-          </div>
-          <div>
-            <span>API access</span>
-            <strong>Pro+</strong>
-          </div>
+          </section>
         </div>
       </div>
     </section>
 
-    <section class="signal-band">
-      <div class="signal-card">
-        <span class="signal-kicker">For creators</span>
-        <strong>Launch memorable profile, bio, and campaign links.</strong>
-      </div>
-      <div class="signal-card">
-        <span class="signal-kicker">For marketers</span>
-        <strong>Track clicks, geo, devices, and referrers without extra tools.</strong>
-      </div>
-      <div class="signal-card">
-        <span class="signal-kicker">For teams</span>
-        <strong>Use white-label domains, reports, API keys, and business workflows.</strong>
-      </div>
-    </section>
-
-    <section class="story-grid">
-      <article class="story-card story-featured">
-        <p class="section-kicker">Why teams switch</p>
-        <h2>Clean links are only the start. SnapLink is the operating layer behind them.</h2>
-        <p>
-          Instead of juggling one tool for shortening, another for analytics, and a third for branded
-          campaigns, SnapLink keeps the entire flow in one dashboard.
-        </p>
-        <ul class="story-list">
-          <li>Custom aliases that stay on-brand</li>
-          <li>Click insights that help campaigns improve faster</li>
-          <li>White-label setup for agencies and businesses</li>
-        </ul>
+    <section class="home-signal-strip">
+      <article class="signal-card">
+        <span class="signal-label">Use case</span>
+        <strong>Share product links, bio links, forms, and campaign pages without messy URLs.</strong>
       </article>
-
-      <article class="story-card">
-        <p class="section-kicker">Built for action</p>
-        <h3>Fast launch flow</h3>
-        <p>Paste a long URL, add optional controls, and publish a polished short link in seconds.</p>
+      <article class="signal-card">
+        <span class="signal-label">Why it feels simpler</span>
+        <strong>Shortener and QR generator live on the same screen, so users solve the problem faster.</strong>
       </article>
-
-      <article class="story-card">
-        <p class="section-kicker">Smart controls</p>
-        <h3>Protected when needed</h3>
-        <p>Use password locks, expiry rules, ad pages, and business domains where the campaign needs more control.</p>
-      </article>
-
-      <article class="story-card">
-        <p class="section-kicker">Clear visibility</p>
-        <h3>One analytics view</h3>
-        <p>Country, city, device, browser, referrer, and top-link snapshots all stay easy to read.</p>
+      <article class="signal-card">
+        <span class="signal-label">What scales later</span>
+        <strong>Analytics, affiliate, wallet, API access, white label, and business controls are already in the product.</strong>
       </article>
     </section>
 
-    <section class="stack-section">
-      <div class="section-heading">
-        <p class="section-kicker">Product stack</p>
-        <h2>Everything you need to ship, share, and optimize links.</h2>
-      </div>
-
-      <div class="stack-grid">
-        <article class="stack-card">
-          <span class="stack-index">01</span>
-          <h3>Branded short URLs</h3>
-          <p>Create memorable aliases that feel like part of the campaign, not an afterthought.</p>
-        </article>
-        <article class="stack-card">
-          <span class="stack-index">02</span>
-          <h3>QR and download flow</h3>
-          <p>Generate a share-ready QR code instantly for offline print, packaging, and events.</p>
-        </article>
-        <article class="stack-card">
-          <span class="stack-index">03</span>
-          <h3>Detailed analytics</h3>
-          <p>See what is working across geography, devices, timing, and referral channels.</p>
-        </article>
-        <article class="stack-card">
-          <span class="stack-index">04</span>
-          <h3>Bulk and API access</h3>
-          <p>Scale link operations when you need more than one-off manual creation.</p>
-        </article>
-        <article class="stack-card">
-          <span class="stack-index">05</span>
-          <h3>White-label delivery</h3>
-          <p>Use your own brand domain and business identity for a more premium customer experience.</p>
-        </article>
-        <article class="stack-card">
-          <span class="stack-index">06</span>
-          <h3>Affiliate and wallet workflows</h3>
-          <p>Keep monetization features, reporting, and campaign operations close to the link data.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="affiliate-showcase">
-      <div class="section-heading">
-        <p class="section-kicker">Affiliate growth</p>
-        <h2>Bring affiliate campaigns, wallet earnings, and payout visibility into the same product.</h2>
-      </div>
-
-      <div class="affiliate-grid">
-        <article class="stack-card">
-          <span class="stack-index">01</span>
-          <h3>Affiliate dashboards</h3>
-          <p>Track referred clicks, campaign activity, and performance snapshots without moving to a separate system.</p>
-        </article>
-        <article class="stack-card">
-          <span class="stack-index">02</span>
-          <h3>Wallet and payout flow</h3>
-          <p>Keep earnings, payout requests, and account-level wallet history visible for creators, partners, and operators.</p>
-        </article>
-        <article class="stack-card">
-          <span class="stack-index">03</span>
-          <h3>Referral-ready landing flow</h3>
-          <p>Turn link sharing into a monetizable channel with affiliate onboarding and business-ready reporting.</p>
-        </article>
-      </div>
-
-      <div class="affiliate-cta-card">
+    <section class="home-section">
+      <div class="section-heading-row">
         <div>
-          <p class="section-kicker">Monetization layer</p>
-          <h3>Affiliate and wallet tools now sit inside SnapLink, not outside it.</h3>
-          <p>Perfect for creators, agencies, and partner-led growth teams that want links and revenue workflows in one place.</p>
+          <div class="eyebrow">Everything starts from the first link</div>
+          <h2 class="section-title">A cleaner homepage that helps users choose the right action immediately.</h2>
         </div>
-        <div class="cta-actions">
-          <% if (isLoggedIn) { %>
-            <a href="/affiliate/dashboard" class="hero-btn-primary">Open Affiliate Dashboard</a>
-          <% } else { %>
-            <a href="/signup" class="hero-btn-primary">Create Affiliate Account</a>
-          <% } %>
-          <a href="/pricing" class="hero-btn-secondary">See Business Features</a>
-        </div>
-      </div>
-    </section>
-
-    <section class="comparison-panel">
-      <div class="comparison-copy">
-        <p class="section-kicker">Why it stands out</p>
-        <h2>Made for India-first pricing, serious use, and clean UI.</h2>
-        <p>
-          SnapLink stays affordable enough for solo creators, but structured enough for businesses that
-          need analytics, white-label, team workflows, and API-backed automation.
+        <p class="section-copy section-heading-copy">
+          Instead of forcing users to search around the product, the homepage now gives two clear starting points:
+          shorten a URL or generate a QR code.
         </p>
       </div>
 
-      <div class="comparison-matrix">
-        <div class="matrix-row matrix-head">
-          <span>Capability</span>
-          <span>SnapLink</span>
+      <div class="capability-grid">
+        <article class="capability-card">
+          <div class="capability-icon">01</div>
+          <h3>Short links that feel professional</h3>
+          <p>Create readable, lightweight share links with optional aliases, redirect ads, and clean copy actions.</p>
+        </article>
+        <article class="capability-card">
+          <div class="capability-icon">02</div>
+          <h3>QR generation built into the hero</h3>
+          <p>Generate and download a QR code instantly from the homepage without opening a separate utility page.</p>
+        </article>
+        <article class="capability-card">
+          <div class="capability-icon">03</div>
+          <h3>Upgrade path already connected</h3>
+          <p>When users are ready, SnapLink expands into analytics, wallet, affiliate, bulk actions, teams, and API workflows.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="home-section workflow-section">
+      <div class="section-heading-row compact">
+        <div>
+          <div class="eyebrow">Simple flow</div>
+          <h2 class="section-title">From long URL to share-ready asset in three quick steps.</h2>
         </div>
-        <div class="matrix-row">
-          <span>Free entry point</span>
-          <strong>Yes, 10 links monthly</strong>
-        </div>
-        <div class="matrix-row">
-          <span>Pro tier</span>
-          <strong>Rs 99 per month</strong>
-        </div>
-        <div class="matrix-row">
-          <span>Business setup</span>
-          <strong>White-label plus reports</strong>
-        </div>
-        <div class="matrix-row">
-          <span>Growth tooling</span>
-          <strong>Analytics, API, QR, bulk</strong>
-        </div>
+      </div>
+
+      <div class="workflow-grid">
+        <article class="workflow-card">
+          <span class="workflow-step">Step 1</span>
+          <h3>Paste the destination</h3>
+          <p>Start with any long URL from your store, video, document, landing page, or profile link.</p>
+        </article>
+        <article class="workflow-card">
+          <span class="workflow-step">Step 2</span>
+          <h3>Pick short link or QR</h3>
+          <p>Use the homepage switch to choose the output format your audience needs right now.</p>
+        </article>
+        <article class="workflow-card">
+          <span class="workflow-step">Step 3</span>
+          <h3>Share and grow</h3>
+          <p>Publish it across socials, offline print, chat, email, or campaigns, then move into analytics when needed.</p>
+        </article>
       </div>
     </section>
 
     <section class="home-cta">
       <div class="home-cta-inner">
-        <p class="section-kicker">Start now</p>
-        <h2>Build your next short link in under a minute.</h2>
-        <p>Start free, upgrade only when you need more volume, more control, or more branding power.</p>
-        <div class="cta-actions">
+        <div class="eyebrow">Ready to ship cleaner links</div>
+        <h2>Start with one URL. Grow into a full sharing workflow.</h2>
+        <p>SnapLink is designed to feel easy on day one and still stay useful when your traffic, campaigns, and team get bigger.</p>
+        <div class="home-cta-actions">
           <% if (isLoggedIn) { %>
-            <a href="/dashboard" class="hero-btn-primary">Go to Dashboard</a>
+            <a href="/dashboard" class="btn-primary">Open dashboard</a>
+            <a href="/qr-codes" class="btn-secondary">Manage QR codes</a>
           <% } else { %>
-            <a href="/signup" class="hero-btn-primary">Create Free Account</a>
+            <a href="/signup" class="btn-primary">Create free account</a>
+            <a href="/tools" class="btn-secondary">Explore free tools</a>
           <% } %>
-          <a href="/features" class="hero-btn-secondary">Explore Features</a>
         </div>
       </div>
     </section>
   </main>
 
-  <%- include('partials/footer', { footerCopy: 'Turn long URLs into clean, branded, and trackable links that are easy to share.' }) %>
+  <%- include('partials/footer', { footerCopy: 'Short links, QR generation, analytics, affiliate flows, and business-ready sharing tools in one focused SnapLink experience.' }) %>
 
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="/js/shared/theme.js"></script>
   <script>
+    let activeHomeMode = 'short';
+    let heroQrReady = false;
+
     function copyUrl(url, btn) {
       navigator.clipboard.writeText(url).then(() => {
+        const previous = btn.textContent;
         btn.textContent = 'Copied';
-        btn.classList.add('copied');
         setTimeout(() => {
-          btn.textContent = 'Copy';
-          btn.classList.remove('copied');
-        }, 1800);
+          btn.textContent = previous;
+        }, 1600);
       });
     }
 
-    function toggleAdSettings() {
-      const panel = document.getElementById('adSettingsPanel');
-      const chevron = document.getElementById('adChevron');
-      const isOpen = panel.classList.toggle('open');
-      chevron.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+    function toggleHomeMode(mode) {
+      activeHomeMode = mode;
+      const shortBtn = document.getElementById('switch-short');
+      const qrBtn = document.getElementById('switch-qr');
+      const shortPanel = document.getElementById('short-panel');
+      const qrPanel = document.getElementById('qr-panel');
+      const shortActive = mode === 'short';
+
+      if (shortBtn) {
+        shortBtn.classList.toggle('is-active', shortActive);
+        shortBtn.setAttribute('aria-selected', shortActive ? 'true' : 'false');
+      }
+      if (qrBtn) {
+        qrBtn.classList.toggle('is-active', !shortActive);
+        qrBtn.setAttribute('aria-selected', shortActive ? 'false' : 'true');
+      }
+      if (shortPanel) {
+        shortPanel.classList.toggle('is-active', shortActive);
+        shortPanel.hidden = !shortActive;
+      }
+      if (qrPanel) {
+        qrPanel.classList.toggle('is-active', !shortActive);
+        qrPanel.hidden = shortActive;
+      }
     }
 
-    function toggleAdFields(checkbox) {
-      document.getElementById('adFields').classList.toggle('is-active', checkbox.checked);
+    function toggleAdvanced() {
+      const panel = document.getElementById('advancedPanel');
+      const toggle = document.getElementById('advancedToggleBtn');
+      const mark = document.getElementById('advancedToggleMark');
+      if (!panel || !toggle || !mark) return;
+      const isOpen = panel.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      mark.textContent = isOpen ? '-' : '+';
     }
+
+    function toggleAdState(checkbox) {
+      const card = checkbox ? checkbox.closest('.toggle-card') : null;
+      if (!card) return;
+      card.classList.toggle('is-checked', checkbox.checked);
+    }
+
+    function getHeroQrValue() {
+      const input = document.getElementById('heroQrInput');
+      return input ? input.value.trim() : '';
+    }
+
+    function setHeroQrEmptyState(message) {
+      const placeholder = document.getElementById('heroQrPlaceholder');
+      const canvas = document.getElementById('heroQrCanvas');
+      const downloadBtn = document.getElementById('heroQrDownloadBtn');
+      const copyBtn = document.getElementById('heroQrCopyBtn');
+      if (placeholder) {
+        placeholder.hidden = false;
+        placeholder.querySelector('span').textContent = message || 'Paste a valid URL and generate the code.';
+      }
+      if (canvas) {
+        canvas.hidden = true;
+      }
+      if (downloadBtn) {
+        downloadBtn.disabled = true;
+      }
+      if (copyBtn) {
+        copyBtn.disabled = true;
+      }
+      heroQrReady = false;
+    }
+
+    function generateHeroQr() {
+      const value = getHeroQrValue();
+      const placeholder = document.getElementById('heroQrPlaceholder');
+      const canvas = document.getElementById('heroQrCanvas');
+      const downloadBtn = document.getElementById('heroQrDownloadBtn');
+      const copyBtn = document.getElementById('heroQrCopyBtn');
+
+      if (!value) {
+        setHeroQrEmptyState('Add a URL first so the QR preview can be generated.');
+        return;
+      }
+
+      if (!window.QRCode || !canvas) {
+        setHeroQrEmptyState('QR library did not load. Refresh once and try again.');
+        return;
+      }
+
+      QRCode.toCanvas(canvas, value, {
+        width: 220,
+        margin: 1,
+        color: { dark: '#0f1720', light: '#ffffff' }
+      }, (error) => {
+        if (error) {
+          setHeroQrEmptyState('Could not generate the QR code for this value.');
+          return;
+        }
+
+        heroQrReady = true;
+        canvas.hidden = false;
+        if (placeholder) {
+          placeholder.hidden = true;
+        }
+        if (downloadBtn) {
+          downloadBtn.disabled = false;
+        }
+        if (copyBtn) {
+          copyBtn.disabled = false;
+        }
+      });
+    }
+
+    function downloadHeroQr() {
+      const canvas = document.getElementById('heroQrCanvas');
+      if (!heroQrReady || !canvas) return;
+      const link = document.createElement('a');
+      link.download = 'snaplink-qr.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function copyHeroQrUrl(btn) {
+      const value = getHeroQrValue();
+      if (!value) return;
+      copyUrl(value, btn);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      toggleHomeMode('short');
+      const adToggle = document.getElementById('heroAdEnabled');
+      if (adToggle) {
+        toggleAdState(adToggle);
+      }
+
+      const qrInput = document.getElementById('heroQrInput');
+      if (qrInput) {
+        qrInput.addEventListener('input', () => {
+          if (!qrInput.value.trim()) {
+            setHeroQrEmptyState('Paste a valid URL and generate the code.');
+            return;
+          }
+          if (heroQrReady) {
+            generateHeroQr();
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
-

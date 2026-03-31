@@ -173,8 +173,13 @@
                   <a class="btn-action" href="/affiliate/links/<%= link.shortCode %>/analytics">
                     Analytics →
                   </a>
-                  <form action="/affiliate/links/<%= link.shortCode %>/delete" method="POST" style="margin:0">
-                    <button class="btn-action danger" type="submit" onclick="return confirm('Delete karo?')">✕</button>
+                  <form action="/affiliate/links/<%= link.shortCode %>/delete" method="POST" style="margin:0"
+                    data-confirm-dialog
+                    data-confirm-title="Delete this campaign link?"
+                    data-confirm-message="This affiliate link will be removed from your campaign list. Any future tracking on this link will stop."
+                    data-confirm-confirm="Delete campaign"
+                    data-confirm-tone="danger">
+                    <button class="btn-action danger" type="submit">✕</button>
                   </form>
                 </div>
               </div>
@@ -234,6 +239,9 @@
     </div>
   </div>
 
+  <%- include('partials/feedback-ui') %>
+
+  <script src="/js/shared/feedback-ui.js"></script>
   <script>
     // ── THEME ──
     function toggleTheme() {

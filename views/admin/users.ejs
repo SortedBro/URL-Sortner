@@ -116,28 +116,63 @@
     </div>
   </div>
 
+  <%- include('../partials/feedback-ui') %>
+
   <script src="/js/shared/theme.js"></script>
+  <script src="/js/shared/feedback-ui.js"></script>
   <script>
 
     async function toggleBan(userId, isBanned) {
-      if (!confirm(isBanned ? 'Unban karo?' : 'Ban karo?')) return;
-      const res  = await fetch(`/admin/users/${userId}/ban`, { method: 'POST' });
-      const data = await res.json();
-      if (data.success) {
-        const btn = document.getElementById(`ban-btn-${userId}`);
-        const row = document.getElementById(`row-${userId}`);
-        btn.textContent = data.isBanned ? 'Unban' : 'Ban';
-        btn.className   = `action-btn ${data.isBanned ? 'btn-unban' : 'btn-ban'}`;
-        row.className   = data.isBanned ? 'banned-row' : '';
+      const ok = await window.snaplinkUI.confirm({
+        title: isBanned ? 'Unban this user?' : 'Ban this user?',
+        message: isBanned
+          ? 'The user will regain access to login and manage links.'
+          : 'The user will lose access to SnapLink until you reverse this action.',
+        confirmText: isBanned ? 'Unban user' : 'Ban user',
+        tone: isBanned ? 'success' : 'danger'
+      });
+      if (!ok) return;
+
+      try {
+        const res = await fetch(`/admin/users/${userId}/ban`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          const btn = document.getElementById(`ban-btn-${userId}`);
+          const row = document.getElementById(`row-${userId}`);
+          btn.textContent = data.isBanned ? 'Unban' : 'Ban';
+          btn.className = `action-btn ${data.isBanned ? 'btn-unban' : 'btn-ban'}`;
+          row.className = data.isBanned ? 'banned-row' : '';
+          window.snaplinkUI.toast(data.isBanned ? 'User banned successfully.' : 'User unbanned successfully.', {
+            tone: data.isBanned ? 'error' : 'success'
+          });
+        } else {
+          window.snaplinkUI.toast(data.error || 'User status update nahi ho paya.', { tone: 'error' });
+        }
+      } catch (error) {
+        window.snaplinkUI.toast('User status update fail ho gaya. Dobara try karo.', { tone: 'error' });
       }
     }
 
     async function deleteUser(userId) {
-      if (!confirm('User aur uske saare URLs delete ho jaayenge. Sure ho?')) return;
-      const res  = await fetch(`/admin/users/${userId}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
-        document.getElementById(`row-${userId}`).remove();
+      const ok = await window.snaplinkUI.confirm({
+        title: 'Delete this user account?',
+        message: 'This will remove the user and all URLs created under the account. This action cannot be undone.',
+        confirmText: 'Delete user',
+        tone: 'danger'
+      });
+      if (!ok) return;
+
+      try {
+        const res = await fetch(`/admin/users/${userId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById(`row-${userId}`).remove();
+          window.snaplinkUI.toast('User deleted successfully.', { tone: 'success' });
+        } else {
+          window.snaplinkUI.toast(data.error || 'User delete nahi ho paya.', { tone: 'error' });
+        }
+      } catch (error) {
+        window.snaplinkUI.toast('User delete request fail ho gaya. Dobara try karo.', { tone: 'error' });
       }
     }
   </script>

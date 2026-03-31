@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Redirecting - SnapLink</title>
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            background: #0d0e13;
+            overflow: hidden;
+        }
+    </style>
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=<%= url.destinationUrl || url.orginalUrl %>" />
+    </noscript>
+</head>
+
+<body>
+    <script>
+        const TARGET = <%- JSON.stringify(url.destinationUrl || url.orginalUrl) %>;
+        const MONETAG_ZONE_ID = <%- JSON.stringify(monetagZoneId || '') %>;
+        const MONETAG_SCRIPT_URL = <%- JSON.stringify(monetagScriptUrl || '') %>;
+
+        let hasNavigated = false;
+
+        function appendMonetagScript() {
+            if (!MONETAG_ZONE_ID || !MONETAG_SCRIPT_URL) {
+                return false;
+            }
+
+            try {
+                const anchor = document.body || document.documentElement;
+                if (!anchor) return false;
+
+                const script = document.createElement('script');
+                script.dataset.zone = MONETAG_ZONE_ID;
+                script.src = MONETAG_SCRIPT_URL;
+                script.async = true;
+                anchor.appendChild(script);
+                return true;
+            } catch (error) {
+                console.error('Monetag script load failed:', error);
+                return false;
+            }
+        }
+
+        function goToDestination() {
+            if (hasNavigated) return;
+            hasNavigated = true;
+            window.location.replace(TARGET);
+        }
+
+        appendMonetagScript();
+        window.addEventListener('load', () => setTimeout(goToDestination, 120), { once: true });
+        setTimeout(goToDestination, 280);
+    </script>
+</body>
+
+</html>
