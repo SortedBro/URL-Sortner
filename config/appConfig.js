@@ -1,4 +1,5 @@
 require('dotenv').config();
+const packageJson = require('../package.json');
 
 /**
  * Central application configuration.
@@ -9,10 +10,19 @@ require('dotenv').config();
  * - Reduces "magic strings" spread across controllers/middlewares.
  */
 const isProduction = process.env.NODE_ENV === 'production';
+const assetVersion =
+    process.env.ASSET_VERSION ||
+    process.env.RAILWAY_GIT_COMMIT_SHA ||
+    process.env.RAILWAY_DEPLOYMENT_ID ||
+    process.env.RENDER_GIT_COMMIT ||
+    process.env.VERCEL_GIT_COMMIT_SHA ||
+    packageJson.version ||
+    'dev';
 
 const appConfig = Object.freeze({
     env: process.env.NODE_ENV || 'development',
     isProduction,
+    assetVersion: String(assetVersion).slice(0, 20),
     port: Number(process.env.PORT || 3000),
     appUrl: process.env.APP_URL || '',
     jwtSecret: process.env.jwt_secret || '',

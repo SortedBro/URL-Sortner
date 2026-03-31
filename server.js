@@ -135,6 +135,7 @@ function configureRouteContext(expressApp) {
     expressApp.use((req, res, next) => {
         res.locals.user = req.user || null;
         res.locals.appUrl = appConfig.appUrl || `${req.protocol}://${req.get('host')}`;
+        res.locals.assetVersion = appConfig.assetVersion;
         next();
     });
 }
