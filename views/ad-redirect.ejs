@@ -26,6 +26,10 @@
         const MONETAG_SCRIPT_URL = <%- JSON.stringify(monetagScriptUrl || '') %>;
 
         let hasNavigated = false;
+        let scriptResolved = false;
+        const MIN_AD_BRIDGE_MS = 650;
+        const MAX_AD_BRIDGE_MS = 1800;
+        const startTime = Date.now();
 
         function appendMonetagScript() {
             if (!MONETAG_ZONE_ID || !MONETAG_SCRIPT_URL) {
@@ -33,13 +37,15 @@
             }
 
             try {
-                const anchor = document.body || document.documentElement;
+                const anchor = [document.documentElement, document.body].filter(Boolean).pop();
                 if (!anchor) return false;
 
                 const script = document.createElement('script');
                 script.dataset.zone = MONETAG_ZONE_ID;
                 script.src = MONETAG_SCRIPT_URL;
                 script.async = true;
+                script.onload = markScriptResolved;
+                script.onerror = markScriptResolved;
                 anchor.appendChild(script);
                 return true;
             } catch (error) {
@@ -48,15 +54,30 @@
             }
         }
 
+        function markScriptResolved() {
+            if (scriptResolved) return;
+            scriptResolved = true;
+            scheduleNavigation();
+        }
+
+        function scheduleNavigation() {
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, MIN_AD_BRIDGE_MS - elapsed);
+            window.setTimeout(goToDestination, remaining);
+        }
+
         function goToDestination() {
             if (hasNavigated) return;
             hasNavigated = true;
-            window.location.replace(TARGET);
+            window.location.assign(TARGET);
         }
 
-        appendMonetagScript();
-        window.addEventListener('load', () => setTimeout(goToDestination, 120), { once: true });
-        setTimeout(goToDestination, 280);
+        if (!appendMonetagScript()) {
+            markScriptResolved();
+        }
+
+        window.addEventListener('load', scheduleNavigation, { once: true });
+        window.setTimeout(goToDestination, MAX_AD_BRIDGE_MS);
     </script>
 </body>
 

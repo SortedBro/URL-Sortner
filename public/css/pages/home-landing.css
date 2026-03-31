@@ -68,6 +68,7 @@
 
 .hero-copy-column {
   padding: clamp(0.4rem, 1vw, 0.8rem) clamp(0.2rem, 1vw, 0.6rem) 0 0;
+  min-width: 0;
 }
 
 .home-title {
@@ -145,6 +146,7 @@
 .hero-toolbox {
   position: relative;
   z-index: 1;
+  min-width: 0;
 }
 
 .tool-switch {
@@ -664,6 +666,11 @@
 
   .tool-switch {
     grid-template-columns: 1fr;
+  }
+
+  .hero-proof-row span {
+    width: 100%;
+    justify-content: center;
   }
 
   .tool-switch-btn,

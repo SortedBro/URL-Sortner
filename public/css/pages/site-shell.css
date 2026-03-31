@@ -49,6 +49,7 @@ body {
   min-height: 100vh;
   font-family: 'DM Sans', sans-serif;
   color: var(--site-text);
+  overflow-x: clip;
   background:
     radial-gradient(circle at top center, rgba(255, 196, 76, 0.08), transparent 24%),
     linear-gradient(180deg, var(--site-bg) 0%, var(--site-bg-soft) 100%);
@@ -128,6 +129,29 @@ main,
   display: flex;
   align-items: center;
   gap: 0.8rem;
+}
+
+.nav-toggle {
+  display: none;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  border-radius: 14px;
+  border: 1px solid var(--site-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--site-text);
+  cursor: pointer;
+}
+
+.nav-toggle span {
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .auth-helper-copy {
@@ -556,6 +580,69 @@ main,
   }
 }
 
+@media (max-width: 920px) {
+  .navbar {
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .nav-center,
+  .nav-right {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .navbar.is-open .nav-center,
+  .navbar.is-open .nav-right {
+    display: flex;
+  }
+
+  .navbar.is-open .nav-toggle span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .navbar.is-open .nav-toggle span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .navbar.is-open .nav-toggle span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .nav-center {
+    order: 3;
+    justify-content: flex-start;
+  }
+
+  .nav-right {
+    order: 4;
+  }
+
+  .nav-user {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .nav-link,
+  .nav-btn-outline,
+  .nav-btn-solid {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .auth-helper-copy {
+    display: none;
+  }
+}
+
 @media (max-width: 720px) {
   main,
   .page-shell,
@@ -605,14 +692,6 @@ main,
   .upgrade-title,
   .legal-title {
     font-size: clamp(2rem, 11vw, 3.1rem);
-  }
-
-  .nav-user {
-    display: none;
-  }
-
-  .auth-helper-copy {
-    display: none;
   }
 
   .nav-link,

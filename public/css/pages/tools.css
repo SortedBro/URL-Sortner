@@ -1099,7 +1099,7 @@ textarea.tinput { resize: vertical; }
   }
 
   .tool-tabs-bar {
-    top: 64px;
+    position: static;
     padding: 0.7rem;
   }
 
@@ -1133,6 +1133,7 @@ textarea.tinput { resize: vertical; }
   max-width: 1240px;
   margin: 0 auto;
   padding: 0 1.5rem 4rem;
+  overflow-x: clip;
 }
 
 .tools-page .tool-overview,

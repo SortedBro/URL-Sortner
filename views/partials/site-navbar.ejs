@@ -14,10 +14,21 @@ const displayUserName = typeof user !== 'undefined' && user
 const displayUserShortName = displayUserName.split(/\s+/)[0];
 const displayUserInitial = displayUserName.charAt(0).toUpperCase();
 %>
-<nav class="<%= navbarClassName %>">
+<nav class="<%= navbarClassName %>" data-navbar-root>
   <a href="/" class="nav-logo" aria-label="SnapLink home">
     SnapLink
   </a>
+
+  <button
+    type="button"
+    class="nav-toggle"
+    aria-expanded="false"
+    aria-label="Open navigation menu"
+    onclick="toggleSnapLinkNav(this)">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
 
   <div class="nav-center">
     <% navLinks.forEach((link) => { %>
@@ -40,3 +51,29 @@ const displayUserInitial = displayUserName.charAt(0).toUpperCase();
     <% } %>
   </div>
 </nav>
+<script>
+  function toggleSnapLinkNav(button) {
+    const nav = button.closest('[data-navbar-root]');
+    if (!nav) return;
+    const isOpen = nav.classList.toggle('is-open');
+    button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+
+  document.addEventListener('click', (event) => {
+    document.querySelectorAll('[data-navbar-root].is-open').forEach((nav) => {
+      if (nav.contains(event.target)) return;
+      nav.classList.remove('is-open');
+      const toggle = nav.querySelector('.nav-toggle');
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    document.querySelectorAll('[data-navbar-root].is-open').forEach((nav) => {
+      nav.classList.remove('is-open');
+      const toggle = nav.querySelector('.nav-toggle');
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>
